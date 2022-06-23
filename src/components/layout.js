@@ -28,7 +28,7 @@ const Layout = ({ location, title, children }) => {
       <header className="global-header">{header}</header>
       <main>{children}</main>
       <footer>
-        <p>Copyright {new Date().getFullYear()} <a href="https://www.github.com/changhwanK">Changhwan</a> all rights reserved</p>
+      <p style={{fontSize: 11, textAlign: "center", position: "fixed", bottom: 0}}>©Changhwan {new Date().getFullYear}, Built with Gatsby-starter</p>
       </footer>
     </div>
   )
