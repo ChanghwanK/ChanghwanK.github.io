@@ -321,6 +321,36 @@ a:focus {
   margin-bottom: var(--spacing-8);
 }
 
+/* tags  #e9ddc5 */
+.blog-post .tags ul {
+  list-style: none;
+}
+
+.blog-post .tags ul li {
+  display: inline-block;
+  margin-right: 1rem;
+  text-align: center;
+}
+
+.blog-post .tags ul li a {
+  display: block;
+  padding-left: 0.5rem;
+  padding-right: 0.5rem;
+  padding-top: 0.1rem;
+  padding-bottom: 0.1rem;
+  text-decoration: none;
+  color: rgb(116, 116, 117);
+  font-size: 0.85rem;
+  font-weight: bold;
+  border-width: 4px;
+  border-radius: 0.25rem;
+  background-color: #edf0ee;
+}
+
+.blog-post .tags ul li a:hover {
+  background-color: #c7c7c5;
+}
+
 /* Media queries */
 
 @media (max-width: 42rem) {

@@ -1,3 +1,5 @@
+const kebabCase = require(`lodash.kebabcase`)
+
 const path = require(`path`)
 const { createFilePath } = require(`gatsby-source-filesystem`)
 
@@ -20,12 +22,16 @@ exports.createPages = async ({ graphql, actions, reporter }) => {
             fields {
               slug
             }
+            frontmatter {
+              tags
+            }
           }
         }
       }
     `
   )
-
+  
+  let tags = new Set()
   if (result.errors) {
     reporter.panicOnBuild(
       `There was an error loading your blog posts`,
@@ -54,8 +60,24 @@ exports.createPages = async ({ graphql, actions, reporter }) => {
           nextPostId,
         },
       })
+
+      if (post.frontmatter.tags) {
+        post.frontmatter.tags.forEach(tags=> {
+          tags.add(tag)
+        }) 
+      }
     })
   }
+  const tagTemplate = path.resolve("src/templates/tags.js")
+  tags.forEach(tag => {
+    createPage({
+      path: `/tags/${kebabCase(tag)}/`,
+      component: tagTemplate,
+      context: {
+        tag,
+      },
+    })
+  })
 }
 
 exports.onCreateNode = ({ node, actions, getNode }) => {

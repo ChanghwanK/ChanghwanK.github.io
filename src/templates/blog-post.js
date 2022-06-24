@@ -4,6 +4,7 @@ import { Link, graphql } from "gatsby"
 import Bio from "../components/bio"
 import Layout from "../components/layout"
 import Seo from "../components/seo"
+import kebabCase from "lodash.kebabcase"
 
 const BlogPostTemplate = ({ data, location }) => {
   const post = data.markdownRemark
@@ -29,7 +30,17 @@ const BlogPostTemplate = ({ data, location }) => {
           dangerouslySetInnerHTML={{ __html: post.html }}
           itemProp="articleBody"
         />
-        <hr />
+        <div className="tags">
+          <ul>
+          {post.frontmatter.tags
+              ? post.frontmatter.tags.map(tag => (
+                  <li key={kebabCase(tag)}>
+                    <Link to={`/tags/${kebabCase(tag)}`}>{kebabCase(tag)}</Link>
+                  </li>
+                  ))
+              : null}
+          </ul>
+        </div>
         <footer>
           <Bio />
         </footer>
@@ -85,6 +96,7 @@ export const pageQuery = graphql`
         title
         date(formatString: "MMMM DD, YYYY")
         description
+        tags
       }
     }
     previous: markdownRemark(id: { eq: $previousPostId }) {
