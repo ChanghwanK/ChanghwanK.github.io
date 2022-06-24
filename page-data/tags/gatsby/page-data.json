@@ -1,0 +1,1 @@
+{"componentChunkName":"component---src-templates-tags-js","path":"/tags/gatsby/","result":{"data":{"site":{"siteMetadata":{"title":"Changwhan's Tech Blog"}},"allMarkdownRemark":{"totalCount":1,"edges":[{"node":{"fields":{"slug":"/6.23/test/"},"frontmatter":{"title":"문제 해결을 위한 사고전환"}}}]}},"pageContext":{"tag":"Gatsby"}},"staticQueryHashes":["2841359383"]}
