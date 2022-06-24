@@ -62,7 +62,7 @@ exports.createPages = async ({ graphql, actions, reporter }) => {
       })
 
       if (post.frontmatter.tags) {
-        post.frontmatter.tags.forEach(tags=> {
+        post.frontmatter.tags.forEach(tag=> {
           tags.add(tag)
         }) 
       }
