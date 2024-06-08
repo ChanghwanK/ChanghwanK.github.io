@@ -14,7 +14,7 @@ timezone: Asia/Seoul
 # jekyll-seo-tag settings › https://github.com/jekyll/jekyll-seo-tag/blob/master/docs/usage.md
 # ↓ --------------------------
 
-title: '# CH11' # the main title
+title: '# Dev Plus' # the main title
 
 tagline: |-
   경험과 생각을 기록하며, 지식을 체계화하기 위한 공간입니다.
