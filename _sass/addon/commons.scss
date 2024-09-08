@@ -753,8 +753,8 @@ $btn-mb: 0.5rem;
       @extend %clickable-transition;
       @extend %sidebar-link-hover;
 
-      color: #FF7601
-      // color: #007bff;
+      // color: #FF7601
+      color: hsl(210, 52%, 50%);
     }
   }
 
