@@ -14,13 +14,12 @@ timezone: Asia/Seoul
 # jekyll-seo-tag settings › https://github.com/jekyll/jekyll-seo-tag/blob/master/docs/usage.md
 # ↓ --------------------------
 
-title: "# Changhwan" # the main title
+title: "Hwan.Blog" # the main title
 
 tagline: |-
-  주어진 환경에서 최선의 결과를 내기 위해 노력하는 DevOps 엔지니어입니다.
+  주어진 환경에서 최선의 결과를 내기 위해 노력하는 Engineer입니다.
   <br>
-  <br>
-  DevOps Engineering 관련 정보를 공유합니다.
+  공유를 통한 성장을 믿기에 기록하고 공유합니다.
 
 description: >- # used by seo meta and the atom feed
 
