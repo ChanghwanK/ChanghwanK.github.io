@@ -4,7 +4,7 @@
 
 @mixin dark-scheme {
   /* Framework color */
-  --main-bg: rgb(27, 27, 30);
+  --main-bg: rgb(30, 29, 29);
   --mask-bg: rgb(68, 69, 70);
   --main-border-color: rgb(44, 45, 45);
 
@@ -38,7 +38,7 @@
   // --site-title-color: #717070;
   --site-title-color: #FF7601;
   --site-subtitle-color: #e2e1e1;
-  --sidebar-bg: #1e1e1e;
+  --sidebar-bg: rgb(30, 29, 29);
   --sidebar-border-color: #292929;
   --sidebar-muted-color: #868686;
   --sidebar-active-color: rgb(255, 255, 255, 0.95);
