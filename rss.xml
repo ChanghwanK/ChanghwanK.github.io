@@ -1,15 +1,77 @@
-<?xml version="1.0" encoding="UTF-8"?><rss xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:atom="http://www.w3.org/2005/Atom" version="2.0"><channel><title><![CDATA[RSS Feed of Changhwan's Tech Blog]]></title><description><![CDATA[컨테이너 기술에 관심이 많으며 서비스를 안정적으로 배포하고 운영하는 것에 관심이 많습니다.]]></description><link>https://tech.k10n.me</link><generator>GatsbyJS</generator><lastBuildDate>Tue, 04 Mar 2025 14:49:26 GMT</lastBuildDate><item><title><![CDATA[Pod 생성 과정 디버깅]]></title><description><![CDATA[쿠버네티스 기반으로 서비스를 운영하다보면 하루에도 수십 수백개의 Pod…]]></description><link>https://tech.k10n.me/Pod생성요청디버깅/</link><guid isPermaLink="false">https://tech.k10n.me/Pod생성요청디버깅/</guid><pubDate>Sun, 16 Feb 2025 00:00:00 GMT</pubDate><content:encoded>&lt;p&gt;쿠버네티스 기반으로 서비스를 운영하다보면 하루에도 수십 수백개의 Pod가 새롭게 생성되고 제거되고 합니다. 이 과정이 클라이언트 입장에서는 명령어 한 줄에 너무나 쉽고 당연하게 발생합니다. 하지만 어렴풋이 ‘스케줄링’ 과정을 공부하며 내부적으로는 꽤나 많고 복잡한 과정을 거친다는 것을 알고 있었습니다. &lt;/p&gt;
-&lt;p&gt;어렴풋이 알고는 있었지만 이 과정을 명확히 이해하지 못한다면 ‘파드가 생성되지 않는’ 장애가 발생했을 때 단계적으로 파악하지 못해 장애 대응이 늦어질 것이라 생각이 들었습니다. 따라서 이 과정을 한 번 알아보고자 합니다.&lt;/p&gt;
+<?xml version="1.0" encoding="UTF-8"?><rss xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:atom="http://www.w3.org/2005/Atom" version="2.0"><channel><title><![CDATA[RSS Feed of Changhwan's Tech Blog]]></title><description><![CDATA[컨테이너와 클라우드 네이티브 기술에 관심이 많으며, 서비스를 효율적이고 안정적으로 운영할 수 있는 방법을 고민합니다.]]></description><link>https://tech.k10n.me</link><generator>GatsbyJS</generator><lastBuildDate>Tue, 04 Mar 2025 15:55:05 GMT</lastBuildDate><item><title><![CDATA[Pod 생성 요청 시 무슨일이 일어날까? Control Plane Side]]></title><description><![CDATA[쿠버네티스 기반으로 서비스를 운영하다 보면 하루에도 수십 수백 개의 Pod…]]></description><link>https://tech.k10n.me/Pod생성_시_발생하는_것들/</link><guid isPermaLink="false">https://tech.k10n.me/Pod생성_시_발생하는_것들/</guid><pubDate>Sun, 16 Feb 2025 00:00:00 GMT</pubDate><content:encoded>&lt;p&gt;쿠버네티스 기반으로 서비스를 운영하다 보면 하루에도 수십 수백 개의 Pod가 새롭게 생성되고 제거되고 합니다. 이 과정이 클라이언트 입장에서는 명령어 한 줄에 너무나 쉽고 당연하게 발생합니다. 하지만 어렴풋이 ‘스케줄링’ 과정을 공부하며 내부적으로는 꽤나 많고 복잡한 과정을 거친다는 것을 알고 있었습니다. &lt;/p&gt;
+&lt;p&gt;어렴풋이 알고는 있었지만 이 과정을 명확히 이해하지 못한다면 ‘파드가 생성되지 않는’ 장애가 발생했을 때 단계적으로 파악하지 못해 장애 대응이 늦어질 것이라 생각이 들었습니다. 따라서 이 과정을 한 번 알아보고자 합니다. 크게 Pod 생성에는 Control Plane 영역과 Data Plane에서 Kubelet이 하는 영역 두 가지로 나눌 수 있는데 이번에는 Control Plane 영역을 다뤄보고자 합니다. &lt;/p&gt;
 &lt;h2 id=&quot;쿠버네티스가-처음이라면&quot; style=&quot;position:relative;&quot;&gt;&lt;a href=&quot;#%EC%BF%A0%EB%B2%84%EB%84%A4%ED%8B%B0%EC%8A%A4%EA%B0%80-%EC%B2%98%EC%9D%8C%EC%9D%B4%EB%9D%BC%EB%A9%B4&quot; aria-label=&quot;쿠버네티스가 처음이라면 permalink&quot; class=&quot;heading-anchor before&quot;&gt;&lt;svg xmlns=&quot;http://www.w3.org/2000/svg&quot; width=&quot;15&quot; height=&quot;15&quot; viewBox=&quot;0 0 24 24&quot;&gt;&lt;path d=&quot;M6.188 8.719c.439-.439.926-.801 1.444-1.087 2.887-1.591 6.589-.745 8.445 2.069l-2.246 2.245c-.644-1.469-2.243-2.305-3.834-1.949-.599.134-1.168.433-1.633.898l-4.304 4.306c-1.307 1.307-1.307 3.433 0 4.74 1.307 1.307 3.433 1.307 4.74 0l1.327-1.327c1.207.479 2.501.67 3.779.575l-2.929 2.929c-2.511 2.511-6.582 2.511-9.093 0s-2.511-6.582 0-9.093l4.304-4.306zm6.836-6.836l-2.929 2.929c1.277-.096 2.572.096 3.779.574l1.326-1.326c1.307-1.307 3.433-1.307 4.74 0 1.307 1.307 1.307 3.433 0 4.74l-4.305 4.305c-1.311 1.311-3.44 1.3-4.74 0-.303-.303-.564-.68-.727-1.051l-2.246 2.245c.236.358.481.667.796.982.812.812 1.846 1.417 3.036 1.704 1.542.371 3.194.166 4.613-.617.518-.286 1.005-.648 1.444-1.087l4.304-4.305c2.512-2.511 2.512-6.582.001-9.093-2.511-2.51-6.581-2.51-9.092 0z&quot;/&gt;&lt;/svg&gt;&lt;/a&gt;쿠버네티스가 처음이라면!&lt;/h2&gt;
+&lt;p&gt;&lt;figure class=&apos;gatsby-resp-image-figure&apos; style=&apos;margin-bottom: 16px;&apos;&gt;
+    &lt;span class=&apos;gatsby-resp-image-wrapper&apos; style=&apos;position: relative; display: block; margin-left: auto; margin-right: auto; max-width: 600px; &apos;&gt;
+      &lt;a class=&apos;gatsby-resp-image-link&apos; href=&apos;/static/7d44574fdb8ff9f8d3d8c70285a1a779/dface/%EC%BF%A0%EB%B2%84%EB%84%A4%ED%8B%B0%EC%8A%A4_01.png&apos; style=&apos;display: block&apos; target=&apos;_blank&apos; rel=&apos;noopener&apos;&gt;
+    &lt;span class=&apos;gatsby-resp-image-background-image&apos; style=&quot;padding-bottom: 58.235294117647065%; position: relative; bottom: 0; left: 0; background-image: url(&apos;data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAAMCAYAAABiDJ37AAAACXBIWXMAAA9hAAAPYQGoP6dpAAABgklEQVR42q2T23KbMBiE/fa57Wv0Ks/Q6SSNa4e0CeADOBhhbDAB2SHgA4cvwqk9SUk7uYhmdn6NRtp/tSt1FkmJCAs+a3S+nCecfY3Jt/Vhoa7bm+o/i6t0w8MqZykzgjhl9Zi3CQ13x429PZG9xhuy1Rp7GmCO7vl+2cN2BP5yzb4o3xL+T/6RLMsypJSMpks0U3Btuvwaejj+w2nPibCqXtTs9iXJ4wb5tEOmO9aqNt3TNCUMQ+JEYrsBs0XERVfDD2LEImkrPHZovNH0CT81ne71HeOJR7d/i2EYB9JGpeVGaIMZPUPwezzH9iKqRtF7hMk6Z2B7GEMbfTBhYAmGtkAIQRzHCpKuZvKjd8ulwreLPvrQaYV48rAoSzbbvaoVW3X9bPMyL4qCKIqUwhzT9unrDrrlczeaMnLmVH97+JFQ1IxFEDJWKRtjlytlxb07RwTy3ynXr/HOsymV2pkiMC2PG91SameHUFoefuT1H3WW6nCDpkdTq6r9Czp88ngGGMKeR3NL4EgAAAAASUVORK5CYII=&apos;); background-size: cover; display: block;&quot;&gt;&lt;/span&gt;
+  &lt;img class=&apos;gatsby-resp-image-image&apos; alt=&apos;핵심! 모든 컴포넌트들은 오직 API Server와만 통신한다.&apos; title=&apos;&apos; src=&apos;/static/7d44574fdb8ff9f8d3d8c70285a1a779/dface/%EC%BF%A0%EB%B2%84%EB%84%A4%ED%8B%B0%EC%8A%A4_01.png&apos; srcset=&apos;/static/7d44574fdb8ff9f8d3d8c70285a1a779/e7570/%EC%BF%A0%EB%B2%84%EB%84%A4%ED%8B%B0%EC%8A%A4_01.png 170w,
+/static/7d44574fdb8ff9f8d3d8c70285a1a779/f46e7/%EC%BF%A0%EB%B2%84%EB%84%A4%ED%8B%B0%EC%8A%A4_01.png 340w,
+/static/7d44574fdb8ff9f8d3d8c70285a1a779/dface/%EC%BF%A0%EB%B2%84%EB%84%A4%ED%8B%B0%EC%8A%A4_01.png 600w&apos; sizes=&apos;(max-width: 600px) 100vw, 600px&apos; style=&apos;width:100%;height:100%;margin:0;vertical-align:middle;position:absolute;top:0;left:0;&apos; loading=&apos;lazy&apos; decoding=&apos;async&apos;&gt;
+  &lt;/a&gt;
+    &lt;/span&gt;
+    &lt;figcaption class=&apos;gatsby-resp-image-figcaption&apos;&gt;핵심! 모든 컴포넌트들은 오직 API Server와만 통신한다.&lt;/figcaption&gt;
+  &lt;/figure&gt;&lt;/p&gt;
 &lt;ol&gt;
-&lt;li&gt;쿠버네티스는 Control Plane과 Data Plane 으로 운영을 담당하는 부분과 실제 Woker들이 동작하는 Cluster를 따로 나누어 운영하는 것을 권장합니다.&lt;/li&gt;
-&lt;li&gt;Control Plane은 YAML 형태로 선언한 구성 정보를 실제 클러스터 상태와 비교하며 달라질 경우, 지속적으로 선언한 구성으로 돌아가고자 합니다.&lt;/li&gt;
-&lt;li&gt;쿠버네티스를 이루는 각 모듈은 이 과정에서 서로 통신하지 않고 오직 API Server와만 통신합니다. API Server를 통해 ETCD에 저장된 상태를 체크하고 &lt;strong&gt;현재 상태와 원하는 상태가 다르면 필요한 작업을 수행합니다.&lt;/strong&gt;&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;쿠버네티스가 제안하는 모범적인 클러스터 아키텍처는 운영을 담당하는&lt;/strong&gt; &lt;code class=&quot;language-text&quot;&gt;Control Plane&lt;/code&gt;&lt;strong&gt;과 실제 Application들이 동작하는&lt;/strong&gt; &lt;code class=&quot;language-text&quot;&gt;Data Plane&lt;/code&gt; &lt;strong&gt;으로  클러스터를 나누어 운영하길 권장합니다.&lt;/strong&gt; 실제 우리의 서비스 Pod들이 동작하는 곳은 기본적으로는 &lt;code class=&quot;language-text&quot;&gt;Data Plane&lt;/code&gt; 입니다.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;파드(Pod) 는 쿠버네티스에서 생성하고 관리할 수 있는 배포 가능한 가장 작은 컴퓨팅(배포) 단위입니다.&lt;/strong&gt; 파드는 여러 개의 컨테이너가 동작 가능하며 네트워크 및 스토리지를 공유하는 컨테이너 그룹입니다.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;쿠버네티스를 이루는 각 모듈은 이 과정에서 서로 통신하지 않고 오직 API Server와만 통신합니다.&lt;/strong&gt; API Server를 통해 ETCD에 저장된 상태를 체크하고 현재 상태와 원하는 상태가 다르면 원하는 상태(Desired State)로 돌아가기 위한 작업들을 수행합니다.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;이후 실제 파드 생성은 Data Plane의 Kubelet이 담당합니다.&lt;/strong&gt; API Server는 Kubelet에게 &lt;code class=&quot;language-text&quot;&gt;‘생성’&lt;/code&gt;  요청을 날리게 됩니다. &lt;/li&gt;
 &lt;/ol&gt;
-&lt;p&gt;이것이 쿠버네티스의 기본적인 철학입니다. 따라서 &lt;code class=&quot;language-text&quot;&gt;kubectl apply -f pod.yaml&lt;/code&gt;라는 CLI를 통해 Pod를 생성하기 위해선 API Server에 요청을 필수로 보내야 한다는 것이고 API Server와의 통신 결과로 Pod가 생성되는 것입니다. 지금부터 이 과정을 보다 자세히 알아보겠습니다. &lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;이것이 쿠버네티스의 기본적인 내용입니다.&lt;/strong&gt;  우리가 자주 사용하는 &lt;code class=&quot;language-text&quot;&gt;kubectl apply -f pod.yaml&lt;/code&gt; 의 뒤에는 여러가지 컴포넌트가 복잡하게 동작하고 각 컴포넌트들은 서로 통신하지 않고 오직 API Server와의 통신하며 최종적으로 Pod가 생성됩니다. &lt;/p&gt;
+&lt;h2 id=&quot;Overview&quot; style=&quot;position:relative;&quot;&gt;&lt;a href=&quot;#Overview&quot; aria-label=&quot;Overview permalink&quot; class=&quot;heading-anchor before&quot;&gt;&lt;svg xmlns=&quot;http://www.w3.org/2000/svg&quot; width=&quot;15&quot; height=&quot;15&quot; viewBox=&quot;0 0 24 24&quot;&gt;&lt;path d=&quot;M6.188 8.719c.439-.439.926-.801 1.444-1.087 2.887-1.591 6.589-.745 8.445 2.069l-2.246 2.245c-.644-1.469-2.243-2.305-3.834-1.949-.599.134-1.168.433-1.633.898l-4.304 4.306c-1.307 1.307-1.307 3.433 0 4.74 1.307 1.307 3.433 1.307 4.74 0l1.327-1.327c1.207.479 2.501.67 3.779.575l-2.929 2.929c-2.511 2.511-6.582 2.511-9.093 0s-2.511-6.582 0-9.093l4.304-4.306zm6.836-6.836l-2.929 2.929c1.277-.096 2.572.096 3.779.574l1.326-1.326c1.307-1.307 3.433-1.307 4.74 0 1.307 1.307 1.307 3.433 0 4.74l-4.305 4.305c-1.311 1.311-3.44 1.3-4.74 0-.303-.303-.564-.68-.727-1.051l-2.246 2.245c.236.358.481.667.796.982.812.812 1.846 1.417 3.036 1.704 1.542.371 3.194.166 4.613-.617.518-.286 1.005-.648 1.444-1.087l4.304-4.305c2.512-2.511 2.512-6.582.001-9.093-2.511-2.51-6.581-2.51-9.092 0z&quot;/&gt;&lt;/svg&gt;&lt;/a&gt;Overview&lt;/h2&gt;
+&lt;p&gt;&lt;figure class=&apos;gatsby-resp-image-figure&apos; style=&apos;margin-bottom: 16px;&apos;&gt;
+    &lt;span class=&apos;gatsby-resp-image-wrapper&apos; style=&apos;position: relative; display: block; margin-left: auto; margin-right: auto; max-width: 680px; &apos;&gt;
+      &lt;a class=&apos;gatsby-resp-image-link&apos; href=&apos;/static/9b8d5c9603187f5c99b4c770314668a8/68327/%EC%BF%A0%EB%B2%84%EB%84%A4%ED%8B%B0%EC%8A%A4_02.png&apos; style=&apos;display: block&apos; target=&apos;_blank&apos; rel=&apos;noopener&apos;&gt;
+    &lt;span class=&apos;gatsby-resp-image-background-image&apos; style=&quot;padding-bottom: 62.94117647058823%; position: relative; bottom: 0; left: 0; background-image: url(&apos;data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAANCAYAAACpUE5eAAAACXBIWXMAAA9hAAAPYQGoP6dpAAACXklEQVR42m2T63KbMBCF8/5v1Zk006aJ0zi2sQ0YxEUIgbjfcXy6wm3izJSZnZX2x8fZPas73HzNMKJoe0Qqg8U8MB5BVQ3VOpQU/Tji3DeY6gIxcxH7Hs5dhbmtcXl/Xxh3l8sFwzBgmGdsXIX1KcPLgeN+ZeH+twODKezcjOoKdpAg9GMc7BhvawO7zRGmmyKk+kyMD2BdV+jGGa+nAg8bgS2rYQQ9VlaBrdfg+ajwsJUwbIk9wb9vU1hBDTdq8XRqqVZg7NpPYKYUAmpvc/SxMwNYXoojk9g5klRlOAU5TJ8yi5ByDhkKZFGEIhYQAYcKQ0z/gMvsmgZxqrA1PbwZJp7WR9w/runuw+UFnDCD7SewXI5MRMh5iIJyJWNkdC4j/hXYdR3qric1KdaGjR+rHX6+GDg4EQFzUixhsgQ2KdTAjAAaWKfJxw+m25ZnMkSbwqIcO5vj28OK4hmGFeLkpwt8a3FSeAOUYgEqrXYBdl+B/TTjRK1pyGpjLZD9iePoxhRymampWyZYTlFSu3Uir/AoxNjeKpymBciijJSE+PV6wCMBtUG61QVK2XQIplvUhgjxF0j30Mf0f2BORoTL7DRkQ8Cnt6tJe4egdoAk8CF9HxXBWpVeFWvg7QwnAg4EdLl+IRJOoMiIhFqOlmyRuoMjsLd8pGEAQa9EQyXBBWMoSfWXGb7Ts5nOZzCR086l5LaivVO0sLTIjHaS9lKfLU8ss1OkiNsmpOci8dhiyjwOn2tz+5bzukNS1ojza4isgsgryKKm1Rpo+A26IkdfFugpd3mGviqhhWngH+Kjy34YzLwdAAAAAElFTkSuQmCC&apos;); background-size: cover; display: block;&quot;&gt;&lt;/span&gt;
+  &lt;img class=&apos;gatsby-resp-image-image&apos; alt=&apos;Kubernetes Pod 생성 Flow&apos; title=&apos;&apos; src=&apos;/static/9b8d5c9603187f5c99b4c770314668a8/ca1dc/%EC%BF%A0%EB%B2%84%EB%84%A4%ED%8B%B0%EC%8A%A4_02.png&apos; srcset=&apos;/static/9b8d5c9603187f5c99b4c770314668a8/e7570/%EC%BF%A0%EB%B2%84%EB%84%A4%ED%8B%B0%EC%8A%A4_02.png 170w,
+/static/9b8d5c9603187f5c99b4c770314668a8/f46e7/%EC%BF%A0%EB%B2%84%EB%84%A4%ED%8B%B0%EC%8A%A4_02.png 340w,
+/static/9b8d5c9603187f5c99b4c770314668a8/ca1dc/%EC%BF%A0%EB%B2%84%EB%84%A4%ED%8B%B0%EC%8A%A4_02.png 680w,
+/static/9b8d5c9603187f5c99b4c770314668a8/68327/%EC%BF%A0%EB%B2%84%EB%84%A4%ED%8B%B0%EC%8A%A4_02.png 950w&apos; sizes=&apos;(max-width: 680px) 100vw, 680px&apos; style=&apos;width:100%;height:100%;margin:0;vertical-align:middle;position:absolute;top:0;left:0;&apos; loading=&apos;lazy&apos; decoding=&apos;async&apos;&gt;
+  &lt;/a&gt;
+    &lt;/span&gt;
+    &lt;figcaption class=&apos;gatsby-resp-image-figcaption&apos;&gt;Kubernetes Pod 생성 Flow&lt;/figcaption&gt;
+  &lt;/figure&gt;&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;클라이언트가 API Server에 HTTP 기반 요청을 보냅니다.&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;API Server에서 요청을 받아 다음을 진행합니다.&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;인증/인가&lt;/li&gt;
+&lt;li&gt;Addmission Control&lt;/li&gt;
+&lt;/ol&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;api sever ↔ etcd&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;요청 받은 Pod의 정보를 ETCD에 저장합니다.&lt;/li&gt;
+&lt;li&gt;만약, 신규 파드인 경우 unscheduled pod 이벤트가 발행됩니다.&lt;/li&gt;
+&lt;li&gt;스케줄러는 이벤트를 주기적으로 Watch 하고 있고, 신규 Pod 이벤트를 핸들링&lt;/li&gt;
+&lt;/ol&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;스케쥴링 동작&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;필터링&lt;/li&gt;
+&lt;li&gt;스코어링&lt;/li&gt;
+&lt;/ol&gt;
+&lt;/li&gt;
+&lt;li&gt;스케줄링 결과는 스케줄러가 진행하지 않고 스케줄링 결과를 api server로 다시 요청을 보냄&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;api server는 요청을 받고 etcd에 바인딩 정보를 저장하고 Pod 상태를 업데이트&lt;/p&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;bash&quot;&gt;&lt;pre class=&quot;language-bash&quot;&gt;&lt;code class=&quot;language-bash&quot;&gt;kubectl get events --sort-by&lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt;.metadata.creationTimestamp &lt;span class=&quot;token parameter variable&quot;&gt;-A&lt;/span&gt; &lt;span class=&quot;token parameter variable&quot;&gt;-w&lt;/span&gt;    
+
+kube-system   0s          Normal   Scheduled   pod/nginx-pod   Successfully assigned kube-system/nginx-pod to kind-control-plane
+kube-system   0s          Normal   Pulling     pod/nginx-pod   Pulling image &lt;span class=&quot;token string&quot;&gt;&quot;nginx:latest&quot;&lt;/span&gt;
+kube-system   0s          Normal   Pulled      pod/nginx-pod   Successfully pulled image &lt;span class=&quot;token string&quot;&gt;&quot;nginx:latest&quot;&lt;/span&gt; &lt;span class=&quot;token keyword&quot;&gt;in&lt;/span&gt; &lt;span class=&quot;token number&quot;&gt;19&lt;/span&gt;.374s &lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token number&quot;&gt;19&lt;/span&gt;.374s including waiting&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;. Image size: &lt;span class=&quot;token number&quot;&gt;68631146&lt;/span&gt; bytes.
+kube-system   0s          Normal   Created     pod/nginx-pod   Created container: nginx
+kube-system   0s          Normal   Started     pod/nginx-pod   Started container nginx&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;지금부터 이 과정을보다 자세히 알아보겠습니다. &lt;/p&gt;
 &lt;hr&gt;
-&lt;h2 id=&quot;kubectl-apply--f-Podyaml&quot; style=&quot;position:relative;&quot;&gt;&lt;a href=&quot;#kubectl-apply--f-Podyaml&quot; aria-label=&quot;kubectl apply  f Podyaml permalink&quot; class=&quot;heading-anchor before&quot;&gt;&lt;svg xmlns=&quot;http://www.w3.org/2000/svg&quot; width=&quot;15&quot; height=&quot;15&quot; viewBox=&quot;0 0 24 24&quot;&gt;&lt;path d=&quot;M6.188 8.719c.439-.439.926-.801 1.444-1.087 2.887-1.591 6.589-.745 8.445 2.069l-2.246 2.245c-.644-1.469-2.243-2.305-3.834-1.949-.599.134-1.168.433-1.633.898l-4.304 4.306c-1.307 1.307-1.307 3.433 0 4.74 1.307 1.307 3.433 1.307 4.74 0l1.327-1.327c1.207.479 2.501.67 3.779.575l-2.929 2.929c-2.511 2.511-6.582 2.511-9.093 0s-2.511-6.582 0-9.093l4.304-4.306zm6.836-6.836l-2.929 2.929c1.277-.096 2.572.096 3.779.574l1.326-1.326c1.307-1.307 3.433-1.307 4.74 0 1.307 1.307 1.307 3.433 0 4.74l-4.305 4.305c-1.311 1.311-3.44 1.3-4.74 0-.303-.303-.564-.68-.727-1.051l-2.246 2.245c.236.358.481.667.796.982.812.812 1.846 1.417 3.036 1.704 1.542.371 3.194.166 4.613-.617.518-.286 1.005-.648 1.444-1.087l4.304-4.305c2.512-2.511 2.512-6.582.001-9.093-2.511-2.51-6.581-2.51-9.092 0z&quot;/&gt;&lt;/svg&gt;&lt;/a&gt;kubectl apply -f Pod.yaml&lt;/h2&gt;
-&lt;p&gt;&lt;code class=&quot;language-text&quot;&gt;kubectl&lt;/code&gt; 매니징 하는 입장에서 가장 많이 사용하는 Client 도구입니다. 사용자가 직접 명령어를 통해 API Server에  HTTP 요청을 보내 리소스를 조회하거나 조작합니다. &lt;/p&gt;
+&lt;h2 id=&quot;1-kubectl-apply--f-Podyaml&quot; style=&quot;position:relative;&quot;&gt;&lt;a href=&quot;#1-kubectl-apply--f-Podyaml&quot; aria-label=&quot;1 kubectl apply  f Podyaml permalink&quot; class=&quot;heading-anchor before&quot;&gt;&lt;svg xmlns=&quot;http://www.w3.org/2000/svg&quot; width=&quot;15&quot; height=&quot;15&quot; viewBox=&quot;0 0 24 24&quot;&gt;&lt;path d=&quot;M6.188 8.719c.439-.439.926-.801 1.444-1.087 2.887-1.591 6.589-.745 8.445 2.069l-2.246 2.245c-.644-1.469-2.243-2.305-3.834-1.949-.599.134-1.168.433-1.633.898l-4.304 4.306c-1.307 1.307-1.307 3.433 0 4.74 1.307 1.307 3.433 1.307 4.74 0l1.327-1.327c1.207.479 2.501.67 3.779.575l-2.929 2.929c-2.511 2.511-6.582 2.511-9.093 0s-2.511-6.582 0-9.093l4.304-4.306zm6.836-6.836l-2.929 2.929c1.277-.096 2.572.096 3.779.574l1.326-1.326c1.307-1.307 3.433-1.307 4.74 0 1.307 1.307 1.307 3.433 0 4.74l-4.305 4.305c-1.311 1.311-3.44 1.3-4.74 0-.303-.303-.564-.68-.727-1.051l-2.246 2.245c.236.358.481.667.796.982.812.812 1.846 1.417 3.036 1.704 1.542.371 3.194.166 4.613-.617.518-.286 1.005-.648 1.444-1.087l4.304-4.305c2.512-2.511 2.512-6.582.001-9.093-2.511-2.51-6.581-2.51-9.092 0z&quot;/&gt;&lt;/svg&gt;&lt;/a&gt;1. kubectl apply -f Pod.yaml&lt;/h2&gt;
+&lt;p&gt;&lt;code class=&quot;language-text&quot;&gt;kubectl&lt;/code&gt; 매니징 하는 입장에서 &lt;code class=&quot;language-text&quot;&gt;kubectl&lt;/code&gt;은 가장 많이 사용하는 Client Tool입니다. 우리는 직접 명령어를 통해 API Server에  Http 프로토콜 기반으로 REST API로 요청을 보내 다양한 Workload들을 &lt;strong&gt;&lt;code class=&quot;language-text&quot;&gt;‘생성’&lt;/code&gt;, &lt;code class=&quot;language-text&quot;&gt;‘수정’&lt;/code&gt;, &lt;code class=&quot;language-text&quot;&gt;‘조회’&lt;/code&gt; 할 수 있습니다.&lt;/strong&gt; &lt;/p&gt;
 &lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;yaml&quot;&gt;&lt;pre class=&quot;language-yaml&quot;&gt;&lt;code class=&quot;language-yaml&quot;&gt;&lt;span class=&quot;token punctuation&quot;&gt;---&lt;/span&gt;
 &lt;span class=&quot;token key atrule&quot;&gt;apiVersion&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt; v1
 &lt;span class=&quot;token key atrule&quot;&gt;kind&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt; Pod
@@ -22,138 +84,311 @@
     &lt;span class=&quot;token punctuation&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;token key atrule&quot;&gt;name&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt; nginx
       &lt;span class=&quot;token key atrule&quot;&gt;image&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt; nginx&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt;latest
       &lt;span class=&quot;token key atrule&quot;&gt;ports&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt;
-        &lt;span class=&quot;token punctuation&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;token key atrule&quot;&gt;containerPort&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token number&quot;&gt;80&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
-&lt;p&gt;가장 기본적인 Pod를 생성하는 YAML 파일입니다. 우리는 이를 &lt;code class=&quot;language-text&quot;&gt;RUNNING&lt;/code&gt; 형태의 &lt;code class=&quot;language-text&quot;&gt;Pod&lt;/code&gt;로 만들기 위해서는 &lt;code class=&quot;language-text&quot;&gt;kubectl apply -f pod.yaml&lt;/code&gt; 이란 명령어를 실행하여 Pod를 생성합니다. 그렇다면 이 과정에서 kubectl은 어떤 역할을 하고 어떤 과정이 발생할까요?&lt;/p&gt;
+      &lt;span class=&quot;token punctuation&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;token key atrule&quot;&gt;containerPort&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token number&quot;&gt;80&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;가장 기본적인 Pod를 생성하는 YAML 파일입니다. 우리는 이를 컨테이너가 동작하는 &lt;code class=&quot;language-text&quot;&gt;RUNNING&lt;/code&gt; 형태의 &lt;code class=&quot;language-text&quot;&gt;Pod&lt;/code&gt;로 만들기 위해서는 &lt;code class=&quot;language-text&quot;&gt;kubectl apply -f pod.yaml&lt;/code&gt; 를 실행해야 합니다. 그렇다면 이 과정에서 kubectl은 어떤 역할을 하고 내부적으로는 어떤 동작들이 발생해  Pod가 생성되고 &lt;code class=&quot;language-text&quot;&gt;RUNNING&lt;/code&gt; 상태가 되는 것일까요?&lt;/p&gt;
+&lt;p&gt;먼저, &lt;code class=&quot;language-text&quot;&gt;kubectl&lt;/code&gt;은 크게 2가지 책임을 가지고 있습니다.&lt;/p&gt;
 &lt;ol&gt;
-&lt;li&gt;&lt;em&gt;kubectl은 먼저 API Server 보내기 전 YAML을 JSON으로 파싱한다.&lt;/em&gt;&lt;/li&gt;
-&lt;li&gt;&lt;em&gt;kubectl은  API Server와 통신하며 요청을 ‘검증’하는 과정을 거친다.&lt;/em&gt;&lt;/li&gt;
+&lt;li&gt;&lt;em&gt;kubectl은 YAML을 API  Server에 요청을 보낼 수 있는 형태인 JSON 형태로 YAML 파싱힙니다.&lt;/em&gt;&lt;/li&gt;
+&lt;li&gt;*kubectl은  API Server와 통신하며 요청을 &lt;strong&gt;‘사전 검증’하는 과정을 진행합니다.*&lt;/strong&gt; &lt;/li&gt;
 &lt;/ol&gt;
-&lt;p&gt;&lt;strong&gt;[kubectl apply -f pold.yaml  실행 시 발생하는 것]&lt;/strong&gt;&lt;/p&gt;
-&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;yaml&quot;&gt;&lt;pre class=&quot;language-yaml&quot;&gt;&lt;code class=&quot;language-yaml&quot;&gt;k apply &lt;span class=&quot;token punctuation&quot;&gt;-&lt;/span&gt;f pod.yaml &lt;span class=&quot;token punctuation&quot;&gt;-&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;-&lt;/span&gt;v=6
-I0212 09&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt;32&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt;16.728845 1129992 loader.go&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;token number&quot;&gt;395&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;]&lt;/span&gt; Config loaded from file&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt;  /root/.kube/config
-I0212  GET https&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt;//192.168.0.200&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt;6443/openapi/v3&lt;span class=&quot;token punctuation&quot;&gt;?&lt;/span&gt;timeout=32s 200 OK in 14 milliseconds
-I0212  GET https&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt;//192.168.0.200&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt;6443/openapi/v3/api/v1&lt;span class=&quot;token punctuation&quot;&gt;?&lt;/span&gt;hash=EBC437E2734C2A5E649C8BB42D0B7D11384F5C16EBAC6C6EBE3D7DBCBE80D184507EC752D56427C4A43A49AB92306FC7B7790B2B13982382DC4525B719ABDA2F&lt;span class=&quot;token important&quot;&gt;&amp;amp;timeout=32s&lt;/span&gt; 200 OK in 19 milliseconds
-I0212  GET https&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt;//192.168.0.200&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt;6443/api&lt;span class=&quot;token punctuation&quot;&gt;?&lt;/span&gt;timeout=32s 200 OK in 1 milliseconds
-I0212  GET https&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt;//192.168.0.200&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt;6443/apis&lt;span class=&quot;token punctuation&quot;&gt;?&lt;/span&gt;timeout=32s 200 OK in 1 milliseconds
-I0212  GET https&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt;//192.168.0.200&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt;6443/api/v1/namespaces/argocd/pods/my&lt;span class=&quot;token punctuation&quot;&gt;-&lt;/span&gt;pod 404 Not Found in 3 milliseconds
-I0212  GET https&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt;//192.168.0.200&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt;6443/api/v1/namespaces/argocd 200 OK in 3 milliseconds
-I0212 09&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt;32&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt;16.879483 1129992 round_trippers.go&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;token number&quot;&gt;553&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;]&lt;/span&gt; POST https&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt;//192.168.0.200&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt;6443/api/v1/namespaces/argocd/pods&lt;span class=&quot;token punctuation&quot;&gt;?&lt;/span&gt;fieldManager=kubectl&lt;span class=&quot;token punctuation&quot;&gt;-&lt;/span&gt;client&lt;span class=&quot;token punctuation&quot;&gt;-&lt;/span&gt;side&lt;span class=&quot;token punctuation&quot;&gt;-&lt;/span&gt;apply&lt;span class=&quot;token important&quot;&gt;&amp;amp;fieldValidation=Strict&lt;/span&gt; 201 Created in 29 milliseconds
-pod/my&lt;span class=&quot;token punctuation&quot;&gt;-&lt;/span&gt;pod created
-I0212 09&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt;32&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt;16.879891 1129992 apply.go&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;token number&quot;&gt;546&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;]&lt;/span&gt; Running apply post&lt;span class=&quot;token punctuation&quot;&gt;-&lt;/span&gt;processor function&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;&lt;strong&gt;kubectl apply -f pold.yaml  실행 시 발생하는  로그  &lt;code class=&quot;language-text&quot;&gt;--v6&lt;/code&gt; 옵션 사용&lt;/strong&gt;&lt;/p&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;bash&quot;&gt;&lt;pre class=&quot;language-bash&quot;&gt;&lt;code class=&quot;language-bash&quot;&gt;kubectl apply &lt;span class=&quot;token parameter variable&quot;&gt;-f&lt;/span&gt; pod.yaml &lt;span class=&quot;token parameter variable&quot;&gt;--v&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;token number&quot;&gt;6&lt;/span&gt;
+---
+I0212 09:32:16.728845 &lt;span class=&quot;token number&quot;&gt;1129992&lt;/span&gt; loader.go:395&lt;span class=&quot;token punctuation&quot;&gt;]&lt;/span&gt; Config loaded from file:  /root/.kube/config
+I0212  GET https://192.168.0.200:6443/openapi/v3?timeout&lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt;32s &lt;span class=&quot;token number&quot;&gt;200&lt;/span&gt; OK &lt;span class=&quot;token keyword&quot;&gt;in&lt;/span&gt; &lt;span class=&quot;token number&quot;&gt;14&lt;/span&gt; milliseconds
+I0212  GET https://192.168.0.200:6443/openapi/v3/api/v1?hash&lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt;EBC437E2734C2A5E649C8BB42D0B7D11384F5C16EBAC6C6EBE3D7DBCBE80D184507EC752D56427C4A43A49AB92306FC7B7790B2B13982382DC4525B719ABDA2F&lt;span class=&quot;token operator&quot;&gt;&amp;amp;&lt;/span&gt;&lt;span class=&quot;token assign-left variable&quot;&gt;timeout&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt;32s &lt;span class=&quot;token number&quot;&gt;200&lt;/span&gt; OK &lt;span class=&quot;token keyword&quot;&gt;in&lt;/span&gt; &lt;span class=&quot;token number&quot;&gt;19&lt;/span&gt; milliseconds
+I0212  GET https://192.168.0.200:6443/api?timeout&lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt;32s &lt;span class=&quot;token number&quot;&gt;200&lt;/span&gt; OK &lt;span class=&quot;token keyword&quot;&gt;in&lt;/span&gt; &lt;span class=&quot;token number&quot;&gt;1&lt;/span&gt; milliseconds
+I0212  GET https://192.168.0.200:6443/apis?timeout&lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt;32s &lt;span class=&quot;token number&quot;&gt;200&lt;/span&gt; OK &lt;span class=&quot;token keyword&quot;&gt;in&lt;/span&gt; &lt;span class=&quot;token number&quot;&gt;1&lt;/span&gt; milliseconds
+I0212  GET https://192.168.0.200:6443/api/v1/namespaces/argocd/pods/my-pod &lt;span class=&quot;token number&quot;&gt;404&lt;/span&gt; Not Found &lt;span class=&quot;token keyword&quot;&gt;in&lt;/span&gt; &lt;span class=&quot;token number&quot;&gt;3&lt;/span&gt; milliseconds
+I0212  GET https://192.168.0.200:6443/api/v1/namespaces/argocd &lt;span class=&quot;token number&quot;&gt;200&lt;/span&gt; OK &lt;span class=&quot;token keyword&quot;&gt;in&lt;/span&gt; &lt;span class=&quot;token number&quot;&gt;3&lt;/span&gt; milliseconds
+I0212 09:32:16.879483 &lt;span class=&quot;token number&quot;&gt;1129992&lt;/span&gt; round_trippers.go:553&lt;span class=&quot;token punctuation&quot;&gt;]&lt;/span&gt; POST https://192.168.0.200:6443/api/v1/namespaces/argocd/pods?fieldManager&lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt;kubectl-client-side-apply&lt;span class=&quot;token operator&quot;&gt;&amp;amp;&lt;/span&gt;&lt;span class=&quot;token assign-left variable&quot;&gt;fieldValidation&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt;Strict &lt;span class=&quot;token number&quot;&gt;201&lt;/span&gt; Created &lt;span class=&quot;token keyword&quot;&gt;in&lt;/span&gt; &lt;span class=&quot;token number&quot;&gt;29&lt;/span&gt; milliseconds
+pod/my-pod created
+I0212 09:32:16.879891 &lt;span class=&quot;token number&quot;&gt;1129992&lt;/span&gt; apply.go:546&lt;span class=&quot;token punctuation&quot;&gt;]&lt;/span&gt; Running apply post-processor &lt;span class=&quot;token keyword&quot;&gt;function&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 &lt;ol&gt;
 &lt;li&gt;
-&lt;p&gt;&lt;strong&gt;Config 로딩&lt;/strong&gt;&lt;/p&gt;
-&lt;p&gt;가장 먼저 &lt;code class=&quot;language-text&quot;&gt;kubectl&lt;/code&gt;은  &lt;code class=&quot;language-text&quot;&gt;$HOME/.kube/config&lt;/code&gt; 에 존재하는 &lt;code class=&quot;language-text&quot;&gt;Config&lt;/code&gt; 파일을 로딩하고 API Server의 IP를 확인합니다. &lt;code class=&quot;language-text&quot;&gt;Config&lt;/code&gt; 파일에는 API Server와 통신하기 위한 여러가지 정보가 있고 그 중 Token과 API Server의 EndPoint를 kubectl은 확인합니다. &lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Config 파일 로딩:&lt;/strong&gt; &lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;가장 먼저 &lt;code class=&quot;language-text&quot;&gt;kubectl&lt;/code&gt;은  &lt;code class=&quot;language-text&quot;&gt;$HOME/.kube/config&lt;/code&gt; 에 존재하는 API Server 와 통신에 필요한 설정이 정의된 &lt;code class=&quot;language-text&quot;&gt;Config&lt;/code&gt; 파일을 메모리에 로딩하여 Config를 분석하고 API Server의 IP를 확인합니다.&lt;/li&gt;
+&lt;li&gt;&lt;code class=&quot;language-text&quot;&gt;Config&lt;/code&gt; 파일에는 여러 가지 정보가 있고 그 중 Token과 API Server의 EndPoint를 &lt;code class=&quot;language-text&quot;&gt;kubectl&lt;/code&gt;은 사용하여 API Server에 요청을 보낼 수 있게 됩니다. &lt;/li&gt;
+&lt;/ul&gt;
 &lt;/li&gt;
-&lt;li&gt;&lt;strong&gt;API Server에 OpenAPI Spec을 요청하여 리소스 정보를 가져옵니다.&lt;/strong&gt;&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;API Server에 OpenAPI Spec을 요청하여 리소스 정보를 가져옵니다.&lt;/strong&gt;&lt;/p&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;bash&quot;&gt;&lt;pre class=&quot;language-bash&quot;&gt;&lt;code class=&quot;language-bash&quot;&gt;I0212  GET https://192.168.0.200:6443/openapi/v3?timeout&lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt;32s &lt;span class=&quot;token number&quot;&gt;200&lt;/span&gt; OK &lt;span class=&quot;token keyword&quot;&gt;in&lt;/span&gt; &lt;span class=&quot;token number&quot;&gt;14&lt;/span&gt; milliseconds&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;/li&gt;
 &lt;li&gt;
 &lt;p&gt;&lt;strong&gt;Open API Spec을 기준으로 JSON을 검증합니다.&lt;/strong&gt;&lt;/p&gt;
-&lt;p&gt;이 과정에서 유저의 YAML 파일을 JSON으로 변환하며 변환된 JSON을 읽으며, API Server의 Open API 스펙과 비교하여 필수 필드 누락 여부를 검증하고 잘못된 필드가 있다면 오류를 반환하고 종료됩니다.&lt;/p&gt;
-&lt;p&gt;e.g) apiVersion이 잘못됨, YAML 타입이나 구조가 잘못됨&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;이 과정에서 유저의 YAML 파일을 JSON으로 변환하며 변환된 JSON을 읽으며, API Server의 Open API Spec과 비교하여 필수 필드 누락 여부를 검증하고 잘못된 필드가 있다면 오류를 반환하고 종료됩니다.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;strong&gt;e.g)&lt;/strong&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code class=&quot;language-text&quot;&gt;apiVersion&lt;/code&gt;이 잘못된 경우, YAML 문법에 맞지 않는 경우&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;YAML → JSON 변환 예시&lt;/strong&gt;&lt;/p&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;yaml&quot;&gt;&lt;pre class=&quot;language-yaml&quot;&gt;&lt;code class=&quot;language-yaml&quot;&gt;&lt;span class=&quot;token key atrule&quot;&gt;apiVersion&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt; v1
+&lt;span class=&quot;token key atrule&quot;&gt;kind&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt; Pod
+&lt;span class=&quot;token key atrule&quot;&gt;metadata&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt;
+  &lt;span class=&quot;token key atrule&quot;&gt;name&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt; my&lt;span class=&quot;token punctuation&quot;&gt;-&lt;/span&gt;pod
+&lt;span class=&quot;token key atrule&quot;&gt;spec&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt;
+  &lt;span class=&quot;token key atrule&quot;&gt;containers&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt;
+  &lt;span class=&quot;token punctuation&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;token key atrule&quot;&gt;name&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt; nginx
+    &lt;span class=&quot;token key atrule&quot;&gt;image&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt; nginx&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;json&quot;&gt;&lt;pre class=&quot;language-json&quot;&gt;&lt;code class=&quot;language-json&quot;&gt;&lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+  &lt;span class=&quot;token property&quot;&gt;&quot;apiVersion&quot;&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&quot;v1&quot;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
+  &lt;span class=&quot;token property&quot;&gt;&quot;kind&quot;&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&quot;Pod&quot;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
+  &lt;span class=&quot;token property&quot;&gt;&quot;metadata&quot;&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;token property&quot;&gt;&quot;name&quot;&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&quot;my-pod&quot;&lt;/span&gt;
+  &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
+  &lt;span class=&quot;token property&quot;&gt;&quot;spec&quot;&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;token property&quot;&gt;&quot;containers&quot;&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;[&lt;/span&gt;
+      &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+        &lt;span class=&quot;token property&quot;&gt;&quot;name&quot;&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&quot;nginx&quot;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
+        &lt;span class=&quot;token property&quot;&gt;&quot;image&quot;&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&quot;nginx&quot;&lt;/span&gt;
+      &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;
+    &lt;span class=&quot;token punctuation&quot;&gt;]&lt;/span&gt;
+  &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;
+&lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 &lt;/li&gt;
-&lt;li&gt;&lt;strong&gt;API Server에 기존에 이미 생성된 Pod가 있는지 사전 체크합니다.&lt;/strong&gt;&lt;/li&gt;
-&lt;li&gt;Namespace가 존재하는지 체크합니다.&lt;/li&gt;
-&lt;li&gt;Pod 생성 요청을 보냅니다.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;API Server에 기존에 이미 생성된 Pod가 있는지 사전 체크합니다.&lt;/strong&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;만약, 존재하는 Pod이 있다면 &lt;code class=&quot;language-text&quot;&gt;POST&lt;/code&gt; 요청이 아닌 &lt;code class=&quot;language-text&quot;&gt;PATCH&lt;/code&gt; 요청이됩니다.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Namespace가 존재하는지 체크합니다.&lt;/strong&gt;&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;위 결과 모두 OK 되면 마지막으로 Pod 생성 요청을 보냅니다.&lt;/strong&gt;&lt;/li&gt;
 &lt;/ol&gt;
-&lt;h3 id=&quot;의문이었던-것&quot; style=&quot;position:relative;&quot;&gt;&lt;a href=&quot;#%EC%9D%98%EB%AC%B8%EC%9D%B4%EC%97%88%EB%8D%98-%EA%B2%83&quot; aria-label=&quot;의문이었던 것 permalink&quot; class=&quot;heading-anchor before&quot;&gt;&lt;svg xmlns=&quot;http://www.w3.org/2000/svg&quot; width=&quot;15&quot; height=&quot;15&quot; viewBox=&quot;0 0 24 24&quot;&gt;&lt;path d=&quot;M6.188 8.719c.439-.439.926-.801 1.444-1.087 2.887-1.591 6.589-.745 8.445 2.069l-2.246 2.245c-.644-1.469-2.243-2.305-3.834-1.949-.599.134-1.168.433-1.633.898l-4.304 4.306c-1.307 1.307-1.307 3.433 0 4.74 1.307 1.307 3.433 1.307 4.74 0l1.327-1.327c1.207.479 2.501.67 3.779.575l-2.929 2.929c-2.511 2.511-6.582 2.511-9.093 0s-2.511-6.582 0-9.093l4.304-4.306zm6.836-6.836l-2.929 2.929c1.277-.096 2.572.096 3.779.574l1.326-1.326c1.307-1.307 3.433-1.307 4.74 0 1.307 1.307 1.307 3.433 0 4.74l-4.305 4.305c-1.311 1.311-3.44 1.3-4.74 0-.303-.303-.564-.68-.727-1.051l-2.246 2.245c.236.358.481.667.796.982.812.812 1.846 1.417 3.036 1.704 1.542.371 3.194.166 4.613-.617.518-.286 1.005-.648 1.444-1.087l4.304-4.305c2.512-2.511 2.512-6.582.001-9.093-2.511-2.51-6.581-2.51-9.092 0z&quot;/&gt;&lt;/svg&gt;&lt;/a&gt;&lt;strong&gt;의문이었던 것&lt;/strong&gt;&lt;/h3&gt;
+&lt;h3 id=&quot;왜-클라이언트-측에서-사전-검증을할까요&quot; style=&quot;position:relative;&quot;&gt;&lt;a href=&quot;#%EC%99%9C-%ED%81%B4%EB%9D%BC%EC%9D%B4%EC%96%B8%ED%8A%B8-%EC%B8%A1%EC%97%90%EC%84%9C-%EC%82%AC%EC%A0%84-%EA%B2%80%EC%A6%9D%EC%9D%84%ED%95%A0%EA%B9%8C%EC%9A%94&quot; aria-label=&quot;왜 클라이언트 측에서 사전 검증을할까요 permalink&quot; class=&quot;heading-anchor before&quot;&gt;&lt;svg xmlns=&quot;http://www.w3.org/2000/svg&quot; width=&quot;15&quot; height=&quot;15&quot; viewBox=&quot;0 0 24 24&quot;&gt;&lt;path d=&quot;M6.188 8.719c.439-.439.926-.801 1.444-1.087 2.887-1.591 6.589-.745 8.445 2.069l-2.246 2.245c-.644-1.469-2.243-2.305-3.834-1.949-.599.134-1.168.433-1.633.898l-4.304 4.306c-1.307 1.307-1.307 3.433 0 4.74 1.307 1.307 3.433 1.307 4.74 0l1.327-1.327c1.207.479 2.501.67 3.779.575l-2.929 2.929c-2.511 2.511-6.582 2.511-9.093 0s-2.511-6.582 0-9.093l4.304-4.306zm6.836-6.836l-2.929 2.929c1.277-.096 2.572.096 3.779.574l1.326-1.326c1.307-1.307 3.433-1.307 4.74 0 1.307 1.307 1.307 3.433 0 4.74l-4.305 4.305c-1.311 1.311-3.44 1.3-4.74 0-.303-.303-.564-.68-.727-1.051l-2.246 2.245c.236.358.481.667.796.982.812.812 1.846 1.417 3.036 1.704 1.542.371 3.194.166 4.613-.617.518-.286 1.005-.648 1.444-1.087l4.304-4.305c2.512-2.511 2.512-6.582.001-9.093-2.511-2.51-6.581-2.51-9.092 0z&quot;/&gt;&lt;/svg&gt;&lt;/a&gt;&lt;strong&gt;왜 클라이언트 측에서 사전 검증을할까요?&lt;/strong&gt;&lt;/h3&gt;
 &lt;blockquote&gt;
-&lt;p&gt;왜 클라이언트 사이드에서 사전 검증을할까?&lt;/p&gt;
+&lt;p&gt; Fast Fail 하여 네트워크 비용을 줄이고 API Server의 불필요한 리소스 낭비를 줄이기 위함입니다.&lt;/p&gt;
 &lt;/blockquote&gt;
-&lt;ol&gt;
-&lt;li&gt;네트워크 비용 절감 및 서버 리소스 절약을 위함입니다.&lt;/li&gt;
-&lt;li&gt;Fast Fail 하기 위함입니다.&lt;/li&gt;
-&lt;/ol&gt;
+&lt;ul&gt;
+&lt;li&gt;Client Side에서 최소한의 검증을 수행하지 않는다면, 잘못된 요청까지 요청들이 API Server로 들어가게 됩니다. 쿠버네티스는 대규모 서비스를 염두에 둔 오케스트레이션 도구이기에 &lt;code class=&quot;language-text&quot;&gt;Control Plane&lt;/code&gt;은 수천 대의 Woker Node에서 수만 개의 Pod들의 요청을 처리해야 할 수 있습니다. &lt;/li&gt;
+&lt;li&gt;이런 대규모 상황에서 클라이언트 측의 잘못된 요청들까지 핸들링 하는 것은 API Server가 집중해야할 부분들에 제대로 집중하지 못하는 리소스 낭비라 할 수 있습니다.  &lt;/li&gt;
+&lt;/ul&gt;
 &lt;blockquote&gt;
-&lt;p&gt;그렇다면 왜 Open API Spec을 항상 요청할까? 매번 Open API Spec을 요청하는 것이 네트워크 낭비 아닐까, 캐싱 해두고 사용하면 더 좋을 것 같다 라는 생각을 했습니다.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;&lt;em&gt;그렇다면 왜 Open API Spec을 항상 요청할까? 매번 Open API Spec을 요청하는 것이 네트워크 낭비 아닐까, 캐싱 해두고 사용하면 더 좋을 것 같다 라는 생각을 했습니다.&lt;/em&gt;&lt;/strong&gt;&lt;/p&gt;
 &lt;/blockquote&gt;
 &lt;p&gt;&lt;strong&gt;[이유]&lt;/strong&gt;&lt;/p&gt;
-&lt;ol&gt;
+&lt;ul&gt;
 &lt;li&gt;Kubernetes는 동적으로 리소스가 추가되거나 변경될 수 있는 &lt;strong&gt;확장 가능한 API 서버 모델&lt;/strong&gt;을 가지고 있기 때문에 &lt;strong&gt;최신 OpenAPI 정보를 항상 가져와야 합니다.&lt;/strong&gt;&lt;/li&gt;
-&lt;li&gt;예를 들어 CRD를 통해 새로운 리소스 타입이 추가될 수 있고 특정 API 그룹이 활성화되거나 비활성화될 수 있기 때문입니다.&lt;/li&gt;
-&lt;/ol&gt;
-&lt;p&gt;&lt;strong&gt;성능을 위해 kubectl이 한 노력&lt;/strong&gt;&lt;/p&gt;
-&lt;ol&gt;
-&lt;li&gt;위 같은 고민을 kubectl도 하지 않은 것이 아닙니다. 따라서 다음과 같은 일종의 캐싱 매커니즘을 지원합니다.&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;ETag(해시) 기반 요청으로 불필요한 데이터 전송을 방지합니다.&lt;/p&gt;
-&lt;ol&gt;
-&lt;li&gt;OpenAPI 요청을 할 때, 이전 응답의 ETag를 함께 보냅니다.&lt;/li&gt;
-&lt;li&gt;API 서버가 같은 해시값을 가지고 있다면, 변경이 없다고 판단하고 304 modified를 응답합니다. &lt;/li&gt;
-&lt;/ol&gt;
-&lt;/li&gt;
-&lt;/ol&gt;
+&lt;li&gt;예를 들어, CRD를 통해 새로운 커스텀 리소스 타입(kind: Prometheus)이 추가될 수 있고 특정 API 그룹이 활성화되거나 비활성화될 수 있기 때문입니다.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id=&quot;역시는-역시다---성능을-위해-kubectl이-한-노력&quot; style=&quot;position:relative;&quot;&gt;&lt;a href=&quot;#%EC%97%AD%EC%8B%9C%EB%8A%94-%EC%97%AD%EC%8B%9C%EB%8B%A4---%EC%84%B1%EB%8A%A5%EC%9D%84-%EC%9C%84%ED%95%B4-kubectl%EC%9D%B4-%ED%95%9C-%EB%85%B8%EB%A0%A5&quot; aria-label=&quot;역시는 역시다   성능을 위해 kubectl이 한 노력 permalink&quot; class=&quot;heading-anchor before&quot;&gt;&lt;svg xmlns=&quot;http://www.w3.org/2000/svg&quot; width=&quot;15&quot; height=&quot;15&quot; viewBox=&quot;0 0 24 24&quot;&gt;&lt;path d=&quot;M6.188 8.719c.439-.439.926-.801 1.444-1.087 2.887-1.591 6.589-.745 8.445 2.069l-2.246 2.245c-.644-1.469-2.243-2.305-3.834-1.949-.599.134-1.168.433-1.633.898l-4.304 4.306c-1.307 1.307-1.307 3.433 0 4.74 1.307 1.307 3.433 1.307 4.74 0l1.327-1.327c1.207.479 2.501.67 3.779.575l-2.929 2.929c-2.511 2.511-6.582 2.511-9.093 0s-2.511-6.582 0-9.093l4.304-4.306zm6.836-6.836l-2.929 2.929c1.277-.096 2.572.096 3.779.574l1.326-1.326c1.307-1.307 3.433-1.307 4.74 0 1.307 1.307 1.307 3.433 0 4.74l-4.305 4.305c-1.311 1.311-3.44 1.3-4.74 0-.303-.303-.564-.68-.727-1.051l-2.246 2.245c.236.358.481.667.796.982.812.812 1.846 1.417 3.036 1.704 1.542.371 3.194.166 4.613-.617.518-.286 1.005-.648 1.444-1.087l4.304-4.305c2.512-2.511 2.512-6.582.001-9.093-2.511-2.51-6.581-2.51-9.092 0z&quot;/&gt;&lt;/svg&gt;&lt;/a&gt;&lt;strong&gt;역시는 역시다 - 성능을 위해 kubectl이 한 노력&lt;/strong&gt;&lt;/h3&gt;
 &lt;blockquote&gt;
-&lt;p&gt;즉, 내용 변경이 없다면 불필요한 데이터 다운로드를 하지 않습니다.&lt;/p&gt;
+&lt;p&gt;위 같은 고민을 kubectl도 하지 않은 것이 아닙니다. 따라서 &lt;strong&gt;다음과 같은 일종의 캐싱 매커니즘을 지원합니다.&lt;/strong&gt;&lt;/p&gt;
 &lt;/blockquote&gt;
-&lt;p&gt;&lt;strong&gt;[결론: OpenAPI 스펙을 매번 가져오는 이유]&lt;/strong&gt;&lt;/p&gt;
-&lt;ol&gt;
-&lt;li&gt;&lt;strong&gt;Kubernetes API가 동적으로 변경되기 때문에 최신 정보를 가져와야 함.&lt;/strong&gt;&lt;/li&gt;
-&lt;li&gt;&lt;strong&gt;CRD 같은 동적 리소스를 즉시 반영하기 위해 필요함.&lt;/strong&gt;&lt;/li&gt;
-&lt;li&gt;&lt;strong&gt;Kubernetes 버전 업그레이드로 인한 API 변경 사항을 반영할 수 있음.&lt;/strong&gt;&lt;/li&gt;
-&lt;li&gt;&lt;strong&gt;kubectl과 API 서버의 버전 차이로 인한 불일치를 방지할 수 있음.&lt;/strong&gt;&lt;/li&gt;
-&lt;li&gt;&lt;strong&gt;ETag 기반 요청을 사용해 불필요한 네트워크 트래픽을 줄이고 있음.&lt;/strong&gt;&lt;/li&gt;
-&lt;/ol&gt;
-&lt;p&gt;즉, 단순한 네트워크 낭비가 아니라 &lt;strong&gt;Kubernetes의 동적인 특성을 반영하기 위한 최적화된 설계입니다.&lt;/strong&gt;&lt;/p&gt;
-&lt;h2 id=&quot;API-Server-가-요청을-받았다&quot; style=&quot;position:relative;&quot;&gt;&lt;a href=&quot;#API-Server-%EA%B0%80-%EC%9A%94%EC%B2%AD%EC%9D%84-%EB%B0%9B%EC%95%98%EB%8B%A4&quot; aria-label=&quot;API Server 가 요청을 받았다 permalink&quot; class=&quot;heading-anchor before&quot;&gt;&lt;svg xmlns=&quot;http://www.w3.org/2000/svg&quot; width=&quot;15&quot; height=&quot;15&quot; viewBox=&quot;0 0 24 24&quot;&gt;&lt;path d=&quot;M6.188 8.719c.439-.439.926-.801 1.444-1.087 2.887-1.591 6.589-.745 8.445 2.069l-2.246 2.245c-.644-1.469-2.243-2.305-3.834-1.949-.599.134-1.168.433-1.633.898l-4.304 4.306c-1.307 1.307-1.307 3.433 0 4.74 1.307 1.307 3.433 1.307 4.74 0l1.327-1.327c1.207.479 2.501.67 3.779.575l-2.929 2.929c-2.511 2.511-6.582 2.511-9.093 0s-2.511-6.582 0-9.093l4.304-4.306zm6.836-6.836l-2.929 2.929c1.277-.096 2.572.096 3.779.574l1.326-1.326c1.307-1.307 3.433-1.307 4.74 0 1.307 1.307 1.307 3.433 0 4.74l-4.305 4.305c-1.311 1.311-3.44 1.3-4.74 0-.303-.303-.564-.68-.727-1.051l-2.246 2.245c.236.358.481.667.796.982.812.812 1.846 1.417 3.036 1.704 1.542.371 3.194.166 4.613-.617.518-.286 1.005-.648 1.444-1.087l4.304-4.305c2.512-2.511 2.512-6.582.001-9.093-2.511-2.51-6.581-2.51-9.092 0z&quot;/&gt;&lt;/svg&gt;&lt;/a&gt;API Server 가 요청을 받았다.&lt;/h2&gt;
-&lt;p&gt;&lt;img src=&quot;attachment:0e5fca1c-eebf-4489-a716-8771e2b5a605:image.png&quot; alt=&quot;image.png&quot;&gt;&lt;/p&gt;
-&lt;p&gt;여기서부터가 이제 핵심?이 되는 부분입니다. &lt;code class=&quot;language-text&quot;&gt;kubectl&lt;/code&gt;로부터 요청을 받은 API Server는 다음 단계를 거칩니다.&lt;/p&gt;
-&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;text&quot;&gt;&lt;pre class=&quot;language-text&quot;&gt;&lt;code class=&quot;language-text&quot;&gt;인증 -&gt; 인가 -&gt; Addmission Control -&gt; ETCD 저장&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
-&lt;p&gt;인증/인가부터 수행합니다.  이후 Addmission Control가 API 요청을 가로채서 Validation 처리와 Mutation (변형) 을 처리합니다. &lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;&lt;code class=&quot;language-text&quot;&gt;ETag(해시)&lt;/code&gt; 기반 요청으로 불필요한 데이터 전송을 방지합니다.&lt;/strong&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;OpenAPI 요청을 할 때, 이전 응답의 &lt;code class=&quot;language-text&quot;&gt;ETag&lt;/code&gt;를 함께 보냅니다.&lt;/li&gt;
+&lt;li&gt;API 서버가 같은 해시값을 가지고 있다면, 변경이 없다고 판단하고 304 modified를 응답합니다.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;strong&gt;즉, 내용 변경이 없다면 불필요한 데이터 다운로드를 하지 않으며 최적화 합니다.&lt;/strong&gt;&lt;/p&gt;
+&lt;hr&gt;
+&lt;h2 id=&quot;2-API-Server-가-요청을-받았다&quot; style=&quot;position:relative;&quot;&gt;&lt;a href=&quot;#2-API-Server-%EA%B0%80-%EC%9A%94%EC%B2%AD%EC%9D%84-%EB%B0%9B%EC%95%98%EB%8B%A4&quot; aria-label=&quot;2 API Server 가 요청을 받았다 permalink&quot; class=&quot;heading-anchor before&quot;&gt;&lt;svg xmlns=&quot;http://www.w3.org/2000/svg&quot; width=&quot;15&quot; height=&quot;15&quot; viewBox=&quot;0 0 24 24&quot;&gt;&lt;path d=&quot;M6.188 8.719c.439-.439.926-.801 1.444-1.087 2.887-1.591 6.589-.745 8.445 2.069l-2.246 2.245c-.644-1.469-2.243-2.305-3.834-1.949-.599.134-1.168.433-1.633.898l-4.304 4.306c-1.307 1.307-1.307 3.433 0 4.74 1.307 1.307 3.433 1.307 4.74 0l1.327-1.327c1.207.479 2.501.67 3.779.575l-2.929 2.929c-2.511 2.511-6.582 2.511-9.093 0s-2.511-6.582 0-9.093l4.304-4.306zm6.836-6.836l-2.929 2.929c1.277-.096 2.572.096 3.779.574l1.326-1.326c1.307-1.307 3.433-1.307 4.74 0 1.307 1.307 1.307 3.433 0 4.74l-4.305 4.305c-1.311 1.311-3.44 1.3-4.74 0-.303-.303-.564-.68-.727-1.051l-2.246 2.245c.236.358.481.667.796.982.812.812 1.846 1.417 3.036 1.704 1.542.371 3.194.166 4.613-.617.518-.286 1.005-.648 1.444-1.087l4.304-4.305c2.512-2.511 2.512-6.582.001-9.093-2.511-2.51-6.581-2.51-9.092 0z&quot;/&gt;&lt;/svg&gt;&lt;/a&gt;2. API Server 가 요청을 받았다.&lt;/h2&gt;
+&lt;p&gt;&lt;figure class=&apos;gatsby-resp-image-figure&apos; style=&apos;margin-bottom: 16px;&apos;&gt;
+    &lt;span class=&apos;gatsby-resp-image-wrapper&apos; style=&apos;position: relative; display: block; margin-left: auto; margin-right: auto; max-width: 680px; &apos;&gt;
+      &lt;a class=&apos;gatsby-resp-image-link&apos; href=&apos;/static/f3f794855e459ed03f7f9a117f6f0a51/0bbcd/%EC%BF%A0%EB%B2%84%EB%84%A4%ED%8B%B0%EC%8A%A4_03.png&apos; style=&apos;display: block&apos; target=&apos;_blank&apos; rel=&apos;noopener&apos;&gt;
+    &lt;span class=&apos;gatsby-resp-image-background-image&apos; style=&quot;padding-bottom: 45.88235294117647%; position: relative; bottom: 0; left: 0; background-image: url(&apos;data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAAJCAYAAAAywQxIAAAACXBIWXMAAAsTAAALEwEAmpwYAAABhElEQVR42oVSTUsjQRTMb5c9efA3CHsQRLyuyyIKIl5UZNXDLphgRMWYSaY/Z/qzrO4kxHixhze8N2+6uqr6DfBl5Qz4kBkJIZbIy/hcr/PEDeVZrUF5yd7UKMv2EdO5gjAOSneYtQqNMNDWYS40pqwVc6kspjOF3qcNQgMbevydDHE7GUE6j0YmTBoJ52P9wRiCGVvzEDykVIipMItIXcTx4x0OH85rP+WEgXQGfx6vcPJ0A+17zAjYtpKbuSElzMmolR2tyOi6Hu9kVexwBPfW4+L5P34/XS8B80KyixGBJxKDUiNZSER+ywQskq1dMDSU2rJmo7K1KuDX8BYHD2drhuxiazdie6+r5hrKEELC+1AZFsmGkiNz7z20UpV9jAEdAU/H/3A0vtxk+OOnxs7+bMGCgK0QeGsU3qaSbAUaWvA6UfUgpSSGL4o+CyQyPhnfb3pYEu90jdUtV9+E4q0SRGoCa4xeNOXrxfdlv2Htvt5ynb3l/K3mcD1730edw7yeww8veLZ3hehwYwAAAABJRU5ErkJggg==&apos;); background-size: cover; display: block;&quot;&gt;&lt;/span&gt;
+  &lt;img class=&apos;gatsby-resp-image-image&apos; alt=&apos;API Server 처리 과정&apos; title=&apos;&apos; src=&apos;/static/f3f794855e459ed03f7f9a117f6f0a51/ca1dc/%EC%BF%A0%EB%B2%84%EB%84%A4%ED%8B%B0%EC%8A%A4_03.png&apos; srcset=&apos;/static/f3f794855e459ed03f7f9a117f6f0a51/e7570/%EC%BF%A0%EB%B2%84%EB%84%A4%ED%8B%B0%EC%8A%A4_03.png 170w,
+/static/f3f794855e459ed03f7f9a117f6f0a51/f46e7/%EC%BF%A0%EB%B2%84%EB%84%A4%ED%8B%B0%EC%8A%A4_03.png 340w,
+/static/f3f794855e459ed03f7f9a117f6f0a51/ca1dc/%EC%BF%A0%EB%B2%84%EB%84%A4%ED%8B%B0%EC%8A%A4_03.png 680w,
+/static/f3f794855e459ed03f7f9a117f6f0a51/0bbcd/%EC%BF%A0%EB%B2%84%EB%84%A4%ED%8B%B0%EC%8A%A4_03.png 820w&apos; sizes=&apos;(max-width: 680px) 100vw, 680px&apos; style=&apos;width:100%;height:100%;margin:0;vertical-align:middle;position:absolute;top:0;left:0;&apos; loading=&apos;lazy&apos; decoding=&apos;async&apos;&gt;
+  &lt;/a&gt;
+    &lt;/span&gt;
+    &lt;figcaption class=&apos;gatsby-resp-image-figcaption&apos;&gt;API Server 처리 과정&lt;/figcaption&gt;
+  &lt;/figure&gt;&lt;/p&gt;
+&lt;p&gt;여기서부터가 실제 Kubernetes의 구성 요소인 API Server에서 발생하는 부분들입니다.  &lt;code class=&quot;language-text&quot;&gt;kubectl&lt;/code&gt;로부터 요청을 받은 API Server는 크게 다음 4 단계를 거칩니다.&lt;/p&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;txt&quot;&gt;&lt;pre class=&quot;language-txt&quot;&gt;&lt;code class=&quot;language-txt&quot;&gt;인증 -&gt; 인가 -&gt; Addmission Control -&gt; ETCD 저장&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;가장 먼저 API Server은 ‘&lt;strong&gt;인증/인가’&lt;/strong&gt;부터 수행하고 이후 &lt;code class=&quot;language-text&quot;&gt;Addmission Control&lt;/code&gt;가 API 요청을 가로채서 &lt;code class=&quot;language-text&quot;&gt;Validation&lt;/code&gt; 처리와 &lt;code class=&quot;language-text&quot;&gt;Mutation&lt;/code&gt; (변형) 을 처리합니다.  이 과정을 모두 통과하면 그 때 &lt;code class=&quot;language-text&quot;&gt;ETCD&lt;/code&gt;에 최종적으로 변경이 기록됩니다. &lt;/p&gt;
 &lt;h3 id=&quot;인증&quot; style=&quot;position:relative;&quot;&gt;&lt;a href=&quot;#%EC%9D%B8%EC%A6%9D&quot; aria-label=&quot;인증 permalink&quot; class=&quot;heading-anchor before&quot;&gt;&lt;svg xmlns=&quot;http://www.w3.org/2000/svg&quot; width=&quot;15&quot; height=&quot;15&quot; viewBox=&quot;0 0 24 24&quot;&gt;&lt;path d=&quot;M6.188 8.719c.439-.439.926-.801 1.444-1.087 2.887-1.591 6.589-.745 8.445 2.069l-2.246 2.245c-.644-1.469-2.243-2.305-3.834-1.949-.599.134-1.168.433-1.633.898l-4.304 4.306c-1.307 1.307-1.307 3.433 0 4.74 1.307 1.307 3.433 1.307 4.74 0l1.327-1.327c1.207.479 2.501.67 3.779.575l-2.929 2.929c-2.511 2.511-6.582 2.511-9.093 0s-2.511-6.582 0-9.093l4.304-4.306zm6.836-6.836l-2.929 2.929c1.277-.096 2.572.096 3.779.574l1.326-1.326c1.307-1.307 3.433-1.307 4.74 0 1.307 1.307 1.307 3.433 0 4.74l-4.305 4.305c-1.311 1.311-3.44 1.3-4.74 0-.303-.303-.564-.68-.727-1.051l-2.246 2.245c.236.358.481.667.796.982.812.812 1.846 1.417 3.036 1.704 1.542.371 3.194.166 4.613-.617.518-.286 1.005-.648 1.444-1.087l4.304-4.305c2.512-2.511 2.512-6.582.001-9.093-2.511-2.51-6.581-2.51-9.092 0z&quot;/&gt;&lt;/svg&gt;&lt;/a&gt;&lt;strong&gt;인증&lt;/strong&gt;&lt;/h3&gt;
+&lt;blockquote&gt;
+&lt;p&gt;Kubernetes API 서버는 여러 가지 인증 방식을 지원하며, 설정에 따라 &lt;code class=&quot;language-text&quot;&gt;X.509 인증서&lt;/code&gt;나 &lt;code class=&quot;language-text&quot;&gt;Bearer Token&lt;/code&gt; 등을 검증합니다.&lt;/p&gt;
+&lt;/blockquote&gt;
 &lt;ul&gt;
-&lt;li&gt;Kubernetes API 서버는 여러 가지 인증 방식을 지원하며, 설정에 따라 X.509 인증서나 Bearer 토큰 등을 검증합니다.&lt;/li&gt;
 &lt;li&gt;
-&lt;p&gt;&lt;strong&gt;X.509 인증서 검증:&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;X.509 인증서 검증 (TLS):&lt;/strong&gt;&lt;/p&gt;
 &lt;ul&gt;
-&lt;li&gt;
-&lt;p&gt;X.509 인증서는 주로 TLS 통신에서 사용되며, 클라이언트 인증에도 활용됩니다.&lt;/p&gt;
-&lt;p&gt;X.509 인증서를 통해 외부 요청의 신뢰성을 판단하고, 해당 클러스터에 접근 가능한  Client에서 요청이 발생한 것인지 검증합니다. 만약, 신뢰할 수 있는 인증서이지만 Control Plane와  다른 인증서를 가지고 요청을 한다면 API Server에 다른 클러스터 정보가 들어올 수 있습니다.&lt;/p&gt;
-&lt;/li&gt;
+&lt;li&gt;X.509 인증서는 주로 TLS 통신에서 사용되며, 클라이언트 인증에도 활용됩니다. X.509 인증서를 통해 외부 요청의 신뢰성을 판단하고, 해당 클러스터에 접근 가능한 Client에서 요청이 발생한 것인지 검증합니다.
+만약, 신뢰할 수 있는 인증서이지만 Control Plane와  다른 인증서를 가지고 요청을 한다면 API Server에 다른 클러스터 정보가 들어올 수 있습니다.&lt;/li&gt;
+&lt;li&gt;쿠버네티스는 &lt;code class=&quot;language-text&quot;&gt;Root Certificate&lt;/code&gt;, &lt;code class=&quot;language-text&quot;&gt;Server Certificate&lt;/code&gt;, &lt;code class=&quot;language-text&quot;&gt;Client Certificate&lt;/code&gt; 3가지 인증서를 기반으로 독자적인 PKI (Public Key Infrastructure)를 구성하고 있습니다.&lt;/li&gt;
+&lt;li&gt;API 서버는 인증서를 제시합니다. 이러한 인증서는 사설 인증 기관(CA)에 기반하여 서명되거나, 혹은 공인 CA와 연결된 공개키 인프라스트럭처에 기반합니다.&lt;/li&gt;
 &lt;/ul&gt;
 &lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;Bear 토큰 검증 (Application):&lt;/strong&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;API 서버에 요청을 보내기 위해선 Authorization Header에 Bear Token을 담아야합니다.&lt;/li&gt;
+&lt;li&gt;인증서는 있지만 인증 토큰이 없다면, &lt;strong&gt;401 Unauthorized 에러가 내려갑니다.&lt;/strong&gt;&lt;/li&gt;
+&lt;li&gt;이후 Token을 활용해 인가 과정을 거칩니다.&lt;/li&gt;
 &lt;/ul&gt;
-&lt;h3 id=&quot;인가&quot; style=&quot;position:relative;&quot;&gt;&lt;a href=&quot;#%EC%9D%B8%EA%B0%80&quot; aria-label=&quot;인가 permalink&quot; class=&quot;heading-anchor before&quot;&gt;&lt;svg xmlns=&quot;http://www.w3.org/2000/svg&quot; width=&quot;15&quot; height=&quot;15&quot; viewBox=&quot;0 0 24 24&quot;&gt;&lt;path d=&quot;M6.188 8.719c.439-.439.926-.801 1.444-1.087 2.887-1.591 6.589-.745 8.445 2.069l-2.246 2.245c-.644-1.469-2.243-2.305-3.834-1.949-.599.134-1.168.433-1.633.898l-4.304 4.306c-1.307 1.307-1.307 3.433 0 4.74 1.307 1.307 3.433 1.307 4.74 0l1.327-1.327c1.207.479 2.501.67 3.779.575l-2.929 2.929c-2.511 2.511-6.582 2.511-9.093 0s-2.511-6.582 0-9.093l4.304-4.306zm6.836-6.836l-2.929 2.929c1.277-.096 2.572.096 3.779.574l1.326-1.326c1.307-1.307 3.433-1.307 4.74 0 1.307 1.307 1.307 3.433 0 4.74l-4.305 4.305c-1.311 1.311-3.44 1.3-4.74 0-.303-.303-.564-.68-.727-1.051l-2.246 2.245c.236.358.481.667.796.982.812.812 1.846 1.417 3.036 1.704 1.542.371 3.194.166 4.613-.617.518-.286 1.005-.648 1.444-1.087l4.304-4.305c2.512-2.511 2.512-6.582.001-9.093-2.511-2.51-6.581-2.51-9.092 0z&quot;/&gt;&lt;/svg&gt;&lt;/a&gt;인가&lt;/h3&gt;
+&lt;/li&gt;
+&lt;li&gt;그외 OIDC 방식도 지원하며 다양한 인증 방식을 지원합니다.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id=&quot;인가&quot; style=&quot;position:relative;&quot;&gt;&lt;a href=&quot;#%EC%9D%B8%EA%B0%80&quot; aria-label=&quot;인가 permalink&quot; class=&quot;heading-anchor before&quot;&gt;&lt;svg xmlns=&quot;http://www.w3.org/2000/svg&quot; width=&quot;15&quot; height=&quot;15&quot; viewBox=&quot;0 0 24 24&quot;&gt;&lt;path d=&quot;M6.188 8.719c.439-.439.926-.801 1.444-1.087 2.887-1.591 6.589-.745 8.445 2.069l-2.246 2.245c-.644-1.469-2.243-2.305-3.834-1.949-.599.134-1.168.433-1.633.898l-4.304 4.306c-1.307 1.307-1.307 3.433 0 4.74 1.307 1.307 3.433 1.307 4.74 0l1.327-1.327c1.207.479 2.501.67 3.779.575l-2.929 2.929c-2.511 2.511-6.582 2.511-9.093 0s-2.511-6.582 0-9.093l4.304-4.306zm6.836-6.836l-2.929 2.929c1.277-.096 2.572.096 3.779.574l1.326-1.326c1.307-1.307 3.433-1.307 4.74 0 1.307 1.307 1.307 3.433 0 4.74l-4.305 4.305c-1.311 1.311-3.44 1.3-4.74 0-.303-.303-.564-.68-.727-1.051l-2.246 2.245c.236.358.481.667.796.982.812.812 1.846 1.417 3.036 1.704 1.542.371 3.194.166 4.613-.617.518-.286 1.005-.648 1.444-1.087l4.304-4.305c2.512-2.511 2.512-6.582.001-9.093-2.511-2.51-6.581-2.51-9.092 0z&quot;/&gt;&lt;/svg&gt;&lt;/a&gt;&lt;strong&gt;인가&lt;/strong&gt;&lt;/h3&gt;
 &lt;ul&gt;
 &lt;li&gt;
-&lt;p&gt;인증 과정을 통해 클라이언트의 신원을 검증하고, 다음으로 클라이언트의 권한을 체크하는 ‘인가’ 처리를 진행합니다.  인가는 사용자가 해당 요청을 수행할 수 있는 권한을 가지고 있는지 검증합니다. 이 때 정책 기반 검증을 진행하며 이를 RBAC (Role-Based Access Control)을 사용합니다.&lt;/p&gt;
-&lt;p&gt;이를 활용해, 특정 유저는 READ 권한만 허용하는 등 최소 권한 원칙을 준 수 할 수 있습니다.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;인가는 클라이언트가 해당 요청을 수행할 수 있는 권한을 가지고 있는지 검증합니다.&lt;/strong&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;API Server는 정책 기반 검증을 지원하며 이를 RBAC (Role-Based Access Control)이라 합니다.&lt;/li&gt;
+&lt;/ul&gt;
 &lt;/li&gt;
 &lt;li&gt;
-&lt;p&gt;&lt;strong&gt;ETCD와 통신:&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;RBAC을 위한 Role&lt;/strong&gt;과 &lt;strong&gt;RoleBinding&lt;/strong&gt;이 &lt;strong&gt;ETCD&lt;/strong&gt;에 저장되어 있으며, API 서버가 요청을 받으면 ETCD에서 해당 정보를 조회하여 사용자가 Pod 생성을 할 수 있는지 확인하는 것입니다.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;[Role 및 RoleBinding]&lt;/strong&gt;&lt;/p&gt;
 &lt;ul&gt;
-&lt;li&gt;핵심은 &lt;strong&gt;Role&lt;/strong&gt;과 &lt;strong&gt;RoleBinding&lt;/strong&gt;이 &lt;strong&gt;ETCD&lt;/strong&gt;에 저장되고, API 서버가 요청을 받으면 &lt;strong&gt;ETCD&lt;/strong&gt;에서 해당 정보를 조회하여 사용자가 &lt;strong&gt;Pod 생성&lt;/strong&gt;을 할 수 있는지 확인하는 것입니다.&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;&lt;strong&gt;Role 및 RoleBinding:&lt;/strong&gt;&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;&lt;strong&gt;Role&lt;/strong&gt;은 네임스페이스 내에서 리소스에 대한 권한을 정의합니다. 예를 들어, Pod 리소스에 대해 create, get, list, delete 등의 권한을 지정할 수 있습니다.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Role은 네임스페이스 내에서 리소스에 대한 권한을 정의합니다.&lt;/strong&gt; 예를 들어, Pod 리소스에 대해 &lt;code class=&quot;language-text&quot;&gt;create&lt;/code&gt;, &lt;code class=&quot;language-text&quot;&gt;get&lt;/code&gt;, &lt;code class=&quot;language-text&quot;&gt;list&lt;/code&gt;, &lt;code class=&quot;language-text&quot;&gt;delete&lt;/code&gt; 등의 권한을 지정할 수 있습니다.&lt;/li&gt;
 &lt;li&gt;&lt;strong&gt;RoleBinding&lt;/strong&gt;은 특정 사용자나 서비스 계정에 &lt;strong&gt;Role&lt;/strong&gt;을 바인딩하여 해당 권한을 부여하는 역할을 합니다.&lt;/li&gt;
 &lt;/ul&gt;
 &lt;/li&gt;
 &lt;/ul&gt;
+&lt;h3 id=&quot;Addmission-Control&quot; style=&quot;position:relative;&quot;&gt;&lt;a href=&quot;#Addmission-Control&quot; aria-label=&quot;Addmission Control permalink&quot; class=&quot;heading-anchor before&quot;&gt;&lt;svg xmlns=&quot;http://www.w3.org/2000/svg&quot; width=&quot;15&quot; height=&quot;15&quot; viewBox=&quot;0 0 24 24&quot;&gt;&lt;path d=&quot;M6.188 8.719c.439-.439.926-.801 1.444-1.087 2.887-1.591 6.589-.745 8.445 2.069l-2.246 2.245c-.644-1.469-2.243-2.305-3.834-1.949-.599.134-1.168.433-1.633.898l-4.304 4.306c-1.307 1.307-1.307 3.433 0 4.74 1.307 1.307 3.433 1.307 4.74 0l1.327-1.327c1.207.479 2.501.67 3.779.575l-2.929 2.929c-2.511 2.511-6.582 2.511-9.093 0s-2.511-6.582 0-9.093l4.304-4.306zm6.836-6.836l-2.929 2.929c1.277-.096 2.572.096 3.779.574l1.326-1.326c1.307-1.307 3.433-1.307 4.74 0 1.307 1.307 1.307 3.433 0 4.74l-4.305 4.305c-1.311 1.311-3.44 1.3-4.74 0-.303-.303-.564-.68-.727-1.051l-2.246 2.245c.236.358.481.667.796.982.812.812 1.846 1.417 3.036 1.704 1.542.371 3.194.166 4.613-.617.518-.286 1.005-.648 1.444-1.087l4.304-4.305c2.512-2.511 2.512-6.582.001-9.093-2.511-2.51-6.581-2.51-9.092 0z&quot;/&gt;&lt;/svg&gt;&lt;/a&gt;&lt;strong&gt;Addmission Control&lt;/strong&gt;&lt;/h3&gt;
+&lt;blockquote&gt;
+&lt;p&gt;&lt;strong&gt;Admission의 뜻은 ‘허가’를 의미합니다.&lt;/strong&gt; &lt;strong&gt;즉, Admission Control은 현재 상황에 클라이언트의 요청을 수락할지 거절할지 결정하는 역할을 합니다.&lt;/strong&gt;&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;즉, Addmission Control까지 수락된 요청만이 &lt;code class=&quot;language-text&quot;&gt;ETCD&lt;/code&gt;에 저장되는 것입니다. &lt;/p&gt;
+&lt;p&gt;&lt;figure class=&apos;gatsby-resp-image-figure&apos; style=&apos;margin-bottom: 16px;&apos;&gt;
+    &lt;span class=&apos;gatsby-resp-image-wrapper&apos; style=&apos;position: relative; display: block; margin-left: auto; margin-right: auto; max-width: 680px; &apos;&gt;
+      &lt;a class=&apos;gatsby-resp-image-link&apos; href=&apos;/static/bf483db79943259877123a26a6cee8c1/30577/%EC%BF%A0%EB%B2%84%EB%84%A4%ED%8B%B0%EC%8A%A4_04.png&apos; style=&apos;display: block&apos; target=&apos;_blank&apos; rel=&apos;noopener&apos;&gt;
+    &lt;span class=&apos;gatsby-resp-image-background-image&apos; style=&quot;padding-bottom: 34.705882352941174%; position: relative; bottom: 0; left: 0; background-image: url(&apos;data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAAHCAYAAAAIy204AAAACXBIWXMAAAsTAAALEwEAmpwYAAABP0lEQVR42nVRS0/CQBjs//8RnjyoMTHxwEVNDFGDwQMClUpSqBXYre2Wbulju20ZP4o1kuBcZncyO/s9jKqqkGUpvFBiOPOwCiQWvoTphnB4RPoGI0dAxBm4iNGfLLCmsxcm5A8QyhSM9DF5okTBKLSGxxms2RJX3QnMuYcXy8XZ7QCPwzksh+P8bgCHCZj2EifXT3B5iLG9wgXpLhcY2QyX9yYYfW7gB0pXCJMCqdJIcg2xUQ1/rXO8fciGC13ClwqavDIt0HlmSMmTF2XjL0hvArfbLf5DnGpqVVE7GnvvXs+LCt3XAHV9+Pa3wp2xNe+4rvfnKClpRqrhHVp9k5Xo9DgyCv773jhWVRssZI6H4Sd6Jqd5Lpp7C3sV4fTmHf2pf7zCY4Frmov1EWDOImK/2WILITNMXdpynB8EfgNXvRWzmu5IpgAAAABJRU5ErkJggg==&apos;); background-size: cover; display: block;&quot;&gt;&lt;/span&gt;
+  &lt;img class=&apos;gatsby-resp-image-image&apos; alt=&apos;https://kubernetes.io/blog/2019/03/21/a-guide-to-kubernetes-admission-controllers/&apos; title=&apos;&apos; src=&apos;/static/bf483db79943259877123a26a6cee8c1/ca1dc/%EC%BF%A0%EB%B2%84%EB%84%A4%ED%8B%B0%EC%8A%A4_04.png&apos; srcset=&apos;/static/bf483db79943259877123a26a6cee8c1/e7570/%EC%BF%A0%EB%B2%84%EB%84%A4%ED%8B%B0%EC%8A%A4_04.png 170w,
+/static/bf483db79943259877123a26a6cee8c1/f46e7/%EC%BF%A0%EB%B2%84%EB%84%A4%ED%8B%B0%EC%8A%A4_04.png 340w,
+/static/bf483db79943259877123a26a6cee8c1/ca1dc/%EC%BF%A0%EB%B2%84%EB%84%A4%ED%8B%B0%EC%8A%A4_04.png 680w,
+/static/bf483db79943259877123a26a6cee8c1/30577/%EC%BF%A0%EB%B2%84%EB%84%A4%ED%8B%B0%EC%8A%A4_04.png 806w&apos; sizes=&apos;(max-width: 680px) 100vw, 680px&apos; style=&apos;width:100%;height:100%;margin:0;vertical-align:middle;position:absolute;top:0;left:0;&apos; loading=&apos;lazy&apos; decoding=&apos;async&apos;&gt;
+  &lt;/a&gt;
+    &lt;/span&gt;
+    &lt;figcaption class=&apos;gatsby-resp-image-figcaption&apos;&gt;https://kubernetes.io/blog/2019/03/21/a-guide-to-kubernetes-admission-controllers/&lt;/figcaption&gt;
+  &lt;/figure&gt;&lt;/p&gt;
+&lt;p&gt;Addmission Control의 Process에는 두 단계가 존재합니다. 먼저 Mutating(변조) 단계가 실행되고 그 다음에 Validating(검증) 단계가 실행됩니다. &lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;[Mutating Addmission]&lt;/strong&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;클러스터에 리소스가 생성되거나 변경될 때, 클라이언트의 요청에 변경이 필요할 경우, 해당 요청을 가로채서 &lt;strong&gt;자동으로 수정&lt;/strong&gt;해줍니다.&lt;/li&gt;
+&lt;li&gt;Admission을 처리하는 서버의 관점에서 보면 웹훅을 통해 &lt;code class=&quot;language-text&quot;&gt;AdmissionReview&lt;/code&gt;라고 하는 객체와 함께 &lt;code class=&quot;language-text&quot;&gt;POST&lt;/code&gt; 요청을 받게됩니다.&lt;/li&gt;
+&lt;li&gt;AdmissionView는 클라이언트가 API 서버로 요청한 매니페스트 데이터를 담고 있다. 즉 전체 요청을 보고 필요한 수정을 판단하여 수정하거나 요청처리 거부를 처리할 수 있습니다.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;strong&gt;[Validating Addmission]&lt;/strong&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Mutating과 다르게  단순히 요청을 검증만하고 변경하지 않습니다.&lt;/li&gt;
+&lt;li&gt;잘못된 리소스 방지, 보안 정책 적용, 컴플라이언스 준수 여부를 판단합니다. 이를 활용해 보안 라벨이 붙지 않은 파드 생성은 거절할 수 있습니다.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id=&quot;-Mutating-vs-Validating-차이점&quot; style=&quot;position:relative;&quot;&gt;&lt;a href=&quot;#-Mutating-vs-Validating-%EC%B0%A8%EC%9D%B4%EC%A0%90&quot; aria-label=&quot; Mutating vs Validating 차이점 permalink&quot; class=&quot;heading-anchor before&quot;&gt;&lt;svg xmlns=&quot;http://www.w3.org/2000/svg&quot; width=&quot;15&quot; height=&quot;15&quot; viewBox=&quot;0 0 24 24&quot;&gt;&lt;path d=&quot;M6.188 8.719c.439-.439.926-.801 1.444-1.087 2.887-1.591 6.589-.745 8.445 2.069l-2.246 2.245c-.644-1.469-2.243-2.305-3.834-1.949-.599.134-1.168.433-1.633.898l-4.304 4.306c-1.307 1.307-1.307 3.433 0 4.74 1.307 1.307 3.433 1.307 4.74 0l1.327-1.327c1.207.479 2.501.67 3.779.575l-2.929 2.929c-2.511 2.511-6.582 2.511-9.093 0s-2.511-6.582 0-9.093l4.304-4.306zm6.836-6.836l-2.929 2.929c1.277-.096 2.572.096 3.779.574l1.326-1.326c1.307-1.307 3.433-1.307 4.74 0 1.307 1.307 1.307 3.433 0 4.74l-4.305 4.305c-1.311 1.311-3.44 1.3-4.74 0-.303-.303-.564-.68-.727-1.051l-2.246 2.245c.236.358.481.667.796.982.812.812 1.846 1.417 3.036 1.704 1.542.371 3.194.166 4.613-.617.518-.286 1.005-.648 1.444-1.087l4.304-4.305c2.512-2.511 2.512-6.582.001-9.093-2.511-2.51-6.581-2.51-9.092 0z&quot;/&gt;&lt;/svg&gt;&lt;/a&gt;🔄 &lt;strong&gt;Mutating vs Validating 차이점&lt;/strong&gt;&lt;/h3&gt;
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th&gt;Feature&lt;/th&gt;
+&lt;th&gt;Mutating Admission Controller&lt;/th&gt;
+&lt;th&gt;Validating Admission Controller&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td&gt;역할&lt;/td&gt;
+&lt;td&gt;요청을 변경 (Modify)&lt;/td&gt;
+&lt;td&gt;요청을 검증 (Validate)&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;예제&lt;/td&gt;
+&lt;td&gt;특정 환경 변수 추가&lt;/td&gt;
+&lt;td&gt;&lt;code class=&quot;language-text&quot;&gt;root&lt;/code&gt; 유저 실행 방지&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;사용 목적&lt;/td&gt;
+&lt;td&gt;기본값 설정, 사이드카 주입&lt;/td&gt;
+&lt;td&gt;보안, 정책 검증&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;Webhook 응답&lt;/td&gt;
+&lt;td&gt;변경된 리소스 반환&lt;/td&gt;
+&lt;td&gt;허용 or 거부 (200 or 400)&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;hr&gt;
+&lt;h2 id=&quot;3-API-Server--ETCD&quot; style=&quot;position:relative;&quot;&gt;&lt;a href=&quot;#3-API-Server--ETCD&quot; aria-label=&quot;3 API Server  ETCD permalink&quot; class=&quot;heading-anchor before&quot;&gt;&lt;svg xmlns=&quot;http://www.w3.org/2000/svg&quot; width=&quot;15&quot; height=&quot;15&quot; viewBox=&quot;0 0 24 24&quot;&gt;&lt;path d=&quot;M6.188 8.719c.439-.439.926-.801 1.444-1.087 2.887-1.591 6.589-.745 8.445 2.069l-2.246 2.245c-.644-1.469-2.243-2.305-3.834-1.949-.599.134-1.168.433-1.633.898l-4.304 4.306c-1.307 1.307-1.307 3.433 0 4.74 1.307 1.307 3.433 1.307 4.74 0l1.327-1.327c1.207.479 2.501.67 3.779.575l-2.929 2.929c-2.511 2.511-6.582 2.511-9.093 0s-2.511-6.582 0-9.093l4.304-4.306zm6.836-6.836l-2.929 2.929c1.277-.096 2.572.096 3.779.574l1.326-1.326c1.307-1.307 3.433-1.307 4.74 0 1.307 1.307 1.307 3.433 0 4.74l-4.305 4.305c-1.311 1.311-3.44 1.3-4.74 0-.303-.303-.564-.68-.727-1.051l-2.246 2.245c.236.358.481.667.796.982.812.812 1.846 1.417 3.036 1.704 1.542.371 3.194.166 4.613-.617.518-.286 1.005-.648 1.444-1.087l4.304-4.305c2.512-2.511 2.512-6.582.001-9.093-2.511-2.51-6.581-2.51-9.092 0z&quot;/&gt;&lt;/svg&gt;&lt;/a&gt;3. API Server ↔ ETCD&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;Addimission Control까지 통과된 요청은 최종적으로 ETCD에 Write 됩니다.&lt;/strong&gt; 정상적으로 Write까지 된다면 API Server에 201 OK 응답을 날리고 해당 Pod는 Pending 상태가 됩니다.&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;201 Success를 수신한 API Server는 등록된 적이 없다는 것을 알고 &lt;code class=&quot;language-text&quot;&gt;unscheduled pod&lt;/code&gt; event가 발행합니다. 해당 Event는 스케줄링 큐에 들어가고  &lt;code class=&quot;language-text&quot;&gt;Scheduler&lt;/code&gt;는 해당 &lt;code class=&quot;language-text&quot;&gt;Queue&lt;/code&gt;를 &lt;code class=&quot;language-text&quot;&gt;Watch&lt;/code&gt;  하고 있습니다.&lt;/p&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;go&quot;&gt;&lt;pre class=&quot;language-go&quot;&gt;&lt;code class=&quot;language-go&quot;&gt;&lt;span class=&quot;token keyword&quot;&gt;func&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;sched &lt;span class=&quot;token operator&quot;&gt;*&lt;/span&gt;Scheduler&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;token function&quot;&gt;addPodToSchedulingQueue&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;obj &lt;span class=&quot;token keyword&quot;&gt;interface&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+	start &lt;span class=&quot;token operator&quot;&gt;:=&lt;/span&gt; time&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;token function&quot;&gt;Now&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;
+	&lt;span class=&quot;token keyword&quot;&gt;defer&lt;/span&gt; metrics&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;EventHandlingLatency&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;token function&quot;&gt;WithLabelValues&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;framework&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;UnscheduledPodAdd&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;Label&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;token function&quot;&gt;Observe&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;metrics&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;token function&quot;&gt;SinceInSeconds&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;start&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;
+
+	logger &lt;span class=&quot;token operator&quot;&gt;:=&lt;/span&gt; sched&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;logger
+  &lt;span class=&quot;token comment&quot;&gt;//	obj.(*v1.Pod): obj를 *v1.Pod 타입으로 변환을 시도하는 타입 어서션입니다.&lt;/span&gt;
+	pod &lt;span class=&quot;token operator&quot;&gt;:=&lt;/span&gt; obj&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;*&lt;/span&gt;v1&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;Pod&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt; 
+	logger&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;token function&quot;&gt;V&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token number&quot;&gt;3&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;token function&quot;&gt;Info&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token string&quot;&gt;&quot;Add event for unscheduled pod&quot;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&quot;pod&quot;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt; klog&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;token function&quot;&gt;KObj&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;pod&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;
+	&lt;span class=&quot;token comment&quot;&gt;// 타입 변환 후 Queue에 넣습니다.&lt;/span&gt;
+	sched&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;SchedulingQueue&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;token function&quot;&gt;Add&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;logger&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt; pod&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;
+&lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;ul&gt;
+&lt;li&gt;해당 코드는 &lt;code class=&quot;language-text&quot;&gt;Scheduler&lt;/code&gt;의  스케줄링 큐에 Pod를 넣는 &lt;code class=&quot;language-text&quot;&gt;Method&lt;/code&gt;입니다.&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;https://github.com/kubernetes/community/blob/master/contributors/devel/sig-scheduling/scheduler_queues.md&quot;&gt;Scheduling queue in kuber-netes&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
 &lt;/li&gt;
 &lt;/ul&gt;
-&lt;p&gt;&lt;img src=&quot;attachment:d86b8bdb-ab89-4e99-bda6-dc0b39cd87fc:image.png&quot; alt=&quot;                                                                                    전체 흐름 &quot;&gt;&lt;/p&gt;
-&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;text&quot;&gt;&lt;pre class=&quot;language-text&quot;&gt;&lt;code class=&quot;language-text&quot;&gt;                                                                                전체 흐름 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
-&lt;h2 id=&quot;전송-보안&quot; style=&quot;position:relative;&quot;&gt;&lt;a href=&quot;#%EC%A0%84%EC%86%A1-%EB%B3%B4%EC%95%88&quot; aria-label=&quot;전송 보안 permalink&quot; class=&quot;heading-anchor before&quot;&gt;&lt;svg xmlns=&quot;http://www.w3.org/2000/svg&quot; width=&quot;15&quot; height=&quot;15&quot; viewBox=&quot;0 0 24 24&quot;&gt;&lt;path d=&quot;M6.188 8.719c.439-.439.926-.801 1.444-1.087 2.887-1.591 6.589-.745 8.445 2.069l-2.246 2.245c-.644-1.469-2.243-2.305-3.834-1.949-.599.134-1.168.433-1.633.898l-4.304 4.306c-1.307 1.307-1.307 3.433 0 4.74 1.307 1.307 3.433 1.307 4.74 0l1.327-1.327c1.207.479 2.501.67 3.779.575l-2.929 2.929c-2.511 2.511-6.582 2.511-9.093 0s-2.511-6.582 0-9.093l4.304-4.306zm6.836-6.836l-2.929 2.929c1.277-.096 2.572.096 3.779.574l1.326-1.326c1.307-1.307 3.433-1.307 4.74 0 1.307 1.307 1.307 3.433 0 4.74l-4.305 4.305c-1.311 1.311-3.44 1.3-4.74 0-.303-.303-.564-.68-.727-1.051l-2.246 2.245c.236.358.481.667.796.982.812.812 1.846 1.417 3.036 1.704 1.542.371 3.194.166 4.613-.617.518-.286 1.005-.648 1.444-1.087l4.304-4.305c2.512-2.511 2.512-6.582.001-9.093-2.511-2.51-6.581-2.51-9.092 0z&quot;/&gt;&lt;/svg&gt;&lt;/a&gt;전송 보안&lt;/h2&gt;
-&lt;p&gt;client가 API Server로 요청을 보내는 것부터 시작입니다. 따라서 우리는 쿠버네티스 세상의 네트워크에 대한 이해도가 필요합니다. 하지만 이 부분은 지금은 다루지 않고 간단하게만 언급하고자 합니다. &lt;/p&gt;
-&lt;ol&gt;
-&lt;li&gt;
-&lt;p&gt;기본적으로 API Server는 TLS에 의해 보호되는 첫번째 non-localhost 네트워크 인터페이스의 6443 포트에서 수신 대기 중입니다. &lt;/p&gt;
-&lt;ol&gt;
-&lt;li&gt;수신 대기 IP 주소는 &lt;code class=&quot;language-text&quot;&gt;—bind-address&lt;/code&gt; 플래그를 통해 변경할 수 있습니다.&lt;/li&gt;
-&lt;/ol&gt;
-&lt;/li&gt;
-&lt;li&gt;쿠버네티스는 Root Certificate, Server Certificate, Client Certificate 3가지 인증서를 기반으로 독자적인 PKI (Public Key Infrastructure)를 구성하고 있습니다.&lt;/li&gt;
-&lt;li&gt;API 서버는 인증서를 제시합니다. 이러한 인증서는 사설 인증 기관(CA)에 기반하여 서명되거나, 혹은 공인 CA와 연결된 공개키 인프라스트럭처에 기반합니다.&lt;/li&gt;
-&lt;/ol&gt;
-&lt;h3 id=&quot;왜-전송-보안을-해야할까요&quot; style=&quot;position:relative;&quot;&gt;&lt;a href=&quot;#%EC%99%9C-%EC%A0%84%EC%86%A1-%EB%B3%B4%EC%95%88%EC%9D%84-%ED%95%B4%EC%95%BC%ED%95%A0%EA%B9%8C%EC%9A%94&quot; aria-label=&quot;왜 전송 보안을 해야할까요 permalink&quot; class=&quot;heading-anchor before&quot;&gt;&lt;svg xmlns=&quot;http://www.w3.org/2000/svg&quot; width=&quot;15&quot; height=&quot;15&quot; viewBox=&quot;0 0 24 24&quot;&gt;&lt;path d=&quot;M6.188 8.719c.439-.439.926-.801 1.444-1.087 2.887-1.591 6.589-.745 8.445 2.069l-2.246 2.245c-.644-1.469-2.243-2.305-3.834-1.949-.599.134-1.168.433-1.633.898l-4.304 4.306c-1.307 1.307-1.307 3.433 0 4.74 1.307 1.307 3.433 1.307 4.74 0l1.327-1.327c1.207.479 2.501.67 3.779.575l-2.929 2.929c-2.511 2.511-6.582 2.511-9.093 0s-2.511-6.582 0-9.093l4.304-4.306zm6.836-6.836l-2.929 2.929c1.277-.096 2.572.096 3.779.574l1.326-1.326c1.307-1.307 3.433-1.307 4.74 0 1.307 1.307 1.307 3.433 0 4.74l-4.305 4.305c-1.311 1.311-3.44 1.3-4.74 0-.303-.303-.564-.68-.727-1.051l-2.246 2.245c.236.358.481.667.796.982.812.812 1.846 1.417 3.036 1.704 1.542.371 3.194.166 4.613-.617.518-.286 1.005-.648 1.444-1.087l4.304-4.305c2.512-2.511 2.512-6.582.001-9.093-2.511-2.51-6.581-2.51-9.092 0z&quot;/&gt;&lt;/svg&gt;&lt;/a&gt;왜 전송 보안을 해야할까요?&lt;/h3&gt;
+&lt;h2 id=&quot;4--스케줄러&quot; style=&quot;position:relative;&quot;&gt;&lt;a href=&quot;#4--%EC%8A%A4%EC%BC%80%EC%A4%84%EB%9F%AC&quot; aria-label=&quot;4  스케줄러 permalink&quot; class=&quot;heading-anchor before&quot;&gt;&lt;svg xmlns=&quot;http://www.w3.org/2000/svg&quot; width=&quot;15&quot; height=&quot;15&quot; viewBox=&quot;0 0 24 24&quot;&gt;&lt;path d=&quot;M6.188 8.719c.439-.439.926-.801 1.444-1.087 2.887-1.591 6.589-.745 8.445 2.069l-2.246 2.245c-.644-1.469-2.243-2.305-3.834-1.949-.599.134-1.168.433-1.633.898l-4.304 4.306c-1.307 1.307-1.307 3.433 0 4.74 1.307 1.307 3.433 1.307 4.74 0l1.327-1.327c1.207.479 2.501.67 3.779.575l-2.929 2.929c-2.511 2.511-6.582 2.511-9.093 0s-2.511-6.582 0-9.093l4.304-4.306zm6.836-6.836l-2.929 2.929c1.277-.096 2.572.096 3.779.574l1.326-1.326c1.307-1.307 3.433-1.307 4.74 0 1.307 1.307 1.307 3.433 0 4.74l-4.305 4.305c-1.311 1.311-3.44 1.3-4.74 0-.303-.303-.564-.68-.727-1.051l-2.246 2.245c.236.358.481.667.796.982.812.812 1.846 1.417 3.036 1.704 1.542.371 3.194.166 4.613-.617.518-.286 1.005-.648 1.444-1.087l4.304-4.305c2.512-2.511 2.512-6.582.001-9.093-2.511-2.51-6.581-2.51-9.092 0z&quot;/&gt;&lt;/svg&gt;&lt;/a&gt;4.  스케줄러&lt;/h2&gt;
 &lt;blockquote&gt;
-&lt;p&gt;클러스터 구성원이란 인증과 클라이언트 요청의 무결성과 신뢰성 확보을 위함&lt;/p&gt;
+&lt;p&gt;쿠버네티스에서 스케줄링은 &lt;code class=&quot;language-text&quot;&gt;kubelet&lt;/code&gt;이 파드를 실행할 수 있도록 파드가 노드에 적합한지 확인하는 것을 의미합니다.&lt;br&gt;
+&lt;a href=&quot;https://kubernetes.io/ko/docs/concepts/scheduling-eviction/kube-scheduler/&quot;&gt;- Kubernetes 문서 -&lt;/a&gt;&lt;/p&gt;
 &lt;/blockquote&gt;
-&lt;p&gt;Kubernetes는 기본적으로 고가용성을 위한 클러스터링을 지원하는 시스템입니다. 이를 위해 Control Plane과 Data Plane이 서로 다른 물리적 위치에 분산되어 운영될 수 있으며, 멀티 클라우드와 하이브리드 환경에서도 동작합니다. 또한, Kubernetes는 클러스터의 안정성을 유지하기 위해 노드들을 여러 지역에 분산 배치할 수 있으며, 각 Node 역시 다양한 지역(zone)에서 운영될 수 있습니다.&lt;/p&gt;
-&lt;p&gt;이처럼, Kubernetes는 동적인 네트워크 모델을 기반으로 하여, 다양한 환경에서 높은 가용성과 확장성을 제공하려고 합니다. &lt;strong&gt;이러한 환경에서는 데이터를 안전하게 보호하고, 클러스터 간 통신의 무결성을 보장하기 위해 TLS 통신이 필수적입니다. 즉 요청자의 신원을 판단해 클러스터에 등록된 구성원인지 검증되어야 하며, 구성원이 신뢰할 수 있는 구성원인지 검증되어야 합니다.&lt;/strong&gt; &lt;/p&gt;
-&lt;p&gt;따라서, Kubernetes에서 TLS를 사용하는 것은 단순히 보안적인 측면뿐만 아니라, 분산된 클러스터 환경에서 신뢰할 수 있는 통신을 보장하는 중요한 요소로, 이를 통해 각 컴포넌트 간의 안전한 데이터 전송을 보장하고, 다양한 네트워크 환경에서의 안정적인 운영을 가능하게 합니다. 인증서 교체와 같은 추가적인 관리 작업이 필요하지만, 이는 클러스터의 보안과 안정성을 위한 필수적인 트레이드 오프라고 할 수 있습니다.&lt;/p&gt;
-&lt;h3 id=&quot;그렇다면-우리의-운영-포인트는&quot; style=&quot;position:relative;&quot;&gt;&lt;a href=&quot;#%EA%B7%B8%EB%A0%87%EB%8B%A4%EB%A9%B4-%EC%9A%B0%EB%A6%AC%EC%9D%98-%EC%9A%B4%EC%98%81-%ED%8F%AC%EC%9D%B8%ED%8A%B8%EB%8A%94&quot; aria-label=&quot;그렇다면 우리의 운영 포인트는 permalink&quot; class=&quot;heading-anchor before&quot;&gt;&lt;svg xmlns=&quot;http://www.w3.org/2000/svg&quot; width=&quot;15&quot; height=&quot;15&quot; viewBox=&quot;0 0 24 24&quot;&gt;&lt;path d=&quot;M6.188 8.719c.439-.439.926-.801 1.444-1.087 2.887-1.591 6.589-.745 8.445 2.069l-2.246 2.245c-.644-1.469-2.243-2.305-3.834-1.949-.599.134-1.168.433-1.633.898l-4.304 4.306c-1.307 1.307-1.307 3.433 0 4.74 1.307 1.307 3.433 1.307 4.74 0l1.327-1.327c1.207.479 2.501.67 3.779.575l-2.929 2.929c-2.511 2.511-6.582 2.511-9.093 0s-2.511-6.582 0-9.093l4.304-4.306zm6.836-6.836l-2.929 2.929c1.277-.096 2.572.096 3.779.574l1.326-1.326c1.307-1.307 3.433-1.307 4.74 0 1.307 1.307 1.307 3.433 0 4.74l-4.305 4.305c-1.311 1.311-3.44 1.3-4.74 0-.303-.303-.564-.68-.727-1.051l-2.246 2.245c.236.358.481.667.796.982.812.812 1.846 1.417 3.036 1.704 1.542.371 3.194.166 4.613-.617.518-.286 1.005-.648 1.444-1.087l4.304-4.305c2.512-2.511 2.512-6.582.001-9.093-2.511-2.51-6.581-2.51-9.092 0z&quot;/&gt;&lt;/svg&gt;&lt;/a&gt;그렇다면 우리의 운영 포인트는?&lt;/h3&gt;
+&lt;p&gt;이번에 살펴보고자 했던 Control Plane의 Pod 생성 여정의 마지막 단계입니다. 사실 스케줄링 그 자체만으로도 많은 부분을 다뤄야 하지만, 여기서 모든 내용을 담기는 어려워 전반적인 내용만 정리하고자 합니다.&lt;/p&gt;
+&lt;p&gt;우선, 스케줄러는 노드가 할당되지 않은 새로 생성된 파드 or 예약되지 않은 파드를 지속적으로 감시합니다. 이후 스케줄러는 감시된 파드가 실행될 최적의 노드를 탐지합니다. 스케줄링은 노드의 점수를 측정하고 가장 높은 점수를 가진 노드에 파드를 선택하는 스코어링 과정을 걸쳐 노드를 선택되며 이후 &lt;em&gt;‘바인딩’&lt;/em&gt; 이라는 프로세스를 통해 API 서버에 결정을 알립니다. &lt;/p&gt;
+&lt;p&gt;&lt;span class=&apos;gatsby-resp-image-wrapper&apos; style=&apos;position: relative; display: block; margin-left: auto; margin-right: auto; max-width: 680px; margin-bottom: 16px;&apos;&gt;
+      &lt;a class=&apos;gatsby-resp-image-link&apos; href=&apos;/static/a3e8fcc75f9afc5b78905854d0661008/f8db4/%EC%BF%A0%EB%B2%84%EB%84%A4%ED%8B%B0%EC%8A%A4_05.png&apos; style=&apos;display: block&apos; target=&apos;_blank&apos; rel=&apos;noopener&apos;&gt;
+    &lt;span class=&apos;gatsby-resp-image-background-image&apos; style=&quot;padding-bottom: 71.76470588235294%; position: relative; bottom: 0; left: 0; background-image: url(&apos;data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAAOCAYAAAAvxDzwAAAACXBIWXMAAAsTAAALEwEAmpwYAAACNUlEQVR42o2T6U8TQRiH+f8T9QsfNJiYmBhFoMQYIRiiqNwChV6UXra7Xfbott1uuzt7P24PBFNI+iYzyfxm3mfmPWaJ1JKEiVmjgJtWl0rTpKHYjEQ00WfbC9nSeIpnxHLLYmXtkDeZA95+ztLuuNxdmKRTkiSLAe8OVmWLjzt5Pn0rsbFb4tZ0eLi/8AvvHNodj639Gmtbp+yeynQsbwp062jldzRz77Eaq+C14GGu5oHTxcAJuSy3ObooU6zrOCKc6IGVR80vo+RX0AvLRMObGTCeB45hcTwlal2bvZMCh+dljrJVrOE0h+HwGvnyJfXz1yi5V+mLG08DH4asmWNgkYMUeHJVx3b8ie6PFFqlbWq5bbT6LpEwng65pgRka8Fk0bMFx5dVznJVstfSv5AT30Sp/USq7NNtH5OE/Zn7I8D9vEvmV28cGHpP8P2kwvbeFb+LCr2hmLhEQkItfeC2tEq3tkbiKYw7NIz9dARp20WEkY/v+ywJIWjKdXSrSa6qpfAuh4UeGz9MarKG2pMZdfPYUobixSZaZR0xKCN3FNpGA63XRDUlJK2BqqnTHOp6h45xy/WfPi82bQajiGfrNvWWidkxcB2bQjPgecbl60WIEC6qqqLpRnqmiyTJ9Pv9+6JY1gDfG9EyIp5vWLhewkFBoBn9VBdz+QqjMK1HzMgN2DlzMNJiCteZ78OhG3Ne9R4r3uz7zcZM84KEL6cOfpj83zaP2SK/LYwSWnpIFN8D/wKHBSfN+HtPvAAAAABJRU5ErkJggg==&apos;); background-size: cover; display: block;&quot;&gt;&lt;/span&gt;
+  &lt;img class=&apos;gatsby-resp-image-image&apos; alt=&apos;      05&apos; title=&apos;&apos; src=&apos;/static/a3e8fcc75f9afc5b78905854d0661008/ca1dc/%EC%BF%A0%EB%B2%84%EB%84%A4%ED%8B%B0%EC%8A%A4_05.png&apos; srcset=&apos;/static/a3e8fcc75f9afc5b78905854d0661008/e7570/%EC%BF%A0%EB%B2%84%EB%84%A4%ED%8B%B0%EC%8A%A4_05.png 170w,
+/static/a3e8fcc75f9afc5b78905854d0661008/f46e7/%EC%BF%A0%EB%B2%84%EB%84%A4%ED%8B%B0%EC%8A%A4_05.png 340w,
+/static/a3e8fcc75f9afc5b78905854d0661008/ca1dc/%EC%BF%A0%EB%B2%84%EB%84%A4%ED%8B%B0%EC%8A%A4_05.png 680w,
+/static/a3e8fcc75f9afc5b78905854d0661008/f8db4/%EC%BF%A0%EB%B2%84%EB%84%A4%ED%8B%B0%EC%8A%A4_05.png 724w&apos; sizes=&apos;(max-width: 680px) 100vw, 680px&apos; style=&apos;width:100%;height:100%;margin:0;vertical-align:middle;position:absolute;top:0;left:0;&apos; loading=&apos;lazy&apos; decoding=&apos;async&apos;&gt;
+  &lt;/a&gt;
+    &lt;/span&gt;&lt;/p&gt;
+&lt;p&gt;스케줄링에는 2단계 작업이 진행됩니다. &lt;a href=&quot;https://github.com/kubernetes/kubernetes/blob/d1126b66cb06e4f67cc1612ff32da51e8541e01b/pkg/scheduler/schedule_one.go#L410&quot;&gt;(코드)&lt;/a&gt;&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;필터링&lt;/li&gt;
+&lt;li&gt;스코어링&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;&lt;strong&gt;필터링:&lt;/strong&gt; 필터링 단계에서는 파드를 스케줄링 할 수 있는 노드 셋을 찾습니다. 필터링 단계는 스케줄링을 위해 필요 조건들을 충족하는 노드를 선택하는 과정입니다. 예를 들면 CPU, Memory와 같은 시스템 리소스들이 요구하는 만큼 존재하는지 체크하는 과정이 포함됩니다. &lt;/p&gt;
+&lt;p&gt;이러한 조건들을 쿠버네티스에서는 &lt;code class=&quot;language-text&quot;&gt;predicates&lt;/code&gt;라 부르며, 이 과정에서 선택된 Node를 &lt;code class=&quot;language-text&quot;&gt;feasible&lt;/code&gt; 노드라 합니다.  만약, 필터링 단계를 통과하지 못하면 &lt;code class=&quot;language-text&quot;&gt;PENDING&lt;/code&gt; 상태로 파드는 유지되며 스케줄링 되지 않는 상태로 유지됩니다. &lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;[필터링에 사용되는 조건들]&lt;/strong&gt;&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;리소스 요구 사항&lt;/li&gt;
+&lt;li&gt;노드 레이블&lt;/li&gt;
+&lt;li&gt;taint, toleration&lt;/li&gt;
+&lt;li&gt;affinity&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;**스코어링: ** 스코어링 단계에서는 노드의 점수를 매기고 점수를 기반하여 순위를 지정하여 가장 적합한 파드 배치를 선택합니다.스케줄링 알고리즘은 우선순위를 매기는 방식으로 동작하며, 이는 여러 종류의 스코어링 방법을 통해 점수를 부여하여 가장 적합한 노드를 선택합니다.&lt;/p&gt;
+&lt;h3 id=&quot;고민거리---동시성-처리&quot; style=&quot;position:relative;&quot;&gt;&lt;a href=&quot;#%EA%B3%A0%EB%AF%BC%EA%B1%B0%EB%A6%AC---%EB%8F%99%EC%8B%9C%EC%84%B1-%EC%B2%98%EB%A6%AC&quot; aria-label=&quot;고민거리   동시성 처리 permalink&quot; class=&quot;heading-anchor before&quot;&gt;&lt;svg xmlns=&quot;http://www.w3.org/2000/svg&quot; width=&quot;15&quot; height=&quot;15&quot; viewBox=&quot;0 0 24 24&quot;&gt;&lt;path d=&quot;M6.188 8.719c.439-.439.926-.801 1.444-1.087 2.887-1.591 6.589-.745 8.445 2.069l-2.246 2.245c-.644-1.469-2.243-2.305-3.834-1.949-.599.134-1.168.433-1.633.898l-4.304 4.306c-1.307 1.307-1.307 3.433 0 4.74 1.307 1.307 3.433 1.307 4.74 0l1.327-1.327c1.207.479 2.501.67 3.779.575l-2.929 2.929c-2.511 2.511-6.582 2.511-9.093 0s-2.511-6.582 0-9.093l4.304-4.306zm6.836-6.836l-2.929 2.929c1.277-.096 2.572.096 3.779.574l1.326-1.326c1.307-1.307 3.433-1.307 4.74 0 1.307 1.307 1.307 3.433 0 4.74l-4.305 4.305c-1.311 1.311-3.44 1.3-4.74 0-.303-.303-.564-.68-.727-1.051l-2.246 2.245c.236.358.481.667.796.982.812.812 1.846 1.417 3.036 1.704 1.542.371 3.194.166 4.613-.617.518-.286 1.005-.648 1.444-1.087l4.304-4.305c2.512-2.511 2.512-6.582.001-9.093-2.511-2.51-6.581-2.51-9.092 0z&quot;/&gt;&lt;/svg&gt;&lt;/a&gt;고민거리 - 동시성 처리&lt;/h3&gt;
+&lt;blockquote&gt;
+&lt;p&gt;만약, 여러 개의 Pod 생성 요청이 동시에 스케줄링이 되면, 스케줄러가 아직 업데이트되지 않은 리소스 정보를 바탕으로 잘못된 결정을 내릴 여지가 있지 않을까합니다. &lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;&lt;strong&gt;상황:&lt;/strong&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;가용 가능한 잔여 CPU 리소스:&lt;/strong&gt; 550m (0.5vCPU)&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;동시 요청:&lt;/strong&gt; A Pod 요청 500m, B Pod 요청 300m&lt;/li&gt;
+&lt;li&gt;아직 ETCD에 반영되지 않았기에 스케줄러 입장에서는 모두 할당 가능한 상황&lt;/li&gt;
+&lt;li&gt;둘 다 스케줄링 가능하다고 판단되어 ETCD Write 요청을 API Server가 진행&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;strong&gt;결론:&lt;/strong&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;최종 일관성에 의해 하나만 생성됩니다.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;strong&gt;어떻게?&lt;/strong&gt; &lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;ETCD는 &lt;code class=&quot;language-text&quot;&gt;Optimistic Lock&lt;/code&gt; 매커니즘을 지원해 동시성 처리를 합니다. 즉, 먼저 처리 되는 순간 &lt;code class=&quot;language-text&quot;&gt;resourceVersion&lt;/code&gt;은 달라지고 옛날버전을 가진 요청을 거절됩니다.&lt;/li&gt;
+&lt;li&gt;&lt;code class=&quot;language-text&quot;&gt;Optimistic Lock&lt;/code&gt; 매커니즘을 지원하기 위해 &lt;a href=&quot;https://arc.net/l/quote/ycnrfamj&quot;&gt;CAS&lt;/a&gt; 기법을 활용합니다.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;hr&gt;
+&lt;h2 id=&quot;마지막으로-그렇다면-운영-포인트는&quot; style=&quot;position:relative;&quot;&gt;&lt;a href=&quot;#%EB%A7%88%EC%A7%80%EB%A7%89%EC%9C%BC%EB%A1%9C-%EA%B7%B8%EB%A0%87%EB%8B%A4%EB%A9%B4-%EC%9A%B4%EC%98%81-%ED%8F%AC%EC%9D%B8%ED%8A%B8%EB%8A%94&quot; aria-label=&quot;마지막으로 그렇다면 운영 포인트는 permalink&quot; class=&quot;heading-anchor before&quot;&gt;&lt;svg xmlns=&quot;http://www.w3.org/2000/svg&quot; width=&quot;15&quot; height=&quot;15&quot; viewBox=&quot;0 0 24 24&quot;&gt;&lt;path d=&quot;M6.188 8.719c.439-.439.926-.801 1.444-1.087 2.887-1.591 6.589-.745 8.445 2.069l-2.246 2.245c-.644-1.469-2.243-2.305-3.834-1.949-.599.134-1.168.433-1.633.898l-4.304 4.306c-1.307 1.307-1.307 3.433 0 4.74 1.307 1.307 3.433 1.307 4.74 0l1.327-1.327c1.207.479 2.501.67 3.779.575l-2.929 2.929c-2.511 2.511-6.582 2.511-9.093 0s-2.511-6.582 0-9.093l4.304-4.306zm6.836-6.836l-2.929 2.929c1.277-.096 2.572.096 3.779.574l1.326-1.326c1.307-1.307 3.433-1.307 4.74 0 1.307 1.307 1.307 3.433 0 4.74l-4.305 4.305c-1.311 1.311-3.44 1.3-4.74 0-.303-.303-.564-.68-.727-1.051l-2.246 2.245c.236.358.481.667.796.982.812.812 1.846 1.417 3.036 1.704 1.542.371 3.194.166 4.613-.617.518-.286 1.005-.648 1.444-1.087l4.304-4.305c2.512-2.511 2.512-6.582.001-9.093-2.511-2.51-6.581-2.51-9.092 0z&quot;/&gt;&lt;/svg&gt;&lt;/a&gt;마지막으로, 그렇다면 운영 포인트는?&lt;/h2&gt;
+&lt;p&gt;Pod 생성은 Control Plane에 많은 의존성이 있습니다. 즉, Control Plane 의 장애는 서비스 장애로도 이어질 수 있습니다. 물론 실제 서비스들이 동작하는 Data Plane과 Control Plane이 분리되어 있기 때문에 어느정도 내성은 있습니다.&lt;/p&gt;
+&lt;p&gt;하지만 운영 애플리케이션의 Pod는 언제든지 죽을 수 있고 부하가 늘어남 HPA가 탄력적으로 스케일 아웃하지 못해 서비스 장애로 이어질 여지가 있습니다. 따라서 Control Plane의 HA가 보장은 우리의 핵심 운영 포인트입니다. 이를 위해 DR과 재해복구 계획을 통해 MTTR을 최대한 짧게 유지하는 것이 운영 포인트라 생각합니다.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;[TO-DO]&lt;/strong&gt;&lt;/p&gt;
 &lt;ol&gt;
 &lt;li&gt;
 &lt;p&gt;&lt;strong&gt;자동화된 TLS 관리&lt;/strong&gt;: 사용되는 인증서는 기본적으로 유효 기간이 1년인 자체 서명된 인증서입니다. 따라서 인증서의 만료일을 추적하지 않으면 클러스터의 통신에 문제가 생길 수 있습니다.&lt;/p&gt;
@@ -163,11 +398,29 @@ I0212 09&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt;32&lt;span
 &lt;li&gt;인증서 갱신 스크립트 작성 or Cert Manager를 사용한 인증서 관리&lt;/li&gt;
 &lt;/ul&gt;
 &lt;p&gt;&lt;strong&gt;[Tip]&lt;/strong&gt;&lt;/p&gt;
-&lt;blockquote&gt;
-&lt;p&gt;인증서 기간 체크 명령어&lt;/p&gt;
-&lt;/blockquote&gt;
-&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;bash&quot;&gt;&lt;pre class=&quot;language-bash&quot;&gt;&lt;code class=&quot;language-bash&quot;&gt;kubeadm certs check-expiration&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code class=&quot;language-text&quot;&gt;kubeadm certs check-expiration&lt;/code&gt;  를 통해 인증 기간 만료를 체크할 수 있습니다.&lt;/li&gt;
+&lt;/ul&gt;
 &lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;Control Plane 클러스터링 및 HA 구성 및 API Server Load Balancing 지원하기&lt;/strong&gt;&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;Control Plane은 1대가 아닌 많고 홀수의 노드로 클러스터링을 구축하는 하는 것을 강력히 권장합니다.&lt;/li&gt;
+&lt;li&gt;API Server는 노드별 분산 배치하는 것을 권장하며 API Server의 앞단에는 LB (HA Proxy)를 놔둬 한쪽 서버에 요청이 몰리는 것을 방지하는 것이 좋습니다.&lt;/li&gt;
+&lt;/ol&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;ETCD 백업&lt;/strong&gt;&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;모든 정보는 ETCD에 기록됩니다. Control Plane 장애 시 ETCD에 Write된 시점까지 복구할 수 있습니다. 따라서 ETCD의 정보를 주기적으로 백업하는 것이 필요합니다.&lt;/li&gt;
+&lt;/ol&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;이것 저것 쓰다보니 이야깃거리가 너무 많이 나온 것 같습니다. 스케줄링 영역도 더 깊게 가고싶었지만 내용이 너무 많아 질 것 같아 다음 포스팅으로 미뤄야 할 것 같습니다. 또 스코어링의 핵심 알고리즘은 리서치 하는데 힘들더군요!! 그럼에도 다음 내용들을 알게된 것 같아 많은 것을 배운 것 같습니다.&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;kubectl 동작 과정&lt;/li&gt;
+&lt;li&gt;스케줄러가 어떻게 신규 Pod 생성 감지 방법! api server가 요청 받고 etcd에 초기 write를 한 경우, unscheduled event가 발생하고 이를 스케줄러가 스케줄링하여 node를 선택함&lt;/li&gt;
+&lt;li&gt;이 과정에서 동시성 이슈는 발생할 수 있고 최종 일관을 맞추기 위해 노력하며 etcd는 cas이론을 통해 동시성을 제어함&lt;/li&gt;
 &lt;/ol&gt;</content:encoded></item><item><title><![CDATA[왜 쿠버네티스를 도입 했는가?]]></title><description><![CDATA[회사에서 쿠버네티스 기반으로 서비스를 약 1년정도 운영 중인 상태입니다. 2024년의 비즈니스 목표는 ‘우리 Platform을 Boxing…]]></description><link>https://tech.k10n.me/왜-쿠버네티스인가/</link><guid isPermaLink="false">https://tech.k10n.me/왜-쿠버네티스인가/</guid><pubDate>Fri, 07 Feb 2025 00:00:00 GMT</pubDate><content:encoded>&lt;p&gt;회사에서 쿠버네티스 기반으로 서비스를 약 1년정도 운영 중인 상태입니다. 2024년의 비즈니스 목표는 &lt;strong&gt;‘우리 Platform을 Boxing하여 고객사에 딜리버리 하고 운영하는 것’&lt;/strong&gt;이었습니다.&lt;/p&gt;
 &lt;p&gt;&lt;strong&gt;목표:&lt;/strong&gt;&lt;/p&gt;
 &lt;blockquote&gt;
