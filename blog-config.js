@@ -1,6 +1,6 @@
 module.exports = {
   title: "Changhwan's Tech Blog",
-  description: "Automate for Reliability, Because Simple Works.",
+  description: "위대한 성취는 위대한 팀이 만든다고 생각합니다. 이 가설을 증명하고 위대한 성취 만들어내기 위해 전진하는 중입니다.",
   author: "Changhwan Kim",
   siteUrl: "https://tech.k10n.me",
   links: {
