@@ -1,0 +1,24 @@
+kubernetes:
+  label: Kubernetes
+  permalink: /kubernetes
+  description: Kubernetes tag description
+
+cs:
+  label: Computer Science
+  permalink: /cs
+  description: Computer Science tag description
+
+container:
+  label: Container
+  permalink: /container
+  description: Container tag description
+
+devops:
+  label: DevOps
+  permalink: /devops
+  description: DevOps tag description
+
+cloud:
+  label: Cloud
+  permalink: /cloud
+  description: Cloud tag description
