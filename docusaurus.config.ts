@@ -84,6 +84,10 @@ const config: Config = {
         },
       ],
     },
+    prism: {
+      theme: prismThemes.oneDark,
+      darkTheme: prismThemes.palenight,
+    },
     footer: {
       style: 'dark',
       links: [
@@ -111,10 +115,6 @@ const config: Config = {
         },
       ],
       copyright: `Copyright © ${new Date().getFullYear()} My Project, Inc. Built with Docusaurus.`,
-    },
-    prism: {
-      theme: prismThemes.github,
-      darkTheme: prismThemes.dracula,
     },
   } satisfies Preset.ThemeConfig,
 };
