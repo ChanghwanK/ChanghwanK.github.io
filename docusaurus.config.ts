@@ -38,9 +38,6 @@ const config: Config = {
       {
         docs: {
           sidebarPath: './sidebars.ts',
-          // Please change this to your repo.
-          // Remove this to remove the "edit this page" links.
-          // editUrl: 'https://github.com/changhwanK/techlog/tree/main',
         },
         blog: {
           showReadingTime: true, // When set to false, the "x min read" won't be shown
@@ -76,6 +73,16 @@ const config: Config = {
       items: [
         {to: '/blog', label: 'Posts', position: 'left'},
         {to: '/about', label: 'About', position: 'left'},
+        {type: 'dropdown', label: 'Series', position: 'left', items: [
+          {
+            to: 'docs/kubernetes_in_action/intro',
+            label: 'Kubernetes in Action',
+          },
+          {
+            to: 'docs/prometheus/intro',
+            label: 'Prometheus',
+          },
+        ]},
         {to: '/blog/tags', label: 'Tags', position: 'right'},
         {to: '/blog/archive', label: 'Archive', position: 'right'},
         {
