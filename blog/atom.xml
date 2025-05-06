@@ -12,14 +12,14 @@
         <id>https://tech.k10n.me/blog/안정적으로 Pod을 운영하기 위한 규칙들</id>
         <link href="https://tech.k10n.me/blog/안정적으로 Pod을 운영하기 위한 규칙들"/>
         <updated>2025-05-06T04:00:29.000Z</updated>
-        <summary type="html"><![CDATA[비즈니스를 운영하는 엔지니어 입장에서 가장 Risky 한 것은 서비스 장애로 인한 사용자 경험을 저해시켜 서비스의 신뢰도를 떨어트리는 것이라 생각합니다. 그렇다고 해서 장애가 0%인 서비스가 있는 것은 아닙니다. 하지만 "장애가 없는 서비스는 없어!" 하고 방치하는 것은 무책임한 것 처사라 생각합니다.]]></summary>
-        <content type="html"><![CDATA[<p><strong>비즈니스를 운영하는 엔지니어 입장에서 가장 Risky 한 것은 서비스 장애로 인한 사용자 경험을 저해시켜 서비스의 신뢰도를 떨어트리는 것이라 생각합니다.</strong> 그렇다고 해서 장애가 0%인 서비스가 있는 것은 아닙니다. 하지만 "장애가 없는 서비스는 없어!" 하고 방치하는 것은 무책임한 것 처사라 생각합니다.</p>
+        <summary type="html"><![CDATA[비즈니스를 운영하는 엔지니어 입장에서 가장 위험 한 것은 서비스 장애로 인한 사용자 경험을 저해시켜 서비스의 신뢰도를 떨어트리는 것이라 생각합니다. 그렇다고 해서 장애가 0%인 서비스가 있는 것은 아닙니다. 하지만 "장애가 없는 서비스는 없어!" 하고 방치하는 것은 무책임한 것 처사라 생각합니다.]]></summary>
+        <content type="html"><![CDATA[<p><strong>비즈니스를 운영하는 엔지니어 입장에서 가장 위험 한 것은 서비스 장애로 인한 사용자 경험을 저해시켜 서비스의 신뢰도를 떨어트리는 것이라 생각합니다.</strong> 그렇다고 해서 장애가 0%인 서비스가 있는 것은 아닙니다. 하지만 "장애가 없는 서비스는 없어!" 하고 방치하는 것은 무책임한 것 처사라 생각합니다.</p>
 <p>우리의 역할은 <strong>장애를 최소한으로 줄이는 것이 우리의 역할이자 책임이라 생각합니다</strong>. 특히 DevOps  Engineering을 한다면 그 책임과 역할이 더욱 클 것입니다. 그렇기에 <strong>이번 포스팅을 통해 조금 더 안정적으로 서비스를 안정적으로 운영하기 위한 여러가지 방법들을 정리합니다.</strong></p>
 <hr>
 <h2 class="anchor anchorWithStickyNavbar_LWe7" id="1--deployment-활용하기">1.  Deployment 활용하기<a href="https://tech.k10n.me/blog/%EC%95%88%EC%A0%95%EC%A0%81%EC%9C%BC%EB%A1%9C%20Pod%EC%9D%84%20%EC%9A%B4%EC%98%81%ED%95%98%EA%B8%B0%20%EC%9C%84%ED%95%9C%20%EA%B7%9C%EC%B9%99%EB%93%A4#1--deployment-%ED%99%9C%EC%9A%A9%ED%95%98%EA%B8%B0" class="hash-link" aria-label="Direct link to 1.  Deployment 활용하기" title="Direct link to 1.  Deployment 활용하기">​</a></h2>
-<div class="prompt-info"><blockquote>
+<blockquote>
 <p>쿠버네티스 환경에서 서비스를 운영한다면 안정성을 높일 수 있는 메커니즘을 제공합니다. 따라서 쿠버네티스 환경에서는 어렵지 않게 안정성을 높일 수 있는데 그 시작을 위한 첫 번째는 <code>Deployment</code>라는 Workload 를 활용하는 것입니다.</p>
-</blockquote></div>
+</blockquote>
 <p>쿠버네티스의 Deployment는 애플리케이션의 선언적 업데이트와 롤백을 관리하는 방법을 제공하는 API 오브젝트이며 다음과 같은 특징들을 가지고 있습니다.</p>
 <ol>
 <li><strong>파드 관리 및 업데이트:</strong> Deployment는 ReplicaSet(레플리카셋)을 사용하여 지정된 수의 파드 복제본을 유지 관리합니다. 사용자는 Deployment를 통해 애플리케이션을 업데이트할 때 새로운 이미지로 Pod를 안전하게 Rollout 할 수 있습니다.</li>
