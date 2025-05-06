@@ -40,7 +40,7 @@ const config: Config = {
           sidebarPath: './sidebars.ts',
           // Please change this to your repo.
           // Remove this to remove the "edit this page" links.
-          editUrl: 'https://github.com/changhwanK/techlog/tree/main',
+          // editUrl: 'https://github.com/changhwanK/techlog/tree/main',
         },
         blog: {
           showReadingTime: true, // When set to false, the "x min read" won't be shown
@@ -51,8 +51,8 @@ const config: Config = {
           },
           // Please change this to your repo.
           // Remove this to remove the "edit this page" links.
-          editUrl:
-            'https://github.com/changhwanK/techlog/tree/main',
+          // editUrl:
+          //   'https://github.com/changhwanK/techlog/tree/main',
           // Useful options to enforce blogging best practices
           onInlineTags: 'warn',
           onInlineAuthors: 'warn',
