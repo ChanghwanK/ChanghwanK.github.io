@@ -5,6 +5,9 @@
 /build
 
 # Generated files
+.cursor
+.cursor/**
+
 .docusaurus
 .cache-loader
 
