@@ -1,0 +1,1 @@
+"use strict";(self.webpackChunkmy_website=self.webpackChunkmy_website||[]).push([[121],{8070:e=>{e.exports=JSON.parse('{"tags":[{"label":"Kubernetes","permalink":"/blog/tags/kubernetes","description":"Kubernetes tag description","count":2}]}')}}]);
