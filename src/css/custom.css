@@ -1,6 +1,6 @@
 /* You can override the default Infima variables here. */
 :root {
-  --ifm-color-primary: #0f4c81;
+  --ifm-color-primary: #0e4474;
   --ifm-color-primary-dark: #0e4474;
   --ifm-color-primary-darker: #0d416e;
   --ifm-color-primary-darkest: #0b355a;
@@ -10,6 +10,24 @@
   --ifm-code-font-size: 95%;
   --ifm-font-family-base: 'Noto Sans KR', sans-serif;
 }
+
+h2.title_f1Hy {
+  font-size: 1.84rem;
+}
+
+h1.title_f1Hy {
+  font-size: 2.2rem;
+}
+
+/* .col--7 {
+  --ifm-col-width: calc(8 / 12 * 100%);
+} */
+
+
+/* .row {
+  padding: 200;
+  
+} */
 
 body {
   font-weight: 500;
