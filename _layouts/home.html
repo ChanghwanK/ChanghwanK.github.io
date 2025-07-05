@@ -9,31 +9,39 @@ layout: base
 
   {{ content }}
 
-
   {% if site.paginate %}
     {% assign posts = paginator.posts %}
   {% else %}
     {% assign posts = site.posts %}
   {% endif %}
 
-
   {%- if posts.size > 0 -%}
     {%- if page.list_title -%}
       <h2 class="post-list-heading">{{ page.list_title }}</h2>
     {%- endif -%}
     <ul class="post-list">
-      {%- assign date_format = site.minima.date_format | default: "%b %-d, %Y" -%}
       {%- for post in posts -%}
       <li>
-        <span class="post-meta">{{ post.date | date: date_format }}</span>
-        <h3>
-          <a class="post-link" href="{{ post.url | relative_url }}">
-            {{ post.title | escape }}
-          </a>
-        </h3>
-        {%- if site.minima.show_excerpts -%}
-          {{ post.excerpt }}
-        {%- endif -%}
+        <div class="post-meta-line">
+          <span class="post-meta">{{ post.date | date: "%Y %b %-d" }}, {% assign words = post.content | number_of_words %}{% if words < 360 %}1 min{% else %}{{ words | divided_by: 200 }} mins{% endif %}</span>
+          
+          {%- if post.tags.size > 0 -%}
+            <span class="post-tags-inline">
+              {%- for tag in post.tags -%}
+                <a href="{{ site.baseurl }}/tags/#{{ tag | slugify }}" class="tag-small">{{ tag }}</a>
+              {%- endfor -%}
+            </span>
+          {%- endif -%}
+        </div>
+        
+        <a class="post-link" href="{{ post.url | relative_url }}">
+          <h3>{{ post.title | escape }}</h3>
+          {%- if site.minima.show_excerpts -%}
+            <div class="post-excerpts">
+              {{ post.excerpt | strip_html | truncate: 200 }}
+            </div>
+          {%- endif -%}
+        </a>
       </li>
       {%- endfor -%}
     </ul>

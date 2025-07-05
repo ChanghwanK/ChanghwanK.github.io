@@ -1,6 +1,14 @@
-
 {% assign show_excerpts = include.show_excerpts %}
 
+<a class="post-title" href="{{ post.url | relative_url }}">
+  {{ post.title | escape }}
+</a>
+
+{%- if show_excerpts -%}
+  <div class="post-excerpts">
+    {{ post.excerpt | strip_html | truncate: 200 }}
+  </div>
+{%- endif -%}
 <div class="post-meta-wrapper">
   <span class="post-date">
     {{ post.date | date: "%Y %b %d" }},
@@ -8,12 +16,3 @@
   </span>
   {% include post_tags.html %}
 </div>
-
-<a class="post-title" href="{{ post.url | relative_url }}">
-  {{ post.title | escape }}
-  {%- if show_excerpts -%}
-    <div class="post-excerpts">
-      {{ post.excerpt }}
-    </div>
-  {%- endif -%}
-</a>
