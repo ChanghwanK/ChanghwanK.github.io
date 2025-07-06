@@ -15,7 +15,7 @@ jobs:
       - name: Setup Ruby and Jekyll
         uses: ruby/setup-ruby@v1
         with:
-          ruby-version: '3.1' # Gemfile.lock에 명시된 루비 버전과 맞추세요.
+          ruby-version: '3.1' # 로컬 환경과 버전을 맞추는 것이 좋습니다.
           bundler-cache: true # 'bundle install'을 실행하고 결과를 캐시합니다.
 
       - name: Build site
