@@ -14,4 +14,4 @@ title: Archive
     <span class="post-meta">{{ post.date | date: "%b %-d, %Y" }}</span>
   </li>
   {%- endfor -%}
-</ul> 
+</ul>
