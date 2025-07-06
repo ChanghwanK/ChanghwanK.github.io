@@ -3,6 +3,13 @@ body {
   font: 16px sans-serif;
   background-color: #222 !important;
   color: #bbb !important;
+  display: flex;
+  min-height: 100vh;
+  flex-direction: column;
+}
+
+main.page-content {
+  flex: 1;
 }
 
 // Dark theme colors
@@ -44,7 +51,7 @@ body {
   
   .social-links {
     position: absolute;
-    top: 0;
+    top: 30px;
     right: 30px;
     margin: 0;
     
@@ -68,17 +75,17 @@ body {
   
   .footer-heading {
     color: #bbb !important;
-    font-size: 1.1em;
-    font-weight: 500;
-    margin-bottom: 15px;
+    font-size: 1.0em;
+    font-weight: 400;
+    margin-bottom: 12px;
   }
   
   small {
     color: #888 !important;
-    font-size: 0.9em;
-    line-height: 1.5;
+    font-size: 12px;
+    line-height: 1.0;
     display: block;
-    margin-bottom: 15px;
+    margin-bottom: 12px;
   }
   
   .contact-list {
@@ -87,10 +94,10 @@ body {
     margin: 0 0 15px 0;
     
     li {
-      margin-bottom: 5px;
+      margin-bottom: 3px;
       
       a {
-        color: #4a9eff !important;
+        color: #379FC7 !important;
         text-decoration: none;
         
         &:hover {
@@ -126,9 +133,9 @@ p {
 
 .post-link {
   color: #379FC7 !important;
-  font: 22px;
-  text-decoration: none;
-  margin: 2px 15px 10px;
+  text-decoration: none !important;
+  font-size: 22px !important;
+  margin: 2px 15px 10px !important;
 
   h3 {
     font-size: 22px;
@@ -136,7 +143,7 @@ p {
   }
 
   &:hover {
-    color: #379FC7 !important;
+    color: #66b3ff !important;
 
     h3,
     .post-excerpts {
@@ -150,8 +157,8 @@ p {
   display: flex;
   align-items: center;
   gap: 10px;
-  margin: 2px 15px 10px;
   margin-bottom: 8px;
+  margin: 2px 15px 10px;
   flex-wrap: wrap;
   
   .post-meta {
