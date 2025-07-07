@@ -123,6 +123,23 @@ h1, h2, h3, h4, h5, h6 {
 
 p {
   color: #bbb !important;
+  line-height: 1.6;
+}
+
+#markdown-content li {
+  line-height: 1.6;
+  margin-bottom: 0.4em;
+}
+
+#markdown-content ol > li:not(:first-child) {
+  margin-top: 0.2em;
+}
+
+#markdown-content img {
+  display: block;
+  margin: 0 auto;
+  max-width: 100%;
+  height: auto;
 }
 
 .wrapper {
