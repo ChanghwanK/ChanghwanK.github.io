@@ -26,4 +26,11 @@ layout: base
     <div id="markdown-content">
       {{ content }}
     </div>
+
+    {%- if page.comments -%}
+      <hr>
+      <div class="comments-wrapper">
+        {%- include giscus.html -%}
+      </div>
+    {%- endif -%}
 </div>

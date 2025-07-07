@@ -6,6 +6,7 @@ excerpt: |
   쿠버네티스의 강점과 트레이드 오프를 고민하며 쿠버네티스 도입 이유를 공유한다.
 date: 2025-07-07
 update: 2025-07-07
+comments: true
 toc: true
 tags:
   - Kubernetes
