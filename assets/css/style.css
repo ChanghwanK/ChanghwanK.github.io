@@ -477,4 +477,6 @@ p { color: #bbb !important; line-height: 1.6; }
 
 .mermaid { display: flex; justify-content: center; }
 
+.post-meta-line:not(.post-list .post-meta-line) { margin-left: 0; margin-right: 0; }
+
 /*# sourceMappingURL=style.css.map */
