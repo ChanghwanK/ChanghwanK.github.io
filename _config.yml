@@ -1,13 +1,13 @@
 # Site settings
-title: CH Engineering
+title: Chnaghwan
 email: devchanghwan@gmail.com
 description: >- # this means to ignore newlines until "baseurl:"
-  Experience and Thinking about Software Development
+  소프트웨어 개발에 대한 경험과 지식을 이야기합니다.
 
 baseurl: "" # the subpath of your site, e.g. /blog
 url: "https://tech.k10n.me"
-github_username: devchanghwan
-linkedin_username: devchanghwan
+github_username: ChanghwanK
+linkedin_username: changhwan-kim-767139219
 # Build settings
 copyright: Copyright 2016-2023. Ju-won Lee. All rights reserved.
 
