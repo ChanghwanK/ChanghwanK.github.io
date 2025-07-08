@@ -475,4 +475,6 @@ p { color: #bbb !important; line-height: 1.6; }
 
 .toc-divider { border: 0; height: 1px; background-color: var(--minima-border-color-01, #e0e0e0); margin: 20px 0; }
 
+.mermaid { display: flex; justify-content: center; }
+
 /*# sourceMappingURL=style.css.map */
