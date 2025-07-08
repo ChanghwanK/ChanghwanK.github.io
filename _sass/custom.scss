@@ -356,3 +356,8 @@ p {
   display: flex;
   justify-content: center;
 }
+
+.post-meta-line:not(.post-list .post-meta-line) {
+  margin-left: 0;
+  margin-right: 0;
+}
