@@ -19,6 +19,7 @@ plugins:
 - jekyll-toc
 - jekyll-sitemap
 - jekyll-last-modified-at
+- jekyll-mermaid
 
 minima:
   skin: dark
@@ -27,3 +28,6 @@ minima:
   - about.md
   - archive.md
   - tags.md
+
+mermaid:
+  src: https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.js
