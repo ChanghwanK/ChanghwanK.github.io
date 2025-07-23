@@ -479,4 +479,6 @@ p { color: #bbb !important; line-height: 1.6; }
 
 .post-meta-line:not(.post-list .post-meta-line) { margin-left: 0; margin-right: 0; }
 
+code.language-plaintext.highlighter-rouge:not(pre code) { background-color: #2b2b2b !important; color: #EB5757 !important; }
+
 /*# sourceMappingURL=style.css.map */
