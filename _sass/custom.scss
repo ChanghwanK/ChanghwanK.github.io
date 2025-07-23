@@ -361,3 +361,11 @@ p {
   margin-left: 0;
   margin-right: 0;
 }
+
+// Inline code styling - blue theme (only for inline code, not code blocks)
+code.language-plaintext.highlighter-rouge:not(pre code) {
+  // background-color: #363b43 !important;
+  // color: #de5135 !important;
+  background-color: #2b2b2b !important;
+  color: #EB5757 !important;
+}
