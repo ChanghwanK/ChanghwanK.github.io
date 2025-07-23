@@ -48,9 +48,9 @@ ConfigMap과 Secret은 컨테이너화된 애플리케이션의 설정을 이미
     - `Opaque:` 가장 일반적인 타입으로 정해진 형식 없는 임의의 데이터를 저장한다.
     - `kubernetes.io/service-account-token:`  ServiceAccount의 자격증명을 저장하며, 자동으로 생성되고 파괴된다.
     - `kubernetes.io/dockerconfigjson:` Private Docker Registry 에 접근하기 위한 인증 정보를 `.docker/config.json` 형태로 저장한다. data 필드에 .dockerconfigjson 이라는 Key가 반드시 필요하다.
-    - `kubernetes.io/basic-auth:`
-    - `kubernetes.io/ssh-auth`
-    - `kubernetes.io/tls`
+    - `kubernetes.io/basic-auth:` 기본 인증을 위한 자격증명을 저장한다. data 필드에 username과 password 키가 필요하다.
+    - `kubernetes.io/ssh-auth:` SSH 키 페어를 저장한다. data 필드에 ssh-privatekey, ssh-publickey 키가 필요하다.
+    - `kubernetes.io/tls:` TLS 인증서와 개인키를 저장한다. Ingress TLS Offloading 등에 사용된다. data 필드에 tls.crt, tls.key 키가 반드시 필요하다. 
 - `data`
     - Secret의 실제 데이터를 key-value 형태로 저장하는 필드이다. value는 반드시 base64로 인코딩된 문자열이어야 하며, key 이름은 영문, 숫자, `-`,`_`,`.` 문자만 포할할 수 있다.
 - `stringdata`
