@@ -1,0 +1,39 @@
+.container {
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 4rem 2rem;
+}
+
+.text {
+    font-size: 1rem;
+    line-height: 1.8;
+    color: #333;
+    margin-bottom: 1rem;
+}
+
+.socialLinks {
+    margin-top: 3rem;
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+}
+
+.socialLink {
+    color: #666;
+    text-decoration: none;
+    transition: color 0.2s ease;
+}
+
+.socialLink:hover {
+    color: #333;
+}
+
+.socialLink svg {
+    display: block;
+}
+
+.username {
+    margin-top: 3rem;
+    color: #999;
+    font-size: 0.9rem;
+}
