@@ -8,7 +8,7 @@ const BlogPage = ({ data }) => {
   const posts = data.allMarkdownRemark.nodes
 
   return (
-    <Layout>
+    <Layout isWide={true}>
       <div className={styles.container}>
         <div className={styles.postList}>
           {posts.map(post => {

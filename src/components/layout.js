@@ -12,7 +12,7 @@ import { useStaticQuery, graphql } from "gatsby"
 import Header from "./header"
 import "./layout.css"
 
-const Layout = ({ children }) => {
+const Layout = ({ children, isWide }) => {
   const data = useStaticQuery(graphql`
     query SiteTitleQuery {
       site {
@@ -29,7 +29,7 @@ const Layout = ({ children }) => {
       <div
         style={{
           margin: `0 auto`,
-          maxWidth: `var(--size-content)`,
+          maxWidth: isWide ? `var(--size-content-wide)` : `var(--size-content)`,
           padding: `var(--size-gutter)`,
         }}
       >
