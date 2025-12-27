@@ -9,9 +9,9 @@
  */
 module.exports = {
   siteMetadata: {
-    title: `하나씩. 천천히. 꾸어나가며.`,
+    title: `Dev Rel`,
     description: `개인 기술 블로그`,
-    author: `@heumsi`,
+    author: `@changhwanK`,
     siteUrl: `https://heumsi.github.io/blog/`,
   },
   plugins: [

@@ -5,32 +5,30 @@ import Seo from "../components/seo"
 import * as styles from "./blog.module.css"
 
 const BlogPage = ({ data }) => {
-    const posts = data.allMarkdownRemark.nodes
+  const posts = data.allMarkdownRemark.nodes
 
-    return (
-        <Layout>
-            <div className={styles.container}>
-                <h1 className={styles.title}>글</h1>
+  return (
+    <Layout>
+      <div className={styles.container}>
+        <div className={styles.postList}>
+          {posts.map(post => {
+            const { title, date, description } = post.frontmatter
+            const { slug } = post.fields
 
-                <div className={styles.postList}>
-                    {posts.map(post => {
-                        const { title, date, description } = post.frontmatter
-                        const { slug } = post.fields
-
-                        return (
-                            <article key={slug} className={styles.postItem}>
-                                <Link to={slug} className={styles.postLink}>
-                                    <h2>{title}</h2>
-                                    <time>{date}</time>
-                                    <p>{description || post.excerpt}</p>
-                                </Link>
-                            </article>
-                        )
-                    })}
-                </div>
-            </div>
-        </Layout>
-    )
+            return (
+              <article key={slug} className={styles.postItem}>
+                <Link to={slug} className={styles.postLink}>
+                  <h2>{title}</h2>
+                  <time>{date}</time>
+                  <p>{description || post.excerpt}</p>
+                </Link>
+              </article>
+            )
+          })}
+        </div>
+      </div>
+    </Layout>
+  )
 }
 
 export const Head = () => <Seo title="Blog" />

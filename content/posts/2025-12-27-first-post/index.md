@@ -5,9 +5,12 @@ description: "Rolling Update vs Blue-Green Deployment"
 tags: ["kubernetes", "devops"]
 ---
 
-## 개요
+# 개요
 
 Kubernetes에서 무중단 배포를 위한...
+
+## Deployment
+ReplicaSet을 관리 
 
 ### Rolling Update
 

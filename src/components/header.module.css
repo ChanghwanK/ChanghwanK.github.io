@@ -1,43 +1,45 @@
 .header {
     border-bottom: 1px solid #f0f0f0;
-    padding: 1.5rem 2rem;
+    padding: 1.5rem 0;
 }
 
 .container {
-    max-width: 600px;
+    /* max-width를 더 좁게 강제 조정 */
+    max-width: 47rem;
     margin: 0 auto;
+    /* padding을 제거하거나 아주 작게 설정 */
+    padding: 0 0rem;
     display: flex;
     align-items: center;
     justify-content: space-between;
 }
 
 .title {
-    font-size: 1rem;
+    font-size: 1.3rem;
     text-decoration: none;
-    color: #333;
-    font-weight: 300;
-    letter-spacing: -0.01em;
-}
-
-.title:hover {
-    color: #000;
+    color: #333333;
+    font-weight: 600;
 }
 
 .nav {
     display: flex;
-    gap: 1.5rem;
+    gap: 1rem;
 }
 
 .navLink {
     text-decoration: none;
-    color: #666;
-    font-size: 0.9rem;
-    font-weight: 300;
+    font-size: 0.95rem;
+    font-weight: 500;
+    color: #333333;
     transition: color 0.2s ease;
 }
 
+.title:hover {
+    color: #663399;
+}
+
 .navLink:hover {
-    color: #333;
+    color: #663399;
 }
 
 .navLinkActive {

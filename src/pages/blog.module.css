@@ -1,7 +1,7 @@
 .container {
     max-width: 800px;
     margin: 0 auto;
-    padding: 4rem 2rem;
+    padding: 2rem 2rem;
 }
 
 .title {
@@ -14,7 +14,6 @@
 .postList {
     display: flex;
     flex-direction: column;
-    gap: 3rem;
 }
 
 .postItem {
@@ -37,9 +36,10 @@
 }
 
 .postLink h2 {
-    font-size: 1.5rem;
-    font-weight: 400;
+    font-size: 1.7rem;
+    font-weight: 600;
     margin-bottom: 0.5rem;
+    /** 마우스를 올렸을 때 자연스럽게 변화*/
     transition: color 0.2s ease;
 }
 
@@ -52,6 +52,6 @@
 
 .postLink p {
     color: #666;
-    line-height: 1.6;
+    line-height: 1.4;
     margin: 0;
 }
