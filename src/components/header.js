@@ -11,7 +11,7 @@ const Header = ({ siteTitle }) => (
 
       <nav className={styles.nav}>
         <Link
-          to="/"
+          to="/blog"  // "/" → "/blog"로 변경
           className={styles.navLink}
           activeClassName={styles.navLinkActive}
         >

@@ -1,18 +1,47 @@
-/**
- * Implement Gatsby's Node APIs in this file.
- *
- * See: https://www.gatsbyjs.com/docs/reference/config-files/gatsby-node/
- */
+const path = require(`path`)
+const { createFilePath } = require(`gatsby-source-filesystem`)
 
-/**
- * @type {import('gatsby').GatsbyNode['createPages']}
- */
-exports.createPages = async ({ actions }) => {
+// Slug 생성 (URL 경로)
+exports.onCreateNode = ({ node, actions, getNode }) => {
+  const { createNodeField } = actions
+
+  if (node.internal.type === `MarkdownRemark`) {
+    const slug = createFilePath({ node, getNode, basePath: `posts` })
+
+    createNodeField({
+      node,
+      name: `slug`,
+      value: slug,
+    })
+  }
+}
+
+// 페이지 동적 생성
+exports.createPages = async ({ graphql, actions }) => {
   const { createPage } = actions
-  createPage({
-    path: "/using-dsg",
-    component: require.resolve("./src/templates/using-dsg.js"),
-    context: {},
-    defer: true,
+
+  const result = await graphql(`
+    query {
+      allMarkdownRemark {
+        nodes {
+          fields {
+            slug
+          }
+        }
+      }
+    }
+  `)
+
+  const posts = result.data.allMarkdownRemark.nodes
+
+  // 각 포스트마다 페이지 생성
+  posts.forEach(post => {
+    createPage({
+      path: post.fields.slug,
+      component: path.resolve(`./src/templates/blog-post.js`),
+      context: {
+        slug: post.fields.slug,
+      },
+    })
   })
 }

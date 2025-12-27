@@ -1,0 +1,57 @@
+.container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 4rem 2rem;
+}
+
+.title {
+    font-size: 2rem;
+    font-weight: 300;
+    margin-bottom: 3rem;
+    color: #333;
+}
+
+.postList {
+    display: flex;
+    flex-direction: column;
+    gap: 3rem;
+}
+
+.postItem {
+    border-bottom: 1px solid #f0f0f0;
+    padding-bottom: 2rem;
+}
+
+.postItem:last-child {
+    border-bottom: none;
+}
+
+.postLink {
+    text-decoration: none;
+    color: inherit;
+    display: block;
+}
+
+.postLink:hover h2 {
+    color: #663399;
+}
+
+.postLink h2 {
+    font-size: 1.5rem;
+    font-weight: 400;
+    margin-bottom: 0.5rem;
+    transition: color 0.2s ease;
+}
+
+.postLink time {
+    font-size: 0.9rem;
+    color: #999;
+    display: block;
+    margin-bottom: 0.75rem;
+}
+
+.postLink p {
+    color: #666;
+    line-height: 1.6;
+    margin: 0;
+}
