@@ -1,0 +1,45 @@
+.header {
+    border-bottom: 1px solid #f0f0f0;
+    padding: 1.5rem 2rem;
+}
+
+.container {
+    max-width: 600px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.title {
+    font-size: 1rem;
+    text-decoration: none;
+    color: #333;
+    font-weight: 300;
+    letter-spacing: -0.01em;
+}
+
+.title:hover {
+    color: #000;
+}
+
+.nav {
+    display: flex;
+    gap: 1.5rem;
+}
+
+.navLink {
+    text-decoration: none;
+    color: #666;
+    font-size: 0.9rem;
+    font-weight: 300;
+    transition: color 0.2s ease;
+}
+
+.navLink:hover {
+    color: #333;
+}
+
+.navLinkActive {
+    color: #333;
+}
