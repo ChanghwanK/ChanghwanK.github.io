@@ -75,7 +75,8 @@
     margin: 1.5rem 0;
     padding: 1rem 1.5rem;
     /* border-left: 4px solid #8e70df; */
-    border-left: 4px solid #663399;
+    /* border-left: 4px solid #663399; */
+    border-left: 3px solid #e6e6e6;
     /* 강조 색상 (보라색) */
     background-color: #f9f9f9;
     /* 연한 회색 배경 */
