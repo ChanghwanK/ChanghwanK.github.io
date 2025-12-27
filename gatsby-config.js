@@ -40,10 +40,20 @@ module.exports = {
               maxWidth: 800,
             },
           },
+          {
+            resolve: `gatsby-remark-autolink-headers`,
+            options: {
+              icon: false,
+              className: `anchor-header`,
+              maintainCase: false,
+              removeAccents: true,
+            },
+          },
           `gatsby-remark-prismjs`, // 코드 하이라이팅
         ],
       },
     },
+    `gatsby-plugin-mdx`, // MDX plugin added
     `gatsby-transformer-sharp`,
     `gatsby-plugin-sharp`,
     {

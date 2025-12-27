@@ -1,4 +1,5 @@
 import * as React from "react"
+import { useEffect, useState } from "react"
 import { Link, graphql } from "gatsby"
 import Layout from "../components/layout"
 import Seo from "../components/seo"
@@ -7,9 +8,27 @@ import * as styles from "./blog-post.module.css"
 const BlogPostTemplate = ({ data }) => {
     const post = data.markdownRemark
     const { title, date, tags } = post.frontmatter
+    const [tocVisible, setTocVisible] = useState(false)
+
+    useEffect(() => {
+        const handleScroll = () => {
+            if (window.scrollY > 300) {
+                setTocVisible(true)
+            } else {
+                setTocVisible(false)
+            }
+        }
+
+        window.addEventListener("scroll", handleScroll)
+        return () => window.removeEventListener("scroll", handleScroll)
+    }, [])
 
     return (
         <Layout>
+            <aside
+                className={`${styles.toc} ${tocVisible ? styles.tocVisible : ""}`}
+                dangerouslySetInnerHTML={{ __html: post.tableOfContents }}
+            />
             <article className={styles.article}>
                 <header className={styles.header}>
                     <h1>{title}</h1>
@@ -54,6 +73,7 @@ export const query = graphql`
         tags
       }
       excerpt
+      tableOfContents
     }
   }
 `
