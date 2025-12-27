@@ -12,15 +12,28 @@ const BlogPage = ({ data }) => {
       <div className={styles.container}>
         <div className={styles.postList}>
           {posts.map(post => {
-            const { title, date, description } = post.frontmatter
+            const { title, date, description, tags, subtitle } = post.frontmatter
             const { slug } = post.fields
 
             return (
               <article key={slug} className={styles.postItem}>
                 <Link to={slug} className={styles.postLink}>
                   <h2>{title}</h2>
-                  <time>{date}</time>
-                  <p>{description || post.excerpt}</p>
+                  <h3>{description || post.excerpt}</h3>
+                  {/* 날짜와 태그를 감싸는 컨테이너 추가 */}
+                  <div className={styles.metaContainer}>
+                    <time className={styles.date}>{date}</time>
+
+                    {tags && tags.length > 0 && (
+                      <div className={styles.tags}>
+                        {tags.map(tag => (
+                          <span key={tag} className={styles.tag}>
+                            #{tag}
+                          </span>
+                        ))}
+                      </div>
+                    )}
+                  </div>
                 </Link>
               </article>
             )

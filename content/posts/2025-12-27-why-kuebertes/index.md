@@ -1,5 +1,6 @@
 ---
 title: "Kubernetes ConfigMap, Secret 깊게 이해하기"
+description: "kuberntes configmap"
 date: 2025-07-16
 tags:
   - Kubernetes
@@ -48,7 +49,6 @@ ConfigMap과 Secret은 컨테이너화된 애플리케이션의 설정을 이미
     - data 필드의 편의성을 위한 필드이다. 여기에 key-value를 일반 문자열로 입력하면 api server가 이를 자동으로 base64 인코딩하여 data 필드에 반영한다. 이 필드는 쓰기 전용 이며, `kubectl get secret -o yaml`  등으로 조회하면 `stringData` 필드는 보이지 않고 data 필드에 인코딩된 값만 나타난다.
 
 # 왜 Secret과 Config를 분리하였을까?
-
 > Config나 Secret은 Pod 입장에서 주입받는 방법이나 활용 방법이 크게 다르지 않다. 그렇다면 쿠버네티스는 왜 두 Workload를 분리하여 운영할까?
 > 
 
@@ -147,9 +147,11 @@ spec:
   restartPolicy: Never
 ```
 
-![image.png](/assets/img/config-secret.png)
+![image.png](./config-secret.png)
 
-## 그렇다면, 왜 두 가지 방식을 지원할까?
+# 테스트
+
+## **그렇다면, 왜 두 가지 방식을 지원할까?**
 
 결론부터 말하면, 이는 **'예측 가능한 안정성(Immutability)'과 '운영상의 유연성(Dynamic Update)'**이라는, 서로 다른 두 설계 목표를 모두 지원하기 위함이다.
 

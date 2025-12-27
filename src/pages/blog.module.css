@@ -31,27 +31,51 @@
     display: block;
 }
 
+
 .postLink:hover h2 {
     color: #663399;
 }
 
 .postLink h2 {
     font-size: 1.7rem;
-    font-weight: 600;
-    margin-bottom: 0.5rem;
-    /** 마우스를 올렸을 때 자연스럽게 변화*/
+    font-weight: 350;
+    margin-bottom: -0.8rem;
     transition: color 0.2s ease;
 }
 
-.postLink time {
-    font-size: 0.9rem;
-    color: #999;
-    display: block;
+
+.postLink h3 {
+    font-size: 1.1rem;
+    font-weight: 350;
+}
+
+.metaContainer {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
     margin-bottom: 0.75rem;
+}
+
+.date {
+    font-size: 0.8rem;
+    color: #999;
+    margin: 0;
+}
+
+.tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+
+.tag {
+    font-size: 0.8rem;
+    color: #999;
+    font-weight: normal;
 }
 
 .postLink p {
     color: #666;
-    line-height: 1.4;
+    line-height: 1.6;
     margin: 0;
 }
