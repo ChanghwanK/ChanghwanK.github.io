@@ -18,7 +18,7 @@ const Header = ({ siteTitle }) => (
           Posts
         </Link>
         <Link
-          to="/log"
+          to="/about"
           className={styles.navLink}
           activeClassName={styles.navLinkActive}
         >

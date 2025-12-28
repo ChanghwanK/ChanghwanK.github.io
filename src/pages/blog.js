@@ -20,7 +20,6 @@ const BlogPage = ({ data }) => {
                 <Link to={slug} className={styles.postLink}>
                   <h2>{title}</h2>
                   <h3>{description || post.excerpt}</h3>
-                  {/* 날짜와 태그를 감싸는 컨테이너 추가 */}
                   <div className={styles.metaContainer}>
                     <time className={styles.date}>{date}</time>
 
@@ -50,6 +49,7 @@ export const query = graphql`
   query {
     allMarkdownRemark(
       sort: { frontmatter: { date: DESC }}
+      filter: { frontmatter: {date: { ne: null }}}
     ) {
       nodes {
         fields {

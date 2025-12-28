@@ -7,7 +7,7 @@ import * as styles from "./blog-post.module.css"
 
 const BlogPostTemplate = ({ data }) => {
     const post = data.markdownRemark
-    const { title, date, tags } = post.frontmatter
+    const { title, description, date, tags } = post.frontmatter
     const [tocVisible, setTocVisible] = useState(false)
 
     useEffect(() => {
@@ -31,17 +31,21 @@ const BlogPostTemplate = ({ data }) => {
             />
             <article className={styles.article}>
                 <header className={styles.header}>
-                    <h1>{title}</h1>
-                    <time>{date}</time>
-                    {tags && (
-                        <div className={styles.tags}>
-                            {tags.map(tag => (
-                                <span key={tag} className={styles.tag}>
-                                    #{tag}
-                                </span>
-                            ))}
-                        </div>
-                    )}
+                    <h1 className={styles.title}>{title}</h1>
+                    {description && <h2 className={styles.subtitle}>{description}</h2>}
+
+                    <div className={styles.meta}>
+                        <time className={styles.date}>{date}</time>
+                        {tags && (
+                            <div className={styles.tags}>
+                                {tags.map(tag => (
+                                    <span key={tag} className={styles.tag}>
+                                        #{tag}
+                                    </span>
+                                ))}
+                            </div>
+                        )}
+                    </div>
                 </header>
 
                 <div
