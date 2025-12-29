@@ -55,35 +55,26 @@
 
 .content {
     line-height: 1.8;
-    color: #333;
     font-family: sans-serif;
+    color: #454545;
     font-family: var(--font-sans);
-    font-weight: 450;
+    font-weight: 400;
 }
 
 .content p {
-    max-width: fit-content;
+    max-width: 100%;
 }
 
 .content h1 {
-    margin-top: 2rem;
     margin-bottom: 1rem;
-    font-size: 1.9rem;
-    font-weight: bold;
 }
 
 .content h2 {
-    margin-top: 3rem;
     margin-bottom: 0.6rem;
-    font-size: 1.7rem;
-    font-weight: bold;
 }
 
 .content h3 {
-    margin-top: 2rem;
     margin-bottom: 0.5rem;
-    font-size: 1.3rem;
-    font-weight: bold;
 }
 
 .content ul li,
@@ -98,8 +89,8 @@
 }
 
 .content blockquote {
-    margin: 1.5rem 0;
-    padding: 1rem 1.5rem;
+    margin: 1rem 0;
+    padding: 0.5rem 1.5rem;
     border-left: 3px solid #e6e6e6;
     background-color: #f9f9f9;
     color: #555;
@@ -111,10 +102,6 @@
     margin-bottom: 0;
 }
 
-.content p {
-    margin-bottom: 1.5rem;
-}
-
 .content code {
     background: #f5f5f5;
     padding: 0.2rem 0.2rem;
@@ -122,18 +109,30 @@
     font-size: 0.9em;
 }
 
-.content pre {
-    background: #282c34;
-    padding: 1.5rem;
-    border-radius: 8px;
-    overflow-x: auto;
-    margin: 2rem 0;
+/* gatsby-remark-highlight-code 스타일 오버라이드 */
+/* deckgo-highlight-code 태그 또는 내부 pre/code 요소 타겟팅 */
+:global(.deckgo-highlight-code-carbon) {
+    font-size: 0.8rem;
+    /* 원하는 크기로 조절 (예: 14px 또는 0.85rem) */
+    line-height: 1.6;
+    /* 줄 간격 조절 */
+    margin: 1.5rem 0;
+    /* 위아래 여백 */
 }
 
-.content pre code {
-    background: none;
-    padding: 0;
-    color: #abb2bf;
+/* gatsby-remark-images가 생성하는 figure 태그 */
+.content figure {
+    margin: 2rem 0;
+    text-align: center;
+}
+
+/* 캡션 스타일 */
+.content figcaption {
+    margin-top: 0.5rem;
+    font-size: 0.8rem;
+    color: #888;
+    text-align: center;
+    line-height: 1;
 }
 
 .footer {
@@ -146,7 +145,7 @@
 .toc {
     position: fixed;
     top: 150px;
-    left: calc(50% - 400px - 420px);
+    left: calc(50% - 400px - 500px);
     /* Center - half content - gap (closer) - toc width */
     width: 200px;
     opacity: 0;
@@ -169,6 +168,15 @@
     list-style: none;
     padding: 0;
     margin: 0;
+}
+
+.toc code {
+    background-color: transparent;
+    color: inherit;
+    font-family: inherit;
+    padding: 0;
+    border-radius: 0;
+    font-size: inherit;
 }
 
 .toc li {

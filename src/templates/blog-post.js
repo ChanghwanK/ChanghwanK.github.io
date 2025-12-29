@@ -1,6 +1,7 @@
 import * as React from "react"
-import { useEffect, useState } from "react"
+import { useEffect, useMemo, useState } from "react"
 import { Link, graphql } from "gatsby"
+import DOMPurify from "isomorphic-dompurify"
 import Layout from "../components/layout"
 import Seo from "../components/seo"
 import * as styles from "./blog-post.module.css"
@@ -10,25 +11,45 @@ const BlogPostTemplate = ({ data }) => {
     const { title, description, date, tags } = post.frontmatter
     const [tocVisible, setTocVisible] = useState(false)
 
+    const sanitizedHtml = useMemo(() => DOMPurify.sanitize(post.html ?? ""), [post.html])
+    const sanitizedToc = useMemo(
+        () => DOMPurify.sanitize(post.tableOfContents ?? ""),
+        [post.tableOfContents]
+    )
+    const hasToc = sanitizedToc.trim().length > 0
+    const isBrowser = typeof window !== "undefined"
+
     useEffect(() => {
+        if (!isBrowser || !hasToc) return undefined
+
+        let frameId = null
         const handleScroll = () => {
-            if (window.scrollY > 300) {
-                setTocVisible(true)
-            } else {
-                setTocVisible(false)
-            }
+            if (frameId !== null) return
+            frameId = window.requestAnimationFrame(() => {
+                setTocVisible(window.scrollY > 300)
+                frameId = null
+            })
         }
 
-        window.addEventListener("scroll", handleScroll)
-        return () => window.removeEventListener("scroll", handleScroll)
-    }, [])
+        window.addEventListener("scroll", handleScroll, { passive: true })
+        handleScroll()
+
+        return () => {
+            window.removeEventListener("scroll", handleScroll)
+            if (frameId !== null) {
+                window.cancelAnimationFrame(frameId)
+            }
+        }
+    }, [hasToc, isBrowser])
 
     return (
         <Layout>
-            <aside
-                className={`${styles.toc} ${tocVisible ? styles.tocVisible : ""}`}
-                dangerouslySetInnerHTML={{ __html: post.tableOfContents }}
-            />
+            {hasToc && (
+                <aside
+                    className={`${styles.toc} ${tocVisible ? styles.tocVisible : ""}`}
+                    dangerouslySetInnerHTML={{ __html: sanitizedToc }}
+                />
+            )}
             <article className={styles.article}>
                 <header className={styles.header}>
                     <h1 className={styles.title}>{title}</h1>
@@ -50,7 +71,7 @@ const BlogPostTemplate = ({ data }) => {
 
                 <div
                     className={styles.content}
-                    dangerouslySetInnerHTML={{ __html: post.html }}
+                    dangerouslySetInnerHTML={{ __html: sanitizedHtml }}
                 />
 
                 <footer className={styles.footer}>

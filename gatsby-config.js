@@ -38,6 +38,14 @@ module.exports = {
             resolve: `gatsby-remark-images`,
             options: {
               maxWidth: 800,
+              showCaptions: true,
+            },
+          },
+          {
+            resolve: `gatsby-remark-highlight-code`,
+            options: {
+              terminal: "carbon",
+              theme: "one-dark",
             },
           },
           {
@@ -49,11 +57,10 @@ module.exports = {
               removeAccents: true,
             },
           },
-          `gatsby-remark-prismjs`, // 코드 하이라이팅
         ],
       },
     },
-    `gatsby-plugin-mdx`, // MDX plugin added
+    `gatsby-plugin-mdx`,
     `gatsby-transformer-sharp`,
     `gatsby-plugin-sharp`,
     {
