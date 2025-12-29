@@ -149,8 +149,6 @@ spec:
 
 ![image.png](./config-secret.png)
 
-# 테스트
-
 ## **그렇다면, 왜 두 가지 방식을 지원할까?**
 
 결론부터 말하면, 이는 **'예측 가능한 안정성(Immutability)'과 '운영상의 유연성(Dynamic Update)'**이라는, 서로 다른 두 설계 목표를 모두 지원하기 위함이다.

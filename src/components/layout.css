@@ -42,7 +42,6 @@ body {
   color: var(--color-text);
   font-family: sans-serif;
   font-family: var(--font-sans);
-  font-weight: normal;
   margin: 0;
   word-wrap: break-word;
 }
