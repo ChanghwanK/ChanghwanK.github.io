@@ -85,7 +85,8 @@
 /* Pagination Styles */
 .pagination {
     display: flex;
-    justify-content: center;
+    justify-content: flex-end;
+    /* 우측 정렬 */
     list-style: none;
     padding: 0;
     margin-top: 3rem;
@@ -94,26 +95,53 @@
 
 .paginationLink {
     text-decoration: none;
-    color: #333;
-    padding: 0.5rem 1rem;
-    border: 1px solid #eee;
-    border-radius: 4px;
+    color: #555;
+
+    /* 원형 버튼 스타일 */
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    /* 동그라미 */
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border: 1px solid #e0e0e0;
     font-size: 0.9rem;
     transition: all 0.2s ease;
+    background-color: white;
+}
+
+/* Prev, Next 버튼은 원형보다는 둥근 사각형이 나을 수 있어서 취향껏 조정 가능하지만, 
+   일단 통일성을 위해 텍스트 길이에 따라 늘어나도록 처리하려면 아래 width: auto 추가 */
+.paginationLink:first-child,
+.paginationLink:last-child {
+    width: auto;
+    padding: 0 1rem;
+    border-radius: 20px;
 }
 
 .paginationLink:hover {
-    background-color: #f9f9f9;
-    border-color: #ddd;
+    background-color: #f1f8e9;
+    /* 연한 연두색 배경 */
+    border-color: #81c784;
+    /* 연한 연두색 테두리 */
+    color: #2e7d32;
+    /* 짙은 초록색 텍스트 */
 }
 
 .activeLink {
-    background-color: #663399;
+    background-color: #70b974;
+    /* 중간 톤의 연두색 (메인) */
     color: white;
-    border-color: #663399;
+    border-color: #66bb6a;
+    font-weight: bold;
 }
 
 .activeLink:hover {
-    background-color: #5a2d85;
+    background-color: #4caf50;
+    /* 조금 더 진한 연두색 */
     color: white;
+    border-color: #4caf50;
 }
