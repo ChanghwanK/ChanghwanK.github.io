@@ -12,7 +12,7 @@ module.exports = {
     title: `어제보다 한 걸음 더.`,
     description: `개인 기술 블로그`,
     author: `@changhwanK`,
-    siteUrl: `https://heumsi.github.io/blog/`,
+    siteUrl: `https://changhwanK.github.io/`,
   },
   plugins: [
     `gatsby-plugin-image`,
