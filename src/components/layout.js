@@ -11,8 +11,8 @@ import { useStaticQuery, graphql } from "gatsby"
 
 import Header from "./header"
 import "./layout.css"
-import { defineCustomElements as deckDeckGoHighlightElement } from "@deckdeckgo/highlight-code/dist/loader";
-deckDeckGoHighlightElement();
+// import { defineCustomElements as deckDeckGoHighlightElement } from "@deckdeckgo/highlight-code/dist/loader";
+// deckDeckGoHighlightElement();
 
 const Layout = ({ children, isWide }) => {
   const data = useStaticQuery(graphql`
@@ -28,15 +28,7 @@ const Layout = ({ children, isWide }) => {
   return (
     <>
       <Header siteTitle={data.site.siteMetadata?.title || `Title`} />
-      <div
-        style={{
-          margin: `0 auto`,
-          maxWidth: isWide ? `var(--size-content-wide)` : `var(--size-content)`,
-          padding: `var(--size-gutter)`,
-        }}
-      >
-        <main>{children}</main>
-      </div>
+      <main>{children}</main>
     </>
   )
 }

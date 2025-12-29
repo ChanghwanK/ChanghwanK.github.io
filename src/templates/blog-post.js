@@ -1,5 +1,5 @@
 import * as React from "react"
-import { useEffect, useMemo, useState } from "react"
+import { useEffect, useMemo, useState, useRef } from "react"
 import { Link, graphql } from "gatsby"
 import DOMPurify from "isomorphic-dompurify"
 import Layout from "../components/layout"
@@ -10,8 +10,15 @@ const BlogPostTemplate = ({ data }) => {
     const post = data.markdownRemark
     const { title, description, date, tags } = post.frontmatter
     const [tocVisible, setTocVisible] = useState(false)
+    const contentRef = useRef(null)
 
-    const sanitizedHtml = useMemo(() => DOMPurify.sanitize(post.html ?? ""), [post.html])
+    const sanitizedHtml = useMemo(() => {
+        // Web Component 태그를 허용하도록 설정
+        return DOMPurify.sanitize(post.html ?? "", {
+            ADD_TAGS: ['deckgo-highlight-code'],
+            ADD_ATTR: ['slot', 'terminal', 'theme', 'language', 'highlight-lines']
+        })
+    }, [post.html])
     const sanitizedToc = useMemo(
         () => DOMPurify.sanitize(post.tableOfContents ?? ""),
         [post.tableOfContents]
@@ -42,6 +49,22 @@ const BlogPostTemplate = ({ data }) => {
         }
     }, [hasToc, isBrowser])
 
+    // Web Component 초기화
+    useEffect(() => {
+        if (!isBrowser) return
+
+        const initWebComponents = async () => {
+            try {
+                const { defineCustomElements } = await import('@deckdeckgo/highlight-code/dist/loader')
+                await defineCustomElements()
+            } catch (error) {
+                console.error('Failed to load highlight-code web component:', error)
+            }
+        }
+
+        initWebComponents()
+    }, [isBrowser, sanitizedHtml])
+
     return (
         <Layout>
             {hasToc && (
@@ -70,6 +93,7 @@ const BlogPostTemplate = ({ data }) => {
                 </header>
 
                 <div
+                    ref={contentRef}
                     className={styles.content}
                     dangerouslySetInnerHTML={{ __html: sanitizedHtml }}
                 />

@@ -4,6 +4,10 @@
  * See: https://www.gatsbyjs.com/docs/reference/config-files/gatsby-ssr/
  */
 
+const { defineCustomElements: deckDeckGoHighlightElement } = require("@deckdeckgo/highlight-code/dist/loader")
+
+deckDeckGoHighlightElement()
+
 /**
  * @type {import('gatsby').GatsbySSR['onRenderBody']}
  */
