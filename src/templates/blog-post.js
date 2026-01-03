@@ -1,7 +1,6 @@
 import * as React from "react"
-import { useEffect, useMemo, useState, useRef } from "react"
+import { useEffect, useState, useRef } from "react"
 import { Link, graphql } from "gatsby"
-import DOMPurify from "isomorphic-dompurify"
 import Layout from "../components/layout"
 import Seo from "../components/seo"
 import * as styles from "./blog-post.module.css"
@@ -12,18 +11,7 @@ const BlogPostTemplate = ({ data }) => {
     const [tocVisible, setTocVisible] = useState(false)
     const contentRef = useRef(null)
 
-    const sanitizedHtml = useMemo(() => {
-        // Web Component 태그를 허용하도록 설정
-        return DOMPurify.sanitize(post.html ?? "", {
-            ADD_TAGS: ['deckgo-highlight-code'],
-            ADD_ATTR: ['slot', 'terminal', 'theme', 'language', 'highlight-lines']
-        })
-    }, [post.html])
-    const sanitizedToc = useMemo(
-        () => DOMPurify.sanitize(post.tableOfContents ?? ""),
-        [post.tableOfContents]
-    )
-    const hasToc = sanitizedToc.trim().length > 0
+    const hasToc = (post.tableOfContents ?? "").trim().length > 0
     const isBrowser = typeof window !== "undefined"
 
     useEffect(() => {
@@ -63,14 +51,14 @@ const BlogPostTemplate = ({ data }) => {
         }
 
         initWebComponents()
-    }, [isBrowser, sanitizedHtml])
+    }, [isBrowser])
 
     return (
         <Layout>
             {hasToc && (
                 <aside
                     className={`${styles.toc} ${tocVisible ? styles.tocVisible : ""}`}
-                    dangerouslySetInnerHTML={{ __html: sanitizedToc }}
+                    dangerouslySetInnerHTML={{ __html: post.tableOfContents }}
                 />
             )}
             <article className={styles.article}>
@@ -95,7 +83,7 @@ const BlogPostTemplate = ({ data }) => {
                 <div
                     ref={contentRef}
                     className={styles.content}
-                    dangerouslySetInnerHTML={{ __html: sanitizedHtml }}
+                    dangerouslySetInnerHTML={{ __html: post.html }}
                 />
 
                 <footer className={styles.footer}>
