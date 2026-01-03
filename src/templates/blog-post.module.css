@@ -14,12 +14,11 @@
     font-size: 2rem;
     font-weight: bold;
     margin-bottom: -0.5rem;
-    color: #333;
     line-height: 1.2;
 }
 
 .subtitle {
-    font-size: 1.2rem;
+    font-size: 1.4rem;
     color: #666;
     font-weight: 400;
     margin-bottom: 1.5rem;
@@ -145,9 +144,8 @@
 .toc {
     position: fixed;
     top: 150px;
-    left: calc(50% - 400px - 500px);
-    /* Center - half content - gap (closer) - toc width */
-    width: 200px;
+    left: calc(50% - 400px - 400px);
+    width: 300px;
     opacity: 0;
     visibility: hidden;
     transition: opacity 0.3s ease, transform 0.3s ease, visibility 0.3s;
