@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charSet="utf-8"/><meta http-equiv="x-ua-compatible" content="ie=edge"/><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"/><meta name="generator" content="Gatsby 5.15.0"/><meta name="description" content="kuberntes configmap" data-gatsby-head="true"/><meta property="og:title" content="Kubernetes ConfigMap, Secret 깊게 이해하기" data-gatsby-head="true"/><meta property="og:description" content="kuberntes configmap" data-gatsby-head="true"/><meta property="og:type" content="website" data-gatsby-head="true"/><meta name="twitter:card" content="summary" data-gatsby-head="true"/><meta name="twitter:creator" content="@changhwanK" data-gatsby-head="true"/><meta name="twitter:title" content="Kubernetes ConfigMap, Secret 깊게 이해하기" data-gatsby-head="true"/><meta name="twitter:description" content="kuberntes configmap" data-gatsby-head="true"/><style data-href="/styles.52197b355a5027b66e36.css" data-identity="gatsby-global-css">code[class*=language-],pre[class*=language-]{background:#282c34;color:#abb2bf;direction:ltr;font-family:Fira Code,Fira Mono,Menlo,Consolas,DejaVu Sans Mono,monospace;-webkit-hyphens:none;hyphens:none;line-height:1.5;tab-size:2;text-align:left;text-shadow:0 1px rgba(0,0,0,.3);white-space:pre;word-break:normal;word-spacing:normal}code[class*=language-] ::selection,code[class*=language-]::selection,pre[class*=language-] ::selection{background:#3e4451;color:inherit;text-shadow:none}pre[class*=language-]{border-radius:.3em;margin:.5em 0;overflow:auto;padding:1em}:not(pre)>code[class*=language-]{border-radius:.3em;padding:.2em .3em;white-space:normal}@media print{code[class*=language-],pre[class*=language-]{text-shadow:none}}.token.cdata,.token.comment,.token.prolog{color:#5c6370}.token.doctype,.token.entity,.token.punctuation{color:#abb2bf}.token.atrule,.token.attr-name,.token.boolean,.token.class-name,.token.constant,.token.number{color:#d19a66}.token.keyword{color:#c678dd}.token.deleted,.token.important,.token.property,.token.symbol,.token.tag{color:#e06c75}.token.attr-value,.token.attr-value>.token.punctuation,.token.builtin,.token.char,.token.inserted,.token.regex,.token.selector,.token.string{color:#98c379}.token.function,.token.operator,.token.variable{color:#61afef}.token.url{color:#56b6c2}.token.attr-value>.token.punctuation.attr-equals,.token.special-attr>.token.attr-value>.token.value.css{color:#abb2bf}.language-css .token.selector{color:#e06c75}.language-css .token.property{color:#abb2bf}.language-css .token.function,.language-css .token.url>.token.function{color:#56b6c2}.language-css .token.url>.token.string.url{color:#98c379}.language-css .token.atrule .token.rule,.language-css .token.important,.language-javascript .token.operator{color:#c678dd}.language-javascript .token.template-string>.token.interpolation>.token.interpolation-punctuation.punctuation{color:#be5046}.language-json .token.operator{color:#abb2bf}.language-json .token.null.keyword{color:#d19a66}.language-markdown .token.url,.language-markdown .token.url-reference.url>.token.string,.language-markdown .token.url>.token.operator{color:#abb2bf}.language-markdown .token.url>.token.content{color:#61afef}.language-markdown .token.url-reference.url,.language-markdown .token.url>.token.url{color:#56b6c2}.language-markdown .token.blockquote.punctuation,.language-markdown .token.hr.punctuation{color:#5c6370;font-style:italic}.language-markdown .token.code-snippet{color:#98c379}.language-markdown .token.bold .token.content{color:#d19a66}.language-markdown .token.italic .token.content{color:#c678dd}.language-markdown .token.list.punctuation,.language-markdown .token.strike .token.content,.language-markdown .token.strike .token.punctuation,.language-markdown .token.title.important>.token.punctuation{color:#e06c75}.token.bold{font-weight:700}.token.comment,.token.italic{font-style:italic}.token.entity{cursor:help}.token.namespace{opacity:.8}.token.token.cr:before,.token.token.lf:before,.token.token.space:before,.token.token.tab:not(:empty):before{color:rgba(171,178,191,.15);text-shadow:none}div.code-toolbar>.toolbar.toolbar>.toolbar-item{margin-right:.4em}div.code-toolbar>.toolbar.toolbar>.toolbar-item>a,div.code-toolbar>.toolbar.toolbar>.toolbar-item>button,div.code-toolbar>.toolbar.toolbar>.toolbar-item>span{background:#3a3f4b;border-radius:.3em;color:#828997;padding:.1em .4em}div.code-toolbar>.toolbar.toolbar>.toolbar-item>a:focus,div.code-toolbar>.toolbar.toolbar>.toolbar-item>a:hover,div.code-toolbar>.toolbar.toolbar>.toolbar-item>button:focus,div.code-toolbar>.toolbar.toolbar>.toolbar-item>button:hover,div.code-toolbar>.toolbar.toolbar>.toolbar-item>span:focus,div.code-toolbar>.toolbar.toolbar>.toolbar-item>span:hover{background:#3e4451;color:#abb2bf}.line-highlight.line-highlight{background:rgba(153,187,255,.04)}.line-highlight.line-highlight:before,.line-highlight.line-highlight[data-end]:after{background:#3a3f4b;border-radius:.3em;box-shadow:0 2px 0 0 rgba(0,0,0,.2);color:#abb2bf;padding:.1em .6em}pre[id].linkable-line-numbers.linkable-line-numbers span.line-numbers-rows>span:hover:before{background-color:rgba(153,187,255,.04)}.command-line .command-line-prompt,.line-numbers.line-numbers .line-numbers-rows{border-right-color:rgba(171,178,191,.15)}.command-line .command-line-prompt>span:before,.line-numbers .line-numbers-rows>span:before{color:#636d83}.rainbow-braces .token.token.punctuation.brace-level-1,.rainbow-braces .token.token.punctuation.brace-level-5,.rainbow-braces .token.token.punctuation.brace-level-9{color:#e06c75}.rainbow-braces .token.token.punctuation.brace-level-10,.rainbow-braces .token.token.punctuation.brace-level-2,.rainbow-braces .token.token.punctuation.brace-level-6{color:#98c379}.rainbow-braces .token.token.punctuation.brace-level-11,.rainbow-braces .token.token.punctuation.brace-level-3,.rainbow-braces .token.token.punctuation.brace-level-7{color:#61afef}.rainbow-braces .token.token.punctuation.brace-level-12,.rainbow-braces .token.token.punctuation.brace-level-4,.rainbow-braces .token.token.punctuation.brace-level-8{color:#c678dd}pre.diff-highlight>code .token.token.deleted:not(.prefix),pre>code.diff-highlight .token.token.deleted:not(.prefix){background-color:rgba(255,82,102,.15)}pre.diff-highlight>code .token.token.deleted:not(.prefix) ::selection,pre.diff-highlight>code .token.token.deleted:not(.prefix)::selection,pre>code.diff-highlight .token.token.deleted:not(.prefix) ::selection,pre>code.diff-highlight .token.token.deleted:not(.prefix)::selection{background-color:rgba(251,86,105,.25)}pre.diff-highlight>code .token.token.inserted:not(.prefix),pre>code.diff-highlight .token.token.inserted:not(.prefix){background-color:rgba(25,255,91,.15)}pre.diff-highlight>code .token.token.inserted:not(.prefix) ::selection,pre.diff-highlight>code .token.token.inserted:not(.prefix)::selection,pre>code.diff-highlight .token.token.inserted:not(.prefix) ::selection,pre>code.diff-highlight .token.token.inserted:not(.prefix)::selection{background-color:rgba(56,224,98,.25)}.prism-previewer-gradient.prism-previewer-gradient div,.prism-previewer.prism-previewer:before{border-color:#262931}.prism-previewer-color.prism-previewer-color:before,.prism-previewer-easing.prism-previewer-easing:before,.prism-previewer-gradient.prism-previewer-gradient div{border-radius:.3em}.prism-previewer.prism-previewer:after{border-top-color:#262931}.prism-previewer-flipped.prism-previewer-flipped.after{border-bottom-color:#262931}.prism-previewer-angle.prism-previewer-angle:before,.prism-previewer-easing.prism-previewer-easing,.prism-previewer-time.prism-previewer-time:before{background:#31363f}.prism-previewer-angle.prism-previewer-angle circle,.prism-previewer-time.prism-previewer-time circle{stroke:#abb2bf;stroke-opacity:1}.prism-previewer-easing.prism-previewer-easing circle,.prism-previewer-easing.prism-previewer-easing line,.prism-previewer-easing.prism-previewer-easing path{stroke:#abb2bf}.prism-previewer-easing.prism-previewer-easing circle{fill:transparent}.header-module--header--666b3{border-bottom:1px solid #f0f0f0;padding:1.5rem 0}.header-module--container--5cb9d{align-items:center;display:flex;justify-content:space-between;margin:0 auto;max-width:42rem;padding:0}.header-module--title--de67b{color:#333;font-size:1.5rem;font-weight:bolder;margin-left:-1rem;text-decoration:none}.header-module--nav--7bc38{display:flex;gap:1rem;margin-right:1.5rem}.header-module--navLink--8864e{color:#333;font-size:1rem;font-weight:500;text-decoration:none;transition:color .2s ease}.header-module--navLink--8864e:hover,.header-module--title--de67b:hover{color:#639}.header-module--navLinkActive--23d5e{color:#333}:root{--border-radius:4px;--color-text:#333;--color-primary:#7026b9;--color-code-bg:#fff4db;--color-code:#8a6534;--font-sans:-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif,"Apple Color Emoji","Segoe UI Emoji";--font-mono:JetBrains Mono,SFMono-Regular,Menlo,Monaco,Consolas,"Liberation Mono","Courier New",monospace;--font-lg:18px;--font-md:16px;--font-sm:14px;--font-sx:12px;--line-height-loose:1.75;--line-height-normal:1.5;--line-height-dense:1.1;--space-1:4px;--space-2:8px;--space-3:16px;--space-4:24px;--space-5:32px;--space-6:64px;--size-content:54rem;--size-content-wide:52rem;--size-gutter:var(--space-5);--size-gap:var(--space-6)}html{-webkit-text-size-adjust:100%;box-sizing:border-box;font:sans-serif;font-size:var(--font-md);line-height:var(--line-height-normal);overflow-y:scroll}body{-moz-osx-font-smoothing:grayscale;-webkit-font-smoothing:antialiased;word-wrap:break-word;color:var(--color-text);font-family:sans-serif;font-family:var(--font-sans)}a{background-color:transparent;color:var(--color-primary);font-weight:500;text-decoration:none;text-decoration:underline;text-decoration-thickness:1.5px;text-underline-offset:2px}a:active,a:hover{outline-width:0;text-decoration:none}abbr[title]{border-bottom:1px dotted rgba(0,0,0,.5);cursor:help;text-decoration:none}b,strong{font-weight:inherit;font-weight:bolder}dfn{font-style:italic}h1{letter-spacing:-.01em;line-height:var(--line-height-dense);margin:0 0 3rem;padding:0}h1>b{color:var(--color-primary)}img{border-style:none;max-width:100%}hr{background:rgba(0,0,0,.2);border:none;box-sizing:content-box;height:1px;margin-bottom:calc(var(--space-4) - 1px);margin-left:0;margin-right:0;margin-top:0;overflow:visible;padding:0}*,:after,:before{box-sizing:inherit}dd,dl,fieldset,figure,hgroup,img,ol,p,ul{margin:0;margin-bottom:var(--space-4);padding:0}ol,ul{list-style-image:none;list-style-position:outside;margin-left:var(--space-4)}b,dt,strong,th{font-weight:700}li{margin-bottom:calc(var(--space-4)/2)}ol li,ul li{padding-left:0}li>ol,li>ul{margin-bottom:calc(var(--space-4)/2);margin-left:var(--space-4);margin-top:calc(var(--space-4)/2)}blockquote :last-child,li :last-child,p :last-child{margin-bottom:0}li>p{margin-bottom:calc(var(--space-4)/2)}p{max-width:780px}:not(pre)>code{background-color:#edeae2!important;border-radius:3px!important;color:#8a6534!important;font-family:sans-serif!important;font-size:1rem!important;font-weight:400!important;padding:.2em!important;text-shadow:none!important}kbd,samp,tt{font-family:var(--font-mono);font-size:.875rem}.about-module--container--41d1b{margin:0 auto;max-width:780px;padding:2rem 0}.about-module--header--e0119{border-bottom:1px solid #eee;margin-bottom:3rem;padding-bottom:1rem}.about-module--title--7e010{font-size:2rem;font-weight:700;margin-bottom:.5rem}.about-module--subtitle--48c80{color:#666;font-size:1.1rem}.about-module--section--9a81e{margin-bottom:3rem}.about-module--sectionTitle--cd509{color:#333;font-size:1.4rem;font-weight:600;margin-bottom:1rem}.about-module--text--51e2f{color:#444;font-size:1rem;line-height:1.8;margin-bottom:1rem}.about-module--skillList--b2760{display:flex;flex-wrap:wrap;gap:.5rem;list-style:none;padding:0}.about-module--skillItem--4afec{background-color:#f5f5f5;border-radius:4px;color:#333;font-size:.9rem;padding:.5rem 1rem}.index-module--container--f8c32{margin:0 auto;max-width:780px;padding:4rem}.index-module--text--96015{color:#333;font-size:1rem;line-height:1.8;margin-bottom:1rem}.index-module--socialLinks--1d6c9{align-items:center;display:flex;gap:1rem;margin-top:3rem}.index-module--socialLink--47985{color:#666;text-decoration:none;transition:color .2s ease}.index-module--socialLink--47985:hover{color:#333}.index-module--socialLink--47985 svg{display:block}.blog-list-module--container--d6c7d{margin:0 auto;max-width:760px;padding:2rem}.blog-list-module--title--6257d{color:#333;font-size:2rem;font-weight:300;margin-bottom:3rem}.blog-list-module--postList--7d15a{display:flex;flex-direction:column}.blog-list-module--postItem--02c8d{border-bottom:1px solid #f0f0f0;padding-bottom:.5rem}.blog-list-module--postItem--02c8d:last-child{border-bottom:none}.blog-list-module--postLink--9fca5{color:inherit;display:block;text-decoration:none}.blog-list-module--postLink--9fca5:hover h2,.blog-list-module--postLink--9fca5:hover h3{color:#639}.blog-list-module--postLink--9fca5 h2{color:#333;font-size:1.2rem;font-weight:700;margin-bottom:-.8rem;margin-top:1rem;transition:color .2s ease}.blog-list-module--postLink--9fca5 h3{color:#555;font-size:1.1rem;font-weight:450;margin-bottom:.5rem}.blog-list-module--metaContainer--12a55{align-items:center;display:flex;gap:1rem;margin-bottom:.75rem}.blog-list-module--date--33fff{color:#999;font-size:.8rem;margin:0}.blog-list-module--tags--cec2e{display:flex;flex-wrap:wrap;gap:.5rem}.blog-list-module--tag--8cb97{color:#999;font-size:.8rem;font-weight:400}.blog-list-module--postLink--9fca5 p{color:#666;line-height:1.6;margin:0}.blog-list-module--pagination--bedb7{display:flex;gap:.5rem;justify-content:flex-end;list-style:none;margin-top:3rem;padding:0}.blog-list-module--paginationLink--cbb1d{align-items:center;background-color:#fff;border:1px solid #e0e0e0;border-radius:50%;color:#555;display:flex;font-size:.9rem;height:40px;justify-content:center;text-decoration:none;transition:all .2s ease;width:40px}.blog-list-module--paginationLink--cbb1d:first-child,.blog-list-module--paginationLink--cbb1d:last-child{border-radius:20px;padding:0 1rem;width:auto}.blog-list-module--paginationLink--cbb1d:hover{background-color:#f1f8e9;border-color:#81c784;color:#2e7d32}.blog-list-module--activeLink--68317{background-color:#70b974;border-color:#66bb6a;color:#fff;font-weight:700}.blog-list-module--activeLink--68317:hover{background-color:#4caf50;border-color:#4caf50;color:#fff}.blog-post-module--article--75029{margin:auto;max-width:760px;padding:1rem 2rem}.blog-post-module--header--200ed{border-bottom:1px solid #f0f0f0;margin-bottom:2rem;padding-bottom:1.5rem}.blog-post-module--title--59a7d{color:#333;font-size:2rem;font-weight:700;line-height:1.2;margin-bottom:-.5rem}.blog-post-module--subtitle--3a90e{color:#666;font-size:1.2rem;font-weight:400;margin-bottom:1.5rem}.blog-post-module--meta--5f023{align-items:center;color:#999;display:flex;flex-wrap:wrap;font-size:.95rem;gap:1rem;margin-top:1rem}.blog-post-module--date--62da1{white-space:nowrap}.blog-post-module--tags--e297a{display:flex;flex-wrap:wrap;gap:.5rem}.blog-post-module--tag--a09fc{background:#f5f0ff;border-radius:4px;color:#639;font-size:.85rem;padding:.25rem .75rem}.blog-post-module--content--91571{color:#454545;font-family:sans-serif;font-family:var(--font-sans);font-weight:400;line-height:1.8}.blog-post-module--content--91571 p{max-width:100%}.blog-post-module--content--91571 h1{margin-bottom:1rem}.blog-post-module--content--91571 h2{margin-bottom:.6rem}.blog-post-module--content--91571 h3{margin-bottom:.5rem}.blog-post-module--content--91571 ol li,.blog-post-module--content--91571 ul li{margin-bottom:.6rem}.blog-post-module--content--91571 p+ol,.blog-post-module--content--91571 p+ul{margin-top:-1rem}.blog-post-module--content--91571 blockquote{background-color:#f9f9f9;border-left:3px solid #e6e6e6;border-radius:0 4px 4px 0;color:#555;margin:1rem 0;padding:.5rem 1.5rem}.blog-post-module--content--91571 blockquote p{margin-bottom:0}.blog-post-module--content--91571 figure{margin:2rem 0;text-align:center}.blog-post-module--content--91571 figcaption{color:#888;font-size:.8rem;line-height:1;margin-top:.5rem;text-align:center}.blog-post-module--footer--d8731{border-top:1px solid #f0f0f0;margin-top:4rem;padding-top:2rem}.blog-post-module--toc--52cca{color:#888;font-size:.8rem;left:calc(50% - 900px);max-height:calc(100vh - 200px);opacity:0;overflow-y:auto;position:fixed;top:150px;transform:translateY(10px);transition:opacity .3s ease,transform .3s ease,visibility .3s;visibility:hidden;width:200px}.blog-post-module--tocVisible--99d69{opacity:1;transform:translateY(0);visibility:visible}.blog-post-module--toc--52cca ul{list-style:none;margin:0;padding:0}.blog-post-module--toc--52cca code{background-color:transparent;border-radius:0;color:inherit;font-family:inherit;font-size:inherit;padding:0}.blog-post-module--toc--52cca li{line-height:1.3;margin-bottom:.3rem}.blog-post-module--toc--52cca ul ul{font-size:.75rem;margin-left:.8rem;margin-top:.3rem}.blog-post-module--toc--52cca a{border-left:2px solid transparent;color:inherit;display:block;padding-left:.8rem;text-decoration:none;transition:color .2s}.blog-post-module--toc--52cca a:hover{border-left-color:#639;color:#639}@media (max-width:1350px){.blog-post-module--toc--52cca{display:none}}</style><style>.gatsby-image-wrapper{position:relative;overflow:hidden}.gatsby-image-wrapper picture.object-fit-polyfill{position:static!important}.gatsby-image-wrapper img{bottom:0;height:100%;left:0;margin:0;max-width:none;padding:0;position:absolute;right:0;top:0;width:100%;object-fit:cover}.gatsby-image-wrapper [data-main-image]{opacity:0;transform:translateZ(0);transition:opacity .25s linear;will-change:opacity}.gatsby-image-wrapper-constrained{display:inline-block;vertical-align:top}</style><noscript><style>.gatsby-image-wrapper noscript [data-main-image]{opacity:1!important}.gatsby-image-wrapper [data-placeholder-image]{opacity:0!important}</style></noscript><script type="module">const e="undefined"!=typeof HTMLImageElement&&"loading"in HTMLImageElement.prototype;e&&document.body.addEventListener("load",(function(e){const t=e.target;if(void 0===t.dataset.mainImage)return;if(void 0===t.dataset.gatsbyImageSsr)return;let a=null,n=t;for(;null===a&&n;)void 0!==n.parentNode.dataset.gatsbyImageWrapper&&(a=n.parentNode),n=n.parentNode;const o=a.querySelector("[data-placeholder-image]"),r=new Image;r.src=t.currentSrc,r.decode().catch((()=>{})).then((()=>{t.style.opacity=1,o&&(o.style.opacity=0,o.style.transition="opacity 500ms linear")}))}),!0);</script><script>
+<!DOCTYPE html><html lang="en"><head><meta charSet="utf-8"/><meta http-equiv="x-ua-compatible" content="ie=edge"/><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"/><meta name="generator" content="Gatsby 5.15.0"/><meta name="description" content="kuberntes configmap" data-gatsby-head="true"/><meta property="og:title" content="Kubernetes ConfigMap, Secret 깊게 이해하기" data-gatsby-head="true"/><meta property="og:description" content="kuberntes configmap" data-gatsby-head="true"/><meta property="og:type" content="website" data-gatsby-head="true"/><meta name="twitter:card" content="summary" data-gatsby-head="true"/><meta name="twitter:creator" content="@changhwanK" data-gatsby-head="true"/><meta name="twitter:title" content="Kubernetes ConfigMap, Secret 깊게 이해하기" data-gatsby-head="true"/><meta name="twitter:description" content="kuberntes configmap" data-gatsby-head="true"/><style data-href="/styles.ca1e6ca3d46c6b080c2e.css" data-identity="gatsby-global-css">.header-module--header--666b3{border-bottom:1px solid #f0f0f0;padding:1.5rem 0}.header-module--container--5cb9d{align-items:center;display:flex;justify-content:space-between;margin:0 auto;max-width:42rem;padding:0}.header-module--title--de67b{color:#333;font-size:1.5rem;font-weight:bolder;margin-left:-1rem;text-decoration:none}.header-module--nav--7bc38{display:flex;gap:1rem;margin-right:1.5rem}.header-module--navLink--8864e{color:#333;font-size:1rem;font-weight:500;text-decoration:none;transition:color .2s ease}.header-module--navLink--8864e:hover,.header-module--title--de67b:hover{color:#639}.header-module--navLinkActive--23d5e{color:#333}:root{--border-radius:4px;--color-text:#333;--color-primary:#7026b9;--color-code-bg:#fff4db;--color-code:#8a6534;--font-sans:-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif,"Apple Color Emoji","Segoe UI Emoji";--font-mono:SFMono-Regular,Menlo,Monaco,Consolas,"Liberation Mono","Courier New",monospace;--font-lg:18px;--font-md:16px;--font-sm:14px;--font-sx:12px;--line-height-loose:1.75;--line-height-normal:1.5;--line-height-dense:1.1;--space-1:4px;--space-2:8px;--space-3:16px;--space-4:24px;--space-5:32px;--space-6:64px;--size-content:54rem;--size-content-wide:52rem;--size-gutter:var(--space-5);--size-gap:var(--space-6)}html{-webkit-text-size-adjust:100%;box-sizing:border-box;font:sans-serif;font-size:var(--font-md);line-height:var(--line-height-normal);overflow-y:scroll}body{-moz-osx-font-smoothing:grayscale;-webkit-font-smoothing:antialiased;word-wrap:break-word;color:var(--color-text);font-family:sans-serif;font-family:var(--font-sans)}a{background-color:transparent;color:var(--color-primary);font-weight:500;text-decoration:none;text-decoration:underline;text-decoration-thickness:1.5px;text-underline-offset:2px}a:active,a:hover{outline-width:0;text-decoration:none}abbr[title]{border-bottom:1px dotted rgba(0,0,0,.5);cursor:help;text-decoration:none}b,strong{font-weight:inherit;font-weight:bolder}dfn{font-style:italic}h1{letter-spacing:-.01em;line-height:var(--line-height-dense);margin:0 0 3rem;padding:0}h1>b{color:var(--color-primary)}img{border-style:none;max-width:100%}code,kbd,pre,samp{font-family:var(--font-mono);font-size:1em;line-height:inherit}hr{background:rgba(0,0,0,.2);border:none;box-sizing:content-box;height:1px;margin-bottom:calc(var(--space-4) - 1px);margin-left:0;margin-right:0;margin-top:0;overflow:visible;padding:0}*,:after,:before{box-sizing:inherit}dd,dl,fieldset,figure,hgroup,img,ol,p,ul{margin:0;margin-bottom:var(--space-4);padding:0}ol,ul{list-style-image:none;list-style-position:outside;margin-left:var(--space-4)}pre{word-wrap:normal;background:rgba(0,0,0,.04);border-radius:var(--border-radius);font-size:.875rem;line-height:var(--line-height-normal);margin-bottom:var(--space-4);margin-left:0;margin-right:0;margin-top:0;overflow:auto;padding:var(--space-4)}b,dt,strong,th{font-weight:700}li{margin-bottom:calc(var(--space-4)/2)}ol li,ul li{padding-left:0}li>ol,li>ul{margin-bottom:calc(var(--space-4)/2);margin-left:var(--space-4);margin-top:calc(var(--space-4)/2)}blockquote :last-child,li :last-child,p :last-child{margin-bottom:0}li>p{margin-bottom:calc(var(--space-4)/2)}p{max-width:680px}code,kbd,samp{font-size:.875rem}abbr,acronym{border-bottom:1px dotted rgba(0,0,0,.5);cursor:help}code,tt{background-color:var(--color-code-bg);border-radius:var(--border-radius);color:var(--color-code);font-family:var(--font-mono);padding-bottom:.25em;padding-top:.25em;word-break:normal}pre code{background:none}code:after,code:before,tt:after,tt:before{content:"\00a0";letter-spacing:-.2em}pre code:after,pre code:before,pre tt:after,pre tt:before{content:none}.about-module--container--41d1b{margin:0 auto;max-width:780px;padding:2rem 0}.about-module--header--e0119{border-bottom:1px solid #eee;margin-bottom:3rem;padding-bottom:1rem}.about-module--title--7e010{font-size:2rem;font-weight:700;margin-bottom:.5rem}.about-module--subtitle--48c80{color:#666;font-size:1.1rem}.about-module--section--9a81e{margin-bottom:3rem}.about-module--sectionTitle--cd509{color:#333;font-size:1.4rem;font-weight:600;margin-bottom:1rem}.about-module--text--51e2f{color:#444;font-size:1rem;line-height:1.8;margin-bottom:1rem}.about-module--skillList--b2760{display:flex;flex-wrap:wrap;gap:.5rem;list-style:none;padding:0}.about-module--skillItem--4afec{background-color:#f5f5f5;border-radius:4px;color:#333;font-size:.9rem;padding:.5rem 1rem}.index-module--container--f8c32{margin:0 auto;max-width:780px;padding:4rem}.index-module--text--96015{color:#333;font-size:1rem;line-height:1.8;margin-bottom:1rem}.index-module--socialLinks--1d6c9{align-items:center;display:flex;gap:1rem;margin-top:3rem}.index-module--socialLink--47985{color:#666;text-decoration:none;transition:color .2s ease}.index-module--socialLink--47985:hover{color:#333}.index-module--socialLink--47985 svg{display:block}.blog-list-module--container--d6c7d{margin:0 auto;max-width:760px;padding:2rem}.blog-list-module--postItem--02c8d{border-bottom:2px solid #f0f0f0;padding:1rem 0}.blog-list-module--postItem--02c8d:last-child{border-bottom:none}.blog-list-module--postLink--9fca5{align-items:stretch;color:inherit;display:flex;text-decoration:none}.blog-list-module--thumbnail--72dc7{border-radius:10px;height:100%;object-fit:cover;width:90%}.blog-list-module--postContent--c5321{display:flex;flex:1 1;flex-direction:column;justify-content:space-between;min-width:0}.blog-list-module--postLink--9fca5:not(:has(.blog-list-module--thumbnailWrapper--f6e07)) .blog-list-module--postContent--c5321{width:100%}.blog-list-module--postLink--9fca5:hover h3,.blog-list-module--postLink--9fca5:hover p{color:#639}.blog-list-module--postLink--9fca5 h3{margin:0}.blog-list-module--metaContainer--12a55{align-items:center;display:flex;gap:.5rem}.blog-list-module--date--33fff{color:#999;font-size:.875rem;margin:0}.blog-list-module--tags--cec2e{display:flex;flex-wrap:wrap;gap:.5rem}.blog-list-module--tag--8cb97{color:#999;font-size:.875rem;font-weight:400}.blog-list-module--pagination--bedb7{display:flex;gap:.5rem;justify-content:flex-end;list-style:none;margin-top:3rem;padding:0}.blog-list-module--paginationLink--cbb1d{align-items:center;background-color:#fff;border:1px solid #e0e0e0;border-radius:50%;color:#555;display:flex;font-size:.9rem;height:40px;justify-content:center;text-decoration:none;transition:all .2s ease;width:40px}.blog-list-module--paginationLink--cbb1d:first-child,.blog-list-module--paginationLink--cbb1d:last-child{border-radius:20px;padding:0 1rem;width:auto}.blog-list-module--paginationLink--cbb1d:hover{background-color:#f1f8e9;border-color:#81c784;color:#2e7d32}.blog-list-module--activeLink--68317{background-color:#70b974;border-color:#66bb6a;color:#fff;font-weight:700}.blog-list-module--activeLink--68317:hover{background-color:#4caf50;border-color:#4caf50;color:#fff}.blog-post-module--article--75029{margin:auto;max-width:760px;padding:1rem 2rem}.blog-post-module--header--200ed{border-bottom:1px solid #f0f0f0;margin-bottom:2rem;padding-bottom:1.5rem}.blog-post-module--title--59a7d{font-size:2rem;font-weight:700;line-height:1.2;margin-bottom:-.5rem}.blog-post-module--subtitle--3a90e{color:#666;font-size:1.4rem;font-weight:400;margin-bottom:1.5rem}.blog-post-module--meta--5f023{align-items:center;color:#999;display:flex;flex-wrap:wrap;font-size:.95rem;gap:1rem;margin-top:1rem}.blog-post-module--date--62da1{white-space:nowrap}.blog-post-module--tags--e297a{display:flex;flex-wrap:wrap;gap:.5rem}.blog-post-module--tag--a09fc{background:#f5f0ff;border-radius:4px;color:#639;font-size:.85rem;padding:.25rem .75rem}.blog-post-module--content--91571{color:#454545;font-family:sans-serif;font-family:var(--font-sans);font-weight:400;line-height:1.8}.blog-post-module--content--91571 p{max-width:100%}.blog-post-module--content--91571 h1{margin-bottom:1rem}.blog-post-module--content--91571 h2{margin-bottom:.6rem}.blog-post-module--content--91571 h3{margin-bottom:.5rem}.blog-post-module--content--91571 ol li,.blog-post-module--content--91571 ul li{margin-bottom:.6rem}.blog-post-module--content--91571 p+ol,.blog-post-module--content--91571 p+ul{margin-top:-1rem}.blog-post-module--content--91571 blockquote{background-color:#f9f9f9;border-left:3px solid #e6e6e6;border-radius:0 4px 4px 0;color:#555;margin:1rem 0;padding:.5rem 1.5rem}.blog-post-module--content--91571 blockquote p{margin-bottom:0}.blog-post-module--content--91571 code{background:#f5f5f5;border-radius:3px;font-size:.9em;padding:.2rem}.deckgo-highlight-code-carbon{font-size:.8rem;line-height:1.6;margin:1.5rem 0}.blog-post-module--content--91571 figure{margin:2rem 0;text-align:center}.blog-post-module--content--91571 figcaption{color:#888;font-size:.8rem;line-height:1;margin-top:.5rem;text-align:center}.blog-post-module--footer--d8731{border-top:1px solid #f0f0f0;margin-top:4rem;padding-top:2rem}.blog-post-module--toc--52cca{color:#888;font-size:.8rem;left:calc(50% - 800px);max-height:calc(100vh - 200px);opacity:0;overflow-y:auto;position:fixed;top:150px;transform:translateY(10px);transition:opacity .3s ease,transform .3s ease,visibility .3s;visibility:hidden;width:300px}.blog-post-module--tocVisible--99d69{opacity:1;transform:translateY(0);visibility:visible}.blog-post-module--toc--52cca ul{list-style:none;margin:0;padding:0}.blog-post-module--toc--52cca code{background-color:transparent;border-radius:0;color:inherit;font-family:inherit;font-size:inherit;padding:0}.blog-post-module--toc--52cca li{line-height:1.3;margin-bottom:.3rem}.blog-post-module--toc--52cca ul ul{font-size:.75rem;margin-left:.8rem;margin-top:.3rem}.blog-post-module--toc--52cca a{border-left:2px solid transparent;color:inherit;display:block;padding-left:.8rem;text-decoration:none;transition:color .2s}.blog-post-module--toc--52cca a:hover{border-left-color:#639;color:#639}@media (max-width:1350px){.blog-post-module--toc--52cca{display:none}}</style><style>.gatsby-image-wrapper{position:relative;overflow:hidden}.gatsby-image-wrapper picture.object-fit-polyfill{position:static!important}.gatsby-image-wrapper img{bottom:0;height:100%;left:0;margin:0;max-width:none;padding:0;position:absolute;right:0;top:0;width:100%;object-fit:cover}.gatsby-image-wrapper [data-main-image]{opacity:0;transform:translateZ(0);transition:opacity .25s linear;will-change:opacity}.gatsby-image-wrapper-constrained{display:inline-block;vertical-align:top}</style><noscript><style>.gatsby-image-wrapper noscript [data-main-image]{opacity:1!important}.gatsby-image-wrapper [data-placeholder-image]{opacity:0!important}</style></noscript><script type="module">const e="undefined"!=typeof HTMLImageElement&&"loading"in HTMLImageElement.prototype;e&&document.body.addEventListener("load",(function(e){const t=e.target;if(void 0===t.dataset.mainImage)return;if(void 0===t.dataset.gatsbyImageSsr)return;let a=null,n=t;for(;null===a&&n;)void 0!==n.parentNode.dataset.gatsbyImageWrapper&&(a=n.parentNode),n=n.parentNode;const o=a.querySelector("[data-placeholder-image]"),r=new Image;r.src=t.currentSrc,r.decode().catch((()=>{})).then((()=>{t.style.opacity=1,o&&(o.style.opacity=0,o.style.transition="opacity 500ms linear")}))}),!0);</script><script>
     document.addEventListener("DOMContentLoaded", function(event) {
       var hash = window.decodeURI(location.hash.replace('#', ''))
       if (hash !== '') {
@@ -37,8 +37,8 @@
 <li>
 <p><a href="#%EA%B7%B8%EB%A0%87%EB%8B%A4%EB%A9%B4-%EC%99%9C-%EB%91%90-%EA%B0%80%EC%A7%80-%EB%B0%A9%EC%8B%9D%EC%9D%84-%EC%A7%80%EC%9B%90%ED%95%A0%EA%B9%8C"><strong>그렇다면, 왜 두 가지 방식을 지원할까?</strong></a></p>
 <ul>
-<li><a href="#1-code-classlanguage-textenvenvfrom-%EB%B0%A9%EC%8B%9Dcode-%EB%B6%88%EB%B3%80%EC%84%B1%EC%9D%84-%ED%86%B5%ED%95%9C-%EC%95%88%EC%A0%95%EC%84%B1-%ED%99%95%EB%B3%B4"><strong>1) <code class="language-text">env/envFrom 방식:</code> 불변성을 통한 안정성 확보</strong></a></li>
-<li><a href="#2-code-classlanguage-textvolumesvolumemounts-%EB%B0%A9%EC%8B%9Dcode-%EB%8F%99%EC%A0%81-%EC%97%85%EB%8D%B0%EC%9D%B4%ED%8A%B8%EB%A5%BC-%ED%86%B5%ED%95%9C-%EC%9C%A0%EC%97%B0%EC%84%B1-%ED%99%95%EB%B3%B4"><strong>2) <code class="language-text">volumes/volumeMounts 방식:</code> 동적 업데이트를 통한 유연성 확보</strong></a></li>
+<li><a href="#1-envenvfrom%EB%B0%A9%EC%8B%9D-%EB%B6%88%EB%B3%80%EC%84%B1%EC%9D%84-%ED%86%B5%ED%95%9C-%EC%95%88%EC%A0%95%EC%84%B1-%ED%99%95%EB%B3%B4"><strong>1) <code>env/envFrom 방식:</code> 불변성을 통한 안정성 확보</strong></a></li>
+<li><a href="#2-volumesvolumemounts%EB%B0%A9%EC%8B%9D-%EB%8F%99%EC%A0%81-%EC%97%85%EB%8D%B0%EC%9D%B4%ED%8A%B8%EB%A5%BC-%ED%86%B5%ED%95%9C-%EC%9C%A0%EC%97%B0%EC%84%B1-%ED%99%95%EB%B3%B4"><strong>2) <code>volumes/volumeMounts 방식:</code> 동적 업데이트를 통한 유연성 확보</strong></a></li>
 </ul>
 </li>
 <li>
@@ -82,9 +82,9 @@
 <p><a href="#%EA%B2%B0%EB%A1%A0"><strong>결론</strong></a></p>
 </li>
 </ul></aside><article class="blog-post-module--article--75029"><header class="blog-post-module--header--200ed"><h1 class="blog-post-module--title--59a7d">Kubernetes ConfigMap, Secret 깊게 이해하기</h1><h2 class="blog-post-module--subtitle--3a90e">kuberntes configmap</h2><div class="blog-post-module--meta--5f023"><time class="blog-post-module--date--62da1">2025년 07월 16일</time><div class="blog-post-module--tags--e297a"><span class="blog-post-module--tag--a09fc">#<!-- -->Kubernetes</span><span class="blog-post-module--tag--a09fc">#<!-- -->DevOps</span></div></div></header><div class="blog-post-module--content--91571"><h1 id="configmap과-secret이란">ConfigMap과 Secret이란?</h1>
-<p>ConfigMap과 Secret은 컨테이너화된 애플리케이션의 설정을 이미지와 분리하기 위해 탄생한 쿠버네티스 API 오브젝트로 이는 <a href="https://en.wikipedia.org/wiki/Twelve-Factor_App_methodology">12-Factor App</a> 원칙 중 하나인 <code class="language-text">Config(주요 설정은 환경변수로 저장하거나 저장소에 커밋되지 않는 파일에 저장한다.)철학</code>을 쿠버네티스 환경에서 구현하는 핵심적인 방법이다.</p>
+<p>ConfigMap과 Secret은 컨테이너화된 애플리케이션의 설정을 이미지와 분리하기 위해 탄생한 쿠버네티스 API 오브젝트로 이는 <a href="https://en.wikipedia.org/wiki/Twelve-Factor_App_methodology">12-Factor App</a> 원칙 중 하나인 <code>Config(주요 설정은 환경변수로 저장하거나 저장소에 커밋되지 않는 파일에 저장한다.)철학</code>을 쿠버네티스 환경에서 구현하는 핵심적인 방법이다.</p>
 <h2 id="configmap을-알아보자">ConfigMap을 알아보자</h2>
-<p><strong>ConfigMap은 민감하지 않은 설정 데이터를</strong> <code class="language-text">Key-Value</code> <strong>형태로 저장하는데 사용하는 API 오브젝트이다.</strong> Pod는 <code class="language-text">볼륨</code>, <code class="language-text">ENV</code>, <code class="language-text">커맨드 라인</code> 등으로 ConfigMap을 활용할 수 있다.</p>
+<p><strong>ConfigMap은 민감하지 않은 설정 데이터를</strong> <code>Key-Value</code> <strong>형태로 저장하는데 사용하는 API 오브젝트이다.</strong> Pod는 <code>볼륨</code>, <code>ENV</code>, <code>커맨드 라인</code> 등으로 ConfigMap을 활용할 수 있다.</p>
 <p>예를 들어 로깅 레벨 지정, 외부 서비스 엔드 포인트, 기능 플래그 등이 해당되며, ConfigMap을 사용하면 컨테이너 이미지에서 환경별 구성을 분리하여, 애플리케이션을 쉽게 이식할 수 있다.</p>
 <p><strong>추가로 ConfigMap은 많은 양의 데이터를 보유하도록 설계되지 않았다.</strong> 컨피그맵에 저장된 데이터는 <strong>1MiB를 초과할 수 없으며</strong> 이 제한보다 큰 설정을 저장해야 하는 경우, 볼륨 마운트하는 것을 고려하거나 별도의 데이터베이스 또는 파일 서비스를 사용할 수 있다.</p>
 <h2 id="secret을-알아보자">Secret을 알아보자</h2>
@@ -106,22 +106,22 @@
 <ul>
 <li>type
 <ul>
-<li><code class="language-text">Opaque:</code> 가장 일반적인 타입으로 정해진 형식 없는 임의의 데이터를 저장한다.</li>
-<li><code class="language-text">kubernetes.io/service-account-token:</code>  ServiceAccount의 자격증명을 저장하며, 자동으로 생성되고 파괴된다.</li>
-<li><code class="language-text">kubernetes.io/dockerconfigjson:</code> Private Docker Registry 에 접근하기 위한 인증 정보를 <code class="language-text">.docker/config.json</code> 형태로 저장한다. data 필드에 .dockerconfigjson 이라는 Key가 반드시 필요하다.</li>
-<li><code class="language-text">kubernetes.io/basic-auth:</code> 기본 인증을 위한 자격증명을 저장한다. data 필드에 username과 password 키가 필요하다.</li>
-<li><code class="language-text">kubernetes.io/ssh-auth:</code> SSH 키 페어를 저장한다. data 필드에 ssh-privatekey, ssh-publickey 키가 필요하다.</li>
-<li><code class="language-text">kubernetes.io/tls:</code> TLS 인증서와 개인키를 저장한다. Ingress TLS Offloading 등에 사용된다. data 필드에 tls.crt, tls.key 키가 반드시 필요하다.</li>
+<li><code>Opaque:</code> 가장 일반적인 타입으로 정해진 형식 없는 임의의 데이터를 저장한다.</li>
+<li><code>kubernetes.io/service-account-token:</code>  ServiceAccount의 자격증명을 저장하며, 자동으로 생성되고 파괴된다.</li>
+<li><code>kubernetes.io/dockerconfigjson:</code> Private Docker Registry 에 접근하기 위한 인증 정보를 <code>.docker/config.json</code> 형태로 저장한다. data 필드에 .dockerconfigjson 이라는 Key가 반드시 필요하다.</li>
+<li><code>kubernetes.io/basic-auth:</code> 기본 인증을 위한 자격증명을 저장한다. data 필드에 username과 password 키가 필요하다.</li>
+<li><code>kubernetes.io/ssh-auth:</code> SSH 키 페어를 저장한다. data 필드에 ssh-privatekey, ssh-publickey 키가 필요하다.</li>
+<li><code>kubernetes.io/tls:</code> TLS 인증서와 개인키를 저장한다. Ingress TLS Offloading 등에 사용된다. data 필드에 tls.crt, tls.key 키가 반드시 필요하다.</li>
 </ul>
 </li>
 <li>data
 <ul>
-<li>Secret의 실제 데이터를 key-value 형태로 저장하는 필드이다. value는 반드시 base64로 인코딩된 문자열이어야 하며, key 이름은 영문, 숫자, <code class="language-text">-</code>,<code class="language-text">_</code>,<code class="language-text">.</code> 문자만 포할할 수 있다.</li>
+<li>Secret의 실제 데이터를 key-value 형태로 저장하는 필드이다. value는 반드시 base64로 인코딩된 문자열이어야 하며, key 이름은 영문, 숫자, <code>-</code>,<code>_</code>,<code>.</code> 문자만 포할할 수 있다.</li>
 </ul>
 </li>
 <li>stringdata
 <ul>
-<li>data 필드의 편의성을 위한 필드이다. 여기에 key-value를 일반 문자열로 입력하면 api server가 이를 자동으로 base64 인코딩하여 data 필드에 반영한다. 이 필드는 쓰기 전용 이며, <code class="language-text">kubectl get secret -o yaml</code>  등으로 조회하면 <code class="language-text">stringData</code> 필드는 보이지 않고 data 필드에 인코딩된 값만 나타난다.</li>
+<li>data 필드의 편의성을 위한 필드이다. 여기에 key-value를 일반 문자열로 입력하면 api server가 이를 자동으로 base64 인코딩하여 data 필드에 반영한다. 이 필드는 쓰기 전용 이며, <code>kubectl get secret -o yaml</code>  등으로 조회하면 <code>stringData</code> 필드는 보이지 않고 data 필드에 인코딩된 값만 나타난다.</li>
 </ul>
 </li>
 </ul>
@@ -158,24 +158,26 @@
 <li>환경 변수는 /proc/[pid]/environ 파일을 통해 Pod 내 다른 프로세스나 권한 있는 사용자에게 노출될 수 있어 보안적으로 덜 안전하다.</li>
 </ul>
 <p><strong>예시</strong></p>
-<div class="gatsby-highlight" data-language="yaml"><pre class="language-yaml"><code class="language-yaml"><span class="token comment"># 예시: 특정 key를 선택하여 환경 변수로 주입</span>
-<span class="token key atrule">apiVersion</span><span class="token punctuation">:</span> v1
-<span class="token key atrule">kind</span><span class="token punctuation">:</span> Pod
-<span class="token key atrule">metadata</span><span class="token punctuation">:</span>
-  <span class="token key atrule">name</span><span class="token punctuation">:</span> my<span class="token punctuation">-</span>pod
-<span class="token key atrule">spec</span><span class="token punctuation">:</span>
-  <span class="token key atrule">containers</span><span class="token punctuation">:</span>
-  <span class="token punctuation">-</span> <span class="token key atrule">name</span><span class="token punctuation">:</span> my<span class="token punctuation">-</span>container
-    <span class="token key atrule">image</span><span class="token punctuation">:</span> redis
-    <span class="token key atrule">env</span><span class="token punctuation">:</span>
-    <span class="token punctuation">-</span> <span class="token key atrule">name</span><span class="token punctuation">:</span> MY_ENV_VARIABLE
-      <span class="token key atrule">valueFrom</span><span class="token punctuation">:</span>
-        <span class="token key atrule">configMapKeyRef</span><span class="token punctuation">:</span>
-          <span class="token key atrule">name</span><span class="token punctuation">:</span> my<span class="token punctuation">-</span>configmap <span class="token comment"># 참조할 ConfigMap 이름</span>
-          <span class="token key atrule">key</span><span class="token punctuation">:</span> my<span class="token punctuation">-</span>key       <span class="token comment"># 사용할 key</span></code></pre></div>
+<deckgo-highlight-code language="yaml" terminal="carbon" theme="one-dark"  >
+          <code slot="code"># 예시: 특정 key를 선택하여 환경 변수로 주입
+apiVersion: v1
+kind: Pod
+metadata:
+  name: my-pod
+spec:
+  containers:
+  - name: my-container
+    image: redis
+    env:
+    - name: MY_ENV_VARIABLE
+      valueFrom:
+        configMapKeyRef:
+          name: my-configmap # 참조할 ConfigMap 이름
+          key: my-key       # 사용할 key</code>
+        </deckgo-highlight-code>
 <h3 id="2-볼륨-마운트로-주입"><strong>2) 볼륨 마운트로 주입</strong></h3>
 <blockquote>
-<p>ConfigMap이나 Secret을 정의하고, 이를 <code class="language-text">volumeMounts</code> 를 통해 컨테이너 내부 특정 경로에 파일 형태로 마운트한다. 각 key는 파일명이 되고, value는 해당 파일의 내용이된다.</p>
+<p>ConfigMap이나 Secret을 정의하고, 이를 <code>volumeMounts</code> 를 통해 컨테이너 내부 특정 경로에 파일 형태로 마운트한다. 각 key는 파일명이 되고, value는 해당 파일의 내용이된다.</p>
 </blockquote>
 <p><strong>장점</strong></p>
 <ul>
@@ -186,34 +188,36 @@
 <li>애플리케이션이 파일 시스템에서 설정을 읽도록 구현되어 있어야 한다.따라서 properties, conf, toml등의 파일을 볼륨 마운트로 Pod에 주입하여 사용하는 방법에 적합하다.</li>
 </ul>
 <p><strong>예시</strong></p>
-<div class="gatsby-highlight" data-language="yaml"><pre class="language-yaml"><code class="language-yaml"><span class="token punctuation">---</span>
-<span class="token key atrule">apiVersion</span><span class="token punctuation">:</span> v1
-<span class="token key atrule">kind</span><span class="token punctuation">:</span> ConfigMap
-<span class="token key atrule">metadata</span><span class="token punctuation">:</span>
-  <span class="token key atrule">name</span><span class="token punctuation">:</span> test<span class="token punctuation">-</span>config
-<span class="token key atrule">data</span><span class="token punctuation">:</span>
-  <span class="token key atrule">APP_NAME</span><span class="token punctuation">:</span> <span class="token string">"MyTestApp"</span>
-  <span class="token key atrule">DATABASE_HOST</span><span class="token punctuation">:</span> <span class="token string">"db.example.com"</span>
-  <span class="token key atrule">DATABASE_PORT</span><span class="token punctuation">:</span> <span class="token string">"5432"</span>
-  <span class="token key atrule">LOG_LEVEL</span><span class="token punctuation">:</span> <span class="token string">"INFO"</span>
-<span class="token punctuation">---</span>
-<span class="token key atrule">apiVersion</span><span class="token punctuation">:</span> v1
-<span class="token key atrule">kind</span><span class="token punctuation">:</span> Pod
-<span class="token key atrule">metadata</span><span class="token punctuation">:</span>
-  <span class="token key atrule">name</span><span class="token punctuation">:</span> test<span class="token punctuation">-</span>pod<span class="token punctuation">-</span>volume<span class="token punctuation">-</span>only
-<span class="token key atrule">spec</span><span class="token punctuation">:</span>
-  <span class="token key atrule">containers</span><span class="token punctuation">:</span>
-  <span class="token punctuation">-</span> <span class="token key atrule">name</span><span class="token punctuation">:</span> main<span class="token punctuation">-</span>container
-    <span class="token key atrule">image</span><span class="token punctuation">:</span> busybox
-    <span class="token key atrule">command</span><span class="token punctuation">:</span> <span class="token punctuation">[</span><span class="token string">"sh"</span><span class="token punctuation">,</span> <span class="token string">"-c"</span><span class="token punctuation">,</span> <span class="token string">"sleep 3600"</span><span class="token punctuation">]</span>
-    <span class="token key atrule">volumeMounts</span><span class="token punctuation">:</span>
-    <span class="token punctuation">-</span> <span class="token key atrule">name</span><span class="token punctuation">:</span> config<span class="token punctuation">-</span>volume
-      <span class="token key atrule">mountPath</span><span class="token punctuation">:</span> /etc/config
-  <span class="token key atrule">volumes</span><span class="token punctuation">:</span>
-  <span class="token punctuation">-</span> <span class="token key atrule">name</span><span class="token punctuation">:</span> config<span class="token punctuation">-</span>volume
-    <span class="token key atrule">configMap</span><span class="token punctuation">:</span>
-      <span class="token key atrule">name</span><span class="token punctuation">:</span> test<span class="token punctuation">-</span>config
-  <span class="token key atrule">restartPolicy</span><span class="token punctuation">:</span> Never</code></pre></div>
+<deckgo-highlight-code language="yaml" terminal="carbon" theme="one-dark"  >
+          <code slot="code">---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: test-config
+data:
+  APP_NAME: &quot;MyTestApp&quot;
+  DATABASE_HOST: &quot;db.example.com&quot;
+  DATABASE_PORT: &quot;5432&quot;
+  LOG_LEVEL: &quot;INFO&quot;
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: test-pod-volume-only
+spec:
+  containers:
+  - name: main-container
+    image: busybox
+    command: [&quot;sh&quot;, &quot;-c&quot;, &quot;sleep 3600&quot;]
+    volumeMounts:
+    - name: config-volume
+      mountPath: /etc/config
+  volumes:
+  - name: config-volume
+    configMap:
+      name: test-config
+  restartPolicy: Never</code>
+        </deckgo-highlight-code>
 <p><figure class="gatsby-resp-image-figure" style="">
     <span
       class="gatsby-resp-image-wrapper"
@@ -249,32 +253,32 @@
   </figure></p>
 <h2 id="그렇다면-왜-두-가지-방식을-지원할까"><strong>그렇다면, 왜 두 가지 방식을 지원할까?</strong></h2>
 <p>결론부터 말하면, 이는 <strong>'예측 가능한 안정성(Immutability)'과 '운영상의 유연성(Dynamic Update)'</strong> 이라는, 서로 다른 두 설계 목표를 모두 지원하기 위함이다.</p>
-<h3 id="1-code-classlanguage-textenvenvfrom-방식code-불변성을-통한-안정성-확보"><strong>1) <code class="language-text">env/envFrom 방식:</code> 불변성을 통한 안정성 확보</strong></h3>
+<h3 id="1-envenvfrom방식-불변성을-통한-안정성-확보"><strong>1) <code>env/envFrom 방식:</code> 불변성을 통한 안정성 확보</strong></h3>
 <p>이 방식으로 주입된 환경 변수는 컨테이너 시작 시 메모리에 주입되어 절대 변하지 않는 <strong>불변(Immutable) 값</strong>이 된다. 이는 "설정이 바뀌면, Pod를 새로 배포한다"는 <strong>불변 인프라(Immutable Infrastructure) 철학</strong>을 강제하여, 런타임 중 설정 변경으로 인한 예측 불가능한 오류를 원천적으로 차단한다.</p>
 <p>하지만 이 '불변성'이라는 특징 때문에, Pod 재시작 없이는 설정을 변경할 수 없어 동적인 Hot Reload는 지원되지 않는다.</p>
-<h3 id="2-code-classlanguage-textvolumesvolumemounts-방식code-동적-업데이트를-통한-유연성-확보"><strong>2) <code class="language-text">volumes/volumeMounts 방식:</code> 동적 업데이트를 통한 유연성 확보</strong></h3>
+<h3 id="2-volumesvolumemounts방식-동적-업데이트를-통한-유연성-확보"><strong>2) <code>volumes/volumeMounts 방식:</code> 동적 업데이트를 통한 유연성 확보</strong></h3>
 <p>반면 이 방식은 ConfigMap/Secret을 파일 시스템의 리소스로 마운트한다. Kubelet이 원본 리소스의 변경을 감지하면 마운트된 파일을 원자적으로(atomically) 교체해주므로, 애플리케이션이 이를 감지해 <strong>Pod 재시작 없이 Hot Reload</strong>하는 것이 가능하다.</p>
 <p>이는 로깅 레벨 변경이나 기능 플래그 전환처럼, 서비스 중단 없이 즉각적인 설정 변경이 필요한 <strong>운영상의 요구</strong>를 충족시키기 위한 강력한 유연성을 제공한다.</p>
 <h2 id="env-주입-과정-알아보기">ENV 주입 과정 알아보기</h2>
-<p>환경 변수가 일단 주입된 후에 불변한 이유는 쿠버네티스의 정책은 아니고 OS의 프로세스 모델의 구조 때문이다. 컨테이너도 OS 관점에서 프로세스이기에 동일훤 원리를 따른다. 보통 새로운 프로세스가 생성될 때,  <code class="language-text">fork()</code>와 <code class="language-text">execve()</code> 라는 두 개의 System Call을 통해 이루어진다.</p>
+<p>환경 변수가 일단 주입된 후에 불변한 이유는 쿠버네티스의 정책은 아니고 OS의 프로세스 모델의 구조 때문이다. 컨테이너도 OS 관점에서 프로세스이기에 동일훤 원리를 따른다. 보통 새로운 프로세스가 생성될 때,  <code>fork()</code>와 <code>execve()</code> 라는 두 개의 System Call을 통해 이루어진다.</p>
 <ol>
-<li><code class="language-text">fork()</code> 를 실행하면 부모 프로세스는 자신과 똑같은 복제본인 자식 프로세스를 만들고 이 때 자식은 부모의 메모리, 파일 디스크립터, 그리고 환경 변수까지 복사해 물려 받는다.</li>
-<li><code class="language-text">execve()</code> 자식 프로세스는 이 시스템 콜을 통해 자기 자신을 새로운 프로세스로 교체하는데, 이 함수를 호출 할 때, 새로운 프로세스에 전달할 초기 환경 변수 목록을 인자로 넘겨준다.</li>
+<li><code>fork()</code> 를 실행하면 부모 프로세스는 자신과 똑같은 복제본인 자식 프로세스를 만들고 이 때 자식은 부모의 메모리, 파일 디스크립터, 그리고 환경 변수까지 복사해 물려 받는다.</li>
+<li><code>execve()</code> 자식 프로세스는 이 시스템 콜을 통해 자기 자신을 새로운 프로세스로 교체하는데, 이 함수를 호출 할 때, 새로운 프로세스에 전달할 초기 환경 변수 목록을 인자로 넘겨준다.</li>
 </ol>
 <p>이 과정은 컨테이너가 시작될 때도 동일하게 일어난다.</p>
 <ol>
-<li><code class="language-text">kubelet(부모 프로세스) 역할:</code>   kubelet은 컨테이너 런타임에게 Pod Spec에 정의된 환경 변수 목록을 전달한다.</li>
-<li><code class="language-text">컨테이너 런타임:</code> 이 정보를 받아 컨테이너 내부에서 실행될 메인 프로세스를 execve()로 실행하면서 전달받은 환경 변수들로 초기화된다.</li>
+<li><code>kubelet(부모 프로세스) 역할:</code>   kubelet은 컨테이너 런타임에게 Pod Spec에 정의된 환경 변수 목록을 전달한다.</li>
+<li><code>컨테이너 런타임:</code> 이 정보를 받아 컨테이너 내부에서 실행될 메인 프로세스를 execve()로 실행하면서 전달받은 환경 변수들로 초기화된다.</li>
 </ol>
 <h2 id="kubelet의-동작-원리---deep-dive">Kubelet의 동작 원리 - Deep Dive</h2>
 <blockquote>
 <p>Kubelet은 ConfigMap/Secret을 컨테이너에 전달하는 실질적인 역할을하는게 그 과정이 어떻게 되는지 조금더 자세히 보자</p>
 </blockquote>
 <ol>
-<li><code class="language-text">감시:</code> 각 노드의 kubelet은 Control Plane의 API Server를 지속적으로 Watch 하고 있다. 이 때 자신에게 할당된 (<code class="language-text">spec.nodeName</code>이 자신의 노드 이름인 경우) Pod가 있는지 체크한다.</li>
-<li><code class="language-text">Pod 인지 및 명세 확인:</code> 스케줄러에 의해 특정 Pod이 노드에 할당되면, kubelet은 해당 Pod의 명세를 API Server로 요청하여 읽어들인다. 이 때 어떤 ConfigMap이나 Secret을 필요로 하는지 파악한다.</li>
-<li><code class="language-text">데이터 요청(Fetch):</code> kubelet은 Pod 명세에 따라 필요한 ConfigMap과 Secret 객체의 내용을 API 서버에 명시적으로 요청하여 가져온다. 이 통신은 TLS로 암호화 되며, kubelet은 ServiceAccount나 인증서를 통해 API 서버로부터 인증/인가를 받아야한다.</li>
-<li><code class="language-text">주입 메커니즘 실행</code></li>
+<li><code>감시:</code> 각 노드의 kubelet은 Control Plane의 API Server를 지속적으로 Watch 하고 있다. 이 때 자신에게 할당된 (<code>spec.nodeName</code>이 자신의 노드 이름인 경우) Pod가 있는지 체크한다.</li>
+<li><code>Pod 인지 및 명세 확인:</code> 스케줄러에 의해 특정 Pod이 노드에 할당되면, kubelet은 해당 Pod의 명세를 API Server로 요청하여 읽어들인다. 이 때 어떤 ConfigMap이나 Secret을 필요로 하는지 파악한다.</li>
+<li><code>데이터 요청(Fetch):</code> kubelet은 Pod 명세에 따라 필요한 ConfigMap과 Secret 객체의 내용을 API 서버에 명시적으로 요청하여 가져온다. 이 통신은 TLS로 암호화 되며, kubelet은 ServiceAccount나 인증서를 통해 API 서버로부터 인증/인가를 받아야한다.</li>
+<li><code>주입 메커니즘 실행</code></li>
 </ol>
 <h3 id="주입-메커니즘-실행"><strong>주입 메커니즘 실행</strong></h3>
 <p><strong>A. 환경 변수로 주입인 경우</strong></p>
@@ -285,14 +289,14 @@
 </ol>
 <p><strong>B. 볼륨 마운트로 주입인 경우</strong></p>
 <ol>
-<li><strong>호스트에 디렉토리 생성:</strong> kubelet은 호스트 노드의 특정 경로(일반적으론 <code class="language-text">/var/lib/kubelet/pods/&lt;pod-uid>/volumes/kubertes.io~[configmap|secret]/&lt;volume-name></code>) 에 디렉토리를 생성한다.</li>
+<li><strong>호스트에 디렉토리 생성:</strong> kubelet은 호스트 노드의 특정 경로(일반적으론 <code>/var/lib/kubelet/pods/&#x3C;pod-uid>/volumes/kubertes.io~[configmap|secret]/&#x3C;volume-name></code>) 에 디렉토리를 생성한다.</li>
 <li><strong>데이터 기록:</strong> 가져온 데이터의 각 key를 파일이름으로, 각 value를 파일 내용으로 하여 해당 디렉토리에 파일을 생성한다.</li>
-<li><strong>심볼릭 링크 생성:</strong> kubelet은 <code class="language-text">..data(가칭)</code> 라는 이름의 심볼릭 링크를 만들어, 방금 생성한 타임스탬프 디렉토리를 가르키도록 한다.</li>
-<li><strong>컨테이너 마운트:</strong> Kubelet이 컨테이너 런타임에 컨테이너 생성을 요청할 때, "호스트의 이 경로를 컨테이너 내부의 저 경로(mountPath)로 마운트하라"고 지시하고 컨테이너 런타임이 이 지시에 따라 <code class="language-text">..data</code>  디렉토리를 컨테이너 바인드 마운트한다.</li>
+<li><strong>심볼릭 링크 생성:</strong> kubelet은 <code>..data(가칭)</code> 라는 이름의 심볼릭 링크를 만들어, 방금 생성한 타임스탬프 디렉토리를 가르키도록 한다.</li>
+<li><strong>컨테이너 마운트:</strong> Kubelet이 컨테이너 런타임에 컨테이너 생성을 요청할 때, "호스트의 이 경로를 컨테이너 내부의 저 경로(mountPath)로 마운트하라"고 지시하고 컨테이너 런타임이 이 지시에 따라 <code>..data</code>  디렉토리를 컨테이너 바인드 마운트한다.</li>
 </ol>
 <h2 id="왜-env는-불변하고-volumemount-방식은-가능한가">왜 ENV는 불변하고 volumeMount 방식은 가능한가?</h2>
-<p><strong>환경 변수는</strong> <code class="language-text">execve()</code> 함수에 의해 <strong>최초 초기화될 때 컨테이너나 프로세스에 각인되며 kubelet에 의해 컨테이너가 시작되면 격리되어 변경할 방법이 없다.</strong> 프로세스도 마찬가지로 실행되면 다른 프로세스로부터 격리된다. 따라서 환경 변수 값을 수정할 수 있는 방법을 OS 레벨에서 제공하지 않기에 변경할 방법이 없다.</p>
-<p>만약, 이게 가능하다면 프로세스가 다른 프로세스의 <code class="language-text">PATH</code> 환경 변수를 마음대로 바꾸거나, <code class="language-text">DB_PASSWORD</code> 를 바꾸는 등의 끔찍한 보안 및 안정성 문제를 일으킬 수 있다. 따라서 프로세스 격리 원칙을 지키기 위해 ENV 값들은 불변하다.</p>
+<p><strong>환경 변수는</strong> <code>execve()</code> 함수에 의해 <strong>최초 초기화될 때 컨테이너나 프로세스에 각인되며 kubelet에 의해 컨테이너가 시작되면 격리되어 변경할 방법이 없다.</strong> 프로세스도 마찬가지로 실행되면 다른 프로세스로부터 격리된다. 따라서 환경 변수 값을 수정할 수 있는 방법을 OS 레벨에서 제공하지 않기에 변경할 방법이 없다.</p>
+<p>만약, 이게 가능하다면 프로세스가 다른 프로세스의 <code>PATH</code> 환경 변수를 마음대로 바꾸거나, <code>DB_PASSWORD</code> 를 바꾸는 등의 끔찍한 보안 및 안정성 문제를 일으킬 수 있다. 따라서 프로세스 격리 원칙을 지키기 위해 ENV 값들은 불변하다.</p>
 <h2 id="볼륨-마운트-방식이-가능한-이유---hot-reload-원리"><strong>볼륨 마운트 방식이 가능한 이유 - Hot reload 원리</strong></h2>
 <p>반면, 볼륨 마운트를 통한 업데이트가 가능한 이유는 파일 시스템을 마운트 하는 방식이 처음부터 여러 프로세스 간 데이터 공유를 위해 설계된 표준적인 메커니즘이기 때문인데 조금더 자세히 알아보자</p>
 <p><strong>이유: 심볼릭 링크</strong></p>
@@ -302,16 +306,17 @@
 </ul>
 <p><strong>과정:</strong></p>
 <ol>
-<li>컨테이너에는 <code class="language-text">..data</code> 심볼릭 링크가 마운트 되어있다. (위에서 설명)</li>
-<li>ConfigMap/Secret이 업데이트되면, <code class="language-text">kubelet</code> 은 새로운 타임스탬프 디렉토리(2025.v2)를 만들고 새 데이터를 쓴 뒤, <code class="language-text">..data</code> 심볼릭 링크가 가르키는 대상을 새 디렉토리로 교체한다.</li>
+<li>컨테이너에는 <code>..data</code> 심볼릭 링크가 마운트 되어있다. (위에서 설명)</li>
+<li>ConfigMap/Secret이 업데이트되면, <code>kubelet</code> 은 새로운 타임스탬프 디렉토리(2025.v2)를 만들고 새 데이터를 쓴 뒤, <code>..data</code> 심볼릭 링크가 가르키는 대상을 새 디렉토리로 교체한다.</li>
 </ol>
 <h2 id="주입받은-환경-변수는-프로세스-메모리-중-어떤-영역에-존재할까">주입받은 환경 변수는 프로세스 메모리 중 어떤 영역에 존재할까?</h2>
 <p><strong>결론:</strong></p>
 <blockquote>
 <p>환경 변수는 프로세스의 가상 메모리 중 Stack 세그먼트 위인 가장 높은 주소 영역에 위치한다.</p>
 </blockquote>
-<p>컨테이너의 본질은 프로세스이다. 따라서 컨테이너의 환경 변수는 프로세스와 동일한 메모리 구조로 맵핑된다. 환경 변수는 프로세스의 가상 메모리 중 Stack 세그먼트 위인 가장 높은 주소 영역에 위치하며, 프로세스 생성 시 호출되는 <code class="language-text">execve()</code>System Call 결과 다음과 같은 메모리 구조를 가지게된다.</p>
-<div class="gatsby-highlight" data-language="text"><pre class="language-text"><code class="language-text">+------------------------+ &lt;-- Highest Memory Address
+<p>컨테이너의 본질은 프로세스이다. 따라서 컨테이너의 환경 변수는 프로세스와 동일한 메모리 구조로 맵핑된다. 환경 변수는 프로세스의 가상 메모리 중 Stack 세그먼트 위인 가장 높은 주소 영역에 위치하며, 프로세스 생성 시 호출되는 <code>execve()</code>System Call 결과 다음과 같은 메모리 구조를 가지게된다.</p>
+<deckgo-highlight-code  terminal="carbon" theme="one-dark"  >
+          <code slot="code">+------------------------+ &lt;-- Highest Memory Address
 | Kernel Space           | (프로세스에서 직접 접근 불가)
 +------------------------+
 |                        |
@@ -335,19 +340,20 @@
 | Text Segment (Code)    |
 +------------------------+ &lt;-- Lowest Memory Address
 | (Reserved)             |
-+------------------------+</code></pre></div>
++------------------------+</code>
+        </deckgo-highlight-code>
 <h2 id="그렇다면-왜-stack-위일까"><strong>그렇다면 왜 Stack 위일까?</strong></h2>
 <blockquote>
-<p>불변의 값을 나열하는 것이면 <code class="language-text">Text Segment</code>, <code class="language-text">Data Segment</code>, <code class="language-text">BSS Segment</code> 사이나 <code class="language-text">Heap</code> 아래여도 될 것 같은데 왜 Stack 위일까?</p>
+<p>불변의 값을 나열하는 것이면 <code>Text Segment</code>, <code>Data Segment</code>, <code>BSS Segment</code> 사이나 <code>Heap</code> 아래여도 될 것 같은데 왜 Stack 위일까?</p>
 </blockquote>
 <p>초기화 과정과 메모리 영역의 특성을 파악해보자</p>
-<p>프로세스 메모리 영역 구성은 위에서 본 것처럼 <code class="language-text">Text</code>, <code class="language-text">Data</code>, <code class="language-text">BSS</code>, <code class="language-text">Heap</code>, <code class="language-text">Unmapped Memory</code>, <code class="language-text">Stack</code>, <code class="language-text">ENV</code> 이렇게 구성되어 있다. 각, 영역의 특성을 이해하면 Stack 위에 위치하는 것이 합리적이다 라는 것을 알 수 있다.</p>
+<p>프로세스 메모리 영역 구성은 위에서 본 것처럼 <code>Text</code>, <code>Data</code>, <code>BSS</code>, <code>Heap</code>, <code>Unmapped Memory</code>, <code>Stack</code>, <code>ENV</code> 이렇게 구성되어 있다. 각, 영역의 특성을 이해하면 Stack 위에 위치하는 것이 합리적이다 라는 것을 알 수 있다.</p>
 <p>우선, Text, Data, BSS 영역에 위치하지 않는 이유는 다음과 같다.</p>
 <blockquote>
 <p>프로세스 생성 과정이 복잡해지고 생성 지연을 최소화 하기 위함</p>
 </blockquote>
 <ul>
-<li><strong>실행 파일과의 직접적인 매핑</strong>: 커널의 로더(loader)가 execve를 처리할 때, 디스크에 있는 실행 파일의 Text Segment와 Data Segment를 가상 메모리 공간으로 거의 그대로 <code class="language-text">mmap()</code>을 통해 매핑한다.</li>
+<li><strong>실행 파일과의 직접적인 매핑</strong>: 커널의 로더(loader)가 execve를 처리할 때, 디스크에 있는 실행 파일의 Text Segment와 Data Segment를 가상 메모리 공간으로 거의 그대로 <code>mmap()</code>을 통해 매핑한다.</li>
 </ul>
 <p>즉, 파일에서의 연속된 바이트들이 메모리에서도 연속된 공간에 매핑되는데 이는 매우 빠르고 효율적인 작업이다.</p>
 <ul>
@@ -370,8 +376,8 @@
 <p>만약, Heap 아래 (즉, BSS와 Heap 사이)에 위치한다면?</p>
 </blockquote>
 <h3 id="기존-동작-원리"><strong>기존 동작 원리</strong></h3>
-<p>Text, Data, BSS 세그먼트 들은 컴파일 시점에 결정되면 링크 과정을 통해 메모리에 맵핑되며 정적 데이터 영역이 끝나는 지점의 주소를 <code class="language-text">_end</code> 또는 <code class="language-text">__bss_end_</code> 와 같은 심볼로 파일 안에 기록해둔다.</p>
-<p>또, 메모리 동적 할당을 담당하는 <code class="language-text">libc</code> 의 <code class="language-text">malloc</code> 구현을 보면 커널에게 물어볼 필요 없이 실행 파일 안에 기록된 <code class="language-text">_end</code>  심볼의 주소를 읽어, 정적 데이터의 끝점을 알게되고 힙의 시작점을 고정할 수 있다.</p>
+<p>Text, Data, BSS 세그먼트 들은 컴파일 시점에 결정되면 링크 과정을 통해 메모리에 맵핑되며 정적 데이터 영역이 끝나는 지점의 주소를 <code>_end</code> 또는 <code>__bss_end_</code> 와 같은 심볼로 파일 안에 기록해둔다.</p>
+<p>또, 메모리 동적 할당을 담당하는 <code>libc</code> 의 <code>malloc</code> 구현을 보면 커널에게 물어볼 필요 없이 실행 파일 안에 기록된 <code>_end</code>  심볼의 주소를 읽어, 정적 데이터의 끝점을 알게되고 힙의 시작점을 고정할 수 있다.</p>
 <p>그런데 BSS와 Heap 사이에 ENV (동적인 사이즈)가 배치된다면 libc의 malloc 초기화 과정에 힙의 시작점을 알기 위해 반드시 커널과 소통해야 한다. (libc는 유저 스페이스의 라이브러리이고, ENV 초기화는 execve 라는 커널 영역의 책임이다.)</p>
 <ul>
 <li>어떻게? 커널이 execve의 결과로 새로운 힙 시작 주소를 프로세스에게 넘겨주거나, libc가 "내 힙은 어디서 시작합니까?"라고 묻는 새로운 시스템 콜을 호출해야 한다.</li>
@@ -400,7 +406,7 @@
 <h1 id="왜-secret은-base64로-인코딩-할까"><strong>왜 Secret은 Base64로 인코딩 할까?</strong></h1>
 <p>Secret 데이터 base64로 인코딩하는 것은 보안적인 측면에서 불안 요소이다. 그럼 왜 base64로 인코딩 하는 형태로 설계되었을까?</p>
 <p><em>이 고민의 핵심 base64로 인코딩 하는 것이 보안과는 관련이 없다는 점을 파악하는 것이다.</em> 결론은 <em>Secret의 data 필드는 임의의 바이너리 데이터를 담을 수 있게 설계되었기 때문에 base64 기반의 인코딩을 지원한다.</em></p>
-<p>YAML이나 JSON 형식의 매니페스트 파일은 기본적으로 Text 기반인데 줄바꿈이나 <code class="language-text">null 문자(\0)</code> 또는 기타 제어 문자가 포함된 바이너리 데이터(예: id_rsa 개인키, .p12 인증서 파일 등)를 그대로 넣으면 파싱 오류가 발생하거나 데이터 변형이 초래될 수 있다.</p>
+<p>YAML이나 JSON 형식의 매니페스트 파일은 기본적으로 Text 기반인데 줄바꿈이나 <code>null 문자(\0)</code> 또는 기타 제어 문자가 포함된 바이너리 데이터(예: id_rsa 개인키, .p12 인증서 파일 등)를 그대로 넣으면 파싱 오류가 발생하거나 데이터 변형이 초래될 수 있다.</p>
 <p>이런 문제를 해결하고자 base64를 활용한다. base64는 모든 바이너리 데이터를 ASCII로 변환하고 이렇게 변환된 문자열은 YAML/JSON 파일에 아무런 문제 없이 포함될 수 있다.</p>
 <h3 id="왜-기본적으로-암호화하지-않았을까"><strong>왜 기본적으로 암호화하지 않았을까?</strong></h3>
 <p><strong>유연성과 확장성을 중시하기 때문</strong></p>
@@ -418,7 +424,7 @@
 </ul>
 <p><strong>두 가지 주입 방식의 근본적 차이</strong></p>
 <ul>
-<li><strong>환경 변수 방식</strong>: <code class="language-text">execve()</code> 시스템 콜에 의해 프로세스 시작 시점에 고정되어 불변성(Immutability)을 보장한다.</li>
+<li><strong>환경 변수 방식</strong>: <code>execve()</code> 시스템 콜에 의해 프로세스 시작 시점에 고정되어 불변성(Immutability)을 보장한다.</li>
 <li><strong>볼륨 마운트 방식</strong>: Kubelet의 symlink 교체를 통해 동적 업데이트(Hot Reload)가 가능하며 유연성을 제공한다.</li>
 <li>이 두 방식은 '안정성 vs 유연성'이라는 상반된 설계 목표를 모두 지원하기 위한 의도적인 선택이다.</li>
 </ul>
@@ -449,6 +455,6 @@
           <script
             id="gatsby-chunk-mapping"
           >
-            window.___chunkMapping="{\"app\":[\"/app-c23d19a8bb6a3e5e6b91.js\"],\"component---src-pages-404-js\":[\"/component---src-pages-404-js-e9d26bfe54dc8ba749d9.js\"],\"component---src-pages-about-js\":[\"/component---src-pages-about-js-439f6d0177de81a1d2e2.js\"],\"component---src-pages-index-js\":[\"/component---src-pages-index-js-c5aa6e0846bc9c251f6f.js\"],\"component---src-pages-using-ssr-js\":[\"/component---src-pages-using-ssr-js-f7009411ada2b7170de3.js\"],\"component---src-templates-blog-list-js\":[\"/component---src-templates-blog-list-js-f61935fa416ef70f9633.js\"],\"component---src-templates-blog-post-js\":[\"/component---src-templates-blog-post-js-04d3320497a6ec876053.js\"]}";
+            window.___chunkMapping="{\"app\":[\"/app-506b1f5a03c37b6257a9.js\"],\"polyfills-dom\":[\"/polyfills-dom-80c6502af71aad0a8a1c.js\"],\"polyfills-core-js\":[\"/polyfills-core-js-6481a7a85aec7ede5038.js\"],\"component---src-pages-404-js\":[\"/component---src-pages-404-js-e9d26bfe54dc8ba749d9.js\"],\"component---src-pages-about-js\":[\"/component---src-pages-about-js-439f6d0177de81a1d2e2.js\"],\"component---src-pages-index-js\":[\"/component---src-pages-index-js-c5aa6e0846bc9c251f6f.js\"],\"component---src-pages-using-ssr-js\":[\"/component---src-pages-using-ssr-js-f7009411ada2b7170de3.js\"],\"component---src-templates-blog-list-js\":[\"/component---src-templates-blog-list-js-bcc1576fd5107ffd0c00.js\"],\"component---src-templates-blog-post-js\":[\"/component---src-templates-blog-post-js-251de4d9b0aae3d98045.js\"]}";
           </script>
-        <script>window.___webpackCompilationHash="ed1852ba4ae8c104d642";</script><script src="/webpack-runtime-d7f8388e53cefe4c337b.js" async></script><script src="/framework-f11658f6be33b675e763.js" async></script><script src="/app-c23d19a8bb6a3e5e6b91.js" async></script><!-- slice-end id="_gatsby-scripts-1" --></body></html>
+        <script>window.___webpackCompilationHash="60d9b3e660f10e56602d";</script><script src="/webpack-runtime-325b0e0809797ca1965c.js" async></script><script src="/framework-f11658f6be33b675e763.js" async></script><script src="/app-506b1f5a03c37b6257a9.js" async></script><!-- slice-end id="_gatsby-scripts-1" --></body></html>
