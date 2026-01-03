@@ -43,26 +43,6 @@
     width: 100%;
 }
 
-/* 반응형 - 태블릿 */
-@media (max-width: 768px) {
-    .thumbnailWrapper {
-        width: 80px;
-        height: 80px;
-    }
-}
-
-/* 반응형 - 모바일 */
-@media (max-width: 600px) {
-    .postLink {
-        flex-direction: column;
-    }
-
-    .thumbnailWrapper {
-        width: 100%;
-        height: 200px;
-    }
-}
-
 .postLink:hover h3 {
     color: #663399;
 }
@@ -72,16 +52,13 @@
 }
 
 .postLink h3 {
-    margin: 0 0 -1rem 0;
-    color: #666;
-    line-height: 1.5;
+    margin: 0 0 0 0;
 }
 
 .metaContainer {
     display: flex;
     align-items: center;
-    gap: 0.8rem;
-    margin-bottom: 0;
+    gap: 0.5rem;
 }
 
 .date {
@@ -100,12 +77,6 @@
     font-size: 0.875rem;
     color: #999;
     font-weight: normal;
-}
-
-.postLink p {
-    color: #666;
-    line-height: 1.6;
-    margin: 0;
 }
 
 /* Pagination Styles */
