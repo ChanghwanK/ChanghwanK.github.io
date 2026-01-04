@@ -7,7 +7,7 @@ const IndexPage = () => (
   <Layout>
     <div className={styles.container}>
       <p className={styles.text}>
-        <strong>안녕하세요:)</strong>
+        <h3>안녕하세요:)</h3>
       </p>
       <p className={styles.text}>
         Cloud Native, Kubernetes등에 관심이 많은 DevOps Engineer 김창환입니다.
