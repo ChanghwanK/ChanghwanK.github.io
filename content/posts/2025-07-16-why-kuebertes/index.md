@@ -2,7 +2,7 @@
 title: "Kubernetes ConfigMap, Secret 깊게 이해하기"
 description: "kuberntes configmap"
 date: 2025-07-16
-thumbnail: ./test.png  # 추가
+thumbnail: ./kubernetes.png
 tags:
   - Kubernetes
   - DevOps
