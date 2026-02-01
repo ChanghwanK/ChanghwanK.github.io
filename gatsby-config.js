@@ -9,7 +9,7 @@
  */
 module.exports = {
   siteMetadata: {
-    title: `쌓아올린 시간.`,
+    title: `축구 좋아하는 개발자.`,
     description: `개인 기술 블로그`,
     author: `@changhwanK`,
     siteUrl: `https://changhwanK.github.io/`,
