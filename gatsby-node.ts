@@ -1,8 +1,12 @@
-const path = require(`path`)
-const { createFilePath } = require(`gatsby-source-filesystem`)
+import path from "path"
+import { createFilePath } from "gatsby-source-filesystem"
+import type { GatsbyNode } from "gatsby"
 
-// Slug 생성 (URL 경로) - 이 부분이 없으면 fields { slug } 에러가 발생합니다.
-exports.onCreateNode = ({ node, actions, getNode }) => {
+export const onCreateNode: GatsbyNode["onCreateNode"] = ({
+  node,
+  actions,
+  getNode,
+}) => {
   const { createNodeField } = actions
 
   if (node.internal.type === `MarkdownRemark`) {
@@ -16,11 +20,21 @@ exports.onCreateNode = ({ node, actions, getNode }) => {
   }
 }
 
-// 페이지 동적 생성
-exports.createPages = async ({ graphql, actions }) => {
+interface AllMarkdownRemarkData {
+  allMarkdownRemark: {
+    nodes: Array<{
+      fields: { slug: string }
+    }>
+  }
+}
+
+export const createPages: GatsbyNode["createPages"] = async ({
+  graphql,
+  actions,
+}) => {
   const { createPage } = actions
 
-  const result = await graphql(`
+  const result = await graphql<AllMarkdownRemarkData>(`
     query {
       allMarkdownRemark(
         sort: { frontmatter: { date: DESC } }
@@ -39,13 +53,13 @@ exports.createPages = async ({ graphql, actions }) => {
     throw result.errors
   }
 
-  const posts = result.data.allMarkdownRemark.nodes
+  const posts = result.data!.allMarkdownRemark.nodes
 
   // 1. 각 포스트 페이지 생성
   posts.forEach(post => {
     createPage({
       path: post.fields.slug,
-      component: path.resolve(`./src/templates/blog-post.js`),
+      component: path.resolve(`./src/templates/blog-post.tsx`),
       context: {
         slug: post.fields.slug,
       },
@@ -59,7 +73,7 @@ exports.createPages = async ({ graphql, actions }) => {
   Array.from({ length: numPages }).forEach((_, i) => {
     createPage({
       path: i === 0 ? `/blog` : `/blog/${i + 1}`,
-      component: path.resolve("./src/templates/blog-list.js"),
+      component: path.resolve("./src/templates/blog-list.tsx"),
       context: {
         limit: postsPerPage,
         skip: i * postsPerPage,

@@ -1,11 +1,29 @@
 import * as React from "react"
 import { useEffect, useState } from "react"
 import { Link, graphql } from "gatsby"
+import type { PageProps, HeadProps } from "gatsby"
 import Layout from "../components/layout"
 import Seo from "../components/seo"
 import * as styles from "./blog-post.module.css"
 
-const BlogPostTemplate = ({ data }) => {
+interface BlogPostData {
+  markdownRemark: {
+    html: string
+    fields: { slug: string }
+    frontmatter: {
+      title: string
+      date: string
+      rawDate: string
+      description: string | null
+      tags: string[] | null
+      thumbnail: { publicURL: string } | null
+    }
+    excerpt: string
+    tableOfContents: string
+  }
+}
+
+const BlogPostTemplate = ({ data }: PageProps<BlogPostData>) => {
   const post = data.markdownRemark
   const { title, description, date, rawDate, tags } = post.frontmatter
   const [tocVisible, setTocVisible] = useState(false)
@@ -15,7 +33,7 @@ const BlogPostTemplate = ({ data }) => {
   useEffect(() => {
     if (!hasToc) return undefined
 
-    let frameId = null
+    let frameId: number | null = null
     const handleScroll = () => {
       if (frameId !== null) return
       frameId = window.requestAnimationFrame(() => {
@@ -77,7 +95,7 @@ const BlogPostTemplate = ({ data }) => {
   )
 }
 
-export const Head = ({ data }) => {
+export const Head = ({ data }: HeadProps<BlogPostData>) => {
   const post = data.markdownRemark
   const image = post.frontmatter.thumbnail?.publicURL
   return (

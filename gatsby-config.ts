@@ -1,13 +1,6 @@
-/**
- * Configure your Gatsby site with this file.
- *
- * See: https://www.gatsbyjs.com/docs/reference/config-files/gatsby-config/
- */
+import type { GatsbyConfig } from "gatsby"
 
-/**
- * @type {import('gatsby').GatsbyConfig}
- */
-module.exports = {
+const config: GatsbyConfig = {
   siteMetadata: {
     title: `Dev.ch`,
     description: `개인 기술 블로그`,
@@ -96,8 +89,8 @@ module.exports = {
         `,
         feeds: [
           {
-            serialize: ({ query: { site, allMarkdownRemark } }) =>
-              allMarkdownRemark.nodes.map(node => ({
+            serialize: ({ query: { site, allMarkdownRemark } }: any) =>
+              allMarkdownRemark.nodes.map((node: any) => ({
                 ...node.frontmatter,
                 description: node.frontmatter.description || node.excerpt,
                 date: node.frontmatter.date,
@@ -140,3 +133,5 @@ module.exports = {
     },
   ],
 }
+
+export default config

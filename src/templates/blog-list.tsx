@@ -1,13 +1,45 @@
 import * as React from "react"
 import { Link, graphql } from "gatsby"
+import type { PageProps, HeadProps } from "gatsby"
 import { GatsbyImage, getImage } from "gatsby-plugin-image"
+import type { IGatsbyImageData } from "gatsby-plugin-image"
 import Layout from "../components/layout"
 import Seo from "../components/seo"
 import * as styles from "./blog-list.module.css"
 
-const BlogList = ({ data, pageContext }) => {
+interface PostNode {
+  fields: { slug: string }
+  frontmatter: {
+    title: string
+    date: string
+    rawDate: string
+    description: string | null
+    tags: string[] | null
+    thumbnail: {
+      childImageSharp: {
+        gatsbyImageData: IGatsbyImageData
+      }
+    } | null
+  }
+  excerpt: string
+}
+
+interface BlogListData {
+  allMarkdownRemark: {
+    nodes: PostNode[]
+  }
+}
+
+interface BlogListPageContext {
+  currentPage: number
+  numPages: number
+}
+
+const BlogList = ({
+  data,
+  pageContext,
+}: PageProps<BlogListData, BlogListPageContext>) => {
   const posts = data.allMarkdownRemark.nodes
-  const totalCount = data.allMarkdownRemark.totalCount
   const { currentPage, numPages } = pageContext
   const isFirst = currentPage === 1
   const isLast = currentPage === numPages
@@ -17,12 +49,6 @@ const BlogList = ({ data, pageContext }) => {
   return (
     <Layout>
       <div className={styles.container}>
-        {/* 페이지 헤더 */}
-        <header className={styles.pageHeader}>
-          <h1 className={styles.pageTitle}>Posts</h1>
-          <span className={styles.postCount}>{totalCount}개의 글</span>
-        </header>
-
         <div className={styles.postList}>
           {posts.map(post => {
             const { title, date, rawDate, description, tags, thumbnail } =
@@ -39,6 +65,8 @@ const BlogList = ({ data, pageContext }) => {
                         image={thumbnailImage}
                         alt={title}
                         className={styles.thumbnail}
+                        style={{ width: "100%", height: "100%" }}
+                        imgStyle={{ objectFit: "contain", objectPosition: "center" }}
                       />
                     </div>
                   )}
@@ -84,7 +112,7 @@ const BlogList = ({ data, pageContext }) => {
                 className={`${styles.paginationLink} ${
                   i + 1 === currentPage ? styles.activeLink : ""
                 }`}
-                {...(i + 1 === currentPage ? { "aria-current": "page" } : {})}
+                {...(i + 1 === currentPage ? { "aria-current": "page" as const } : {})}
               >
                 {i + 1}
               </Link>
@@ -102,7 +130,9 @@ const BlogList = ({ data, pageContext }) => {
   )
 }
 
-export const Head = ({ pageContext }) => {
+export const Head = ({
+  pageContext,
+}: HeadProps<BlogListData, BlogListPageContext>) => {
   const pathname =
     pageContext.currentPage === 1 ? "/blog" : `/blog/${pageContext.currentPage}`
   return <Seo title="Blog" pathname={pathname} />
@@ -116,7 +146,6 @@ export const query = graphql`
       limit: $limit
       skip: $skip
     ) {
-      totalCount
       nodes {
         fields {
           slug
@@ -131,7 +160,6 @@ export const query = graphql`
             childImageSharp {
               gatsbyImageData(
                 width: 200
-                height: 200
                 placeholder: BLURRED
                 formats: [AUTO, WEBP]
               )

@@ -1,10 +1,16 @@
 import * as React from "react"
-import { graphql } from "gatsby"
+import { graphql, PageProps } from "gatsby"
 import Layout from "../components/layout"
 import Seo from "../components/seo"
 import * as styles from "./index.module.css"
 
-const CAREER = [
+interface CareerItem {
+  company: string
+  role: string
+  period: string
+}
+
+const CAREER: CareerItem[] = [
   {
     company: "Riiid",
     role: "DevOps Engineer",
@@ -22,8 +28,20 @@ const CAREER = [
   },
 ]
 
-const IndexPage = ({ data }) => {
-  const { authorName, authorRole, authorBio, techStack } = data.site.siteMetadata
+interface HomePageQueryData {
+  site: {
+    siteMetadata: {
+      authorName: string
+      authorRole: string
+      authorBio: string
+      techStack: string[]
+    }
+  }
+}
+
+const IndexPage = ({ data }: PageProps<HomePageQueryData>) => {
+  const { authorName, authorRole, authorBio, techStack } =
+    data.site.siteMetadata
 
   return (
     <Layout>

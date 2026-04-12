@@ -2,7 +2,11 @@ import * as React from "react"
 import { Link } from "gatsby"
 import * as styles from "./header.module.css"
 
-const Header = ({ siteTitle }) => (
+interface HeaderProps {
+  siteTitle: string
+}
+
+const Header = ({ siteTitle }: HeaderProps) => (
   <header className={styles.header}>
     <div className={styles.container}>
       <Link to="/" className={styles.title}>

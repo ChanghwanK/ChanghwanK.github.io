@@ -1,4 +1,4 @@
-/* src/pages/about.js */
+/* src/pages/about.tsx */
 import * as React from "react"
 import Layout from "../components/layout"
 import Seo from "../components/seo"
