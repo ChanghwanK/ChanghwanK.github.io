@@ -1,28 +1,25 @@
 {
-  "name": "gatsby-starter-default",
+  "name": "tech-blog",
   "private": true,
-  "description": "A simple starter to get up and developing quickly with Gatsby",
+  "description": "개인 기술 블로그",
   "version": "0.1.0",
-  "author": "Kyle Mathews <mathews.kyle@gmail.com>",
+  "author": "changhwanK",
   "dependencies": {
     "@deckdeckgo/highlight-code": "^3.6.0",
-    "@mdx-js/react": "^2.3.0",
     "gatsby": "^5.14.6",
     "gatsby-plugin-feed": "^5.15.0",
     "gatsby-plugin-image": "^3.14.0",
     "gatsby-plugin-manifest": "^5.14.0",
-    "gatsby-plugin-mdx": "^5.15.0",
+    "gatsby-plugin-robots-txt": "^1.8.0",
     "gatsby-plugin-sharp": "^5.14.0",
+    "gatsby-plugin-sitemap": "^6.16.0",
     "gatsby-remark-autolink-headers": "^6.15.0",
     "gatsby-remark-highlight-code": "^3.3.0",
     "gatsby-remark-images": "^7.15.0",
-    "gatsby-remark-table-of-contents": "^2.0.0",
     "gatsby-source-filesystem": "^5.15.0",
     "gatsby-transformer-remark": "^6.15.0",
     "gatsby-transformer-sharp": "^5.14.0",
     "gh-pages": "^6.3.0",
-    "isomorphic-dompurify": "^2.35.0",
-    "prismjs": "^1.30.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0"
   },
@@ -44,9 +41,9 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/gatsbyjs/gatsby-starter-default"
+    "url": "https://github.com/ChanghwanK/ChanghwanK.github.io"
   },
   "bugs": {
-    "url": "https://github.com/gatsbyjs/gatsby/issues"
+    "url": "https://github.com/ChanghwanK/ChanghwanK.github.io/issues"
   }
 }

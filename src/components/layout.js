@@ -1,4 +1,3 @@
-
 /**
  * Layout component that queries for data
  * with Gatsby's useStaticQuery component
@@ -11,10 +10,8 @@ import { useStaticQuery, graphql } from "gatsby"
 
 import Header from "./header"
 import "./layout.css"
-// import { defineCustomElements as deckDeckGoHighlightElement } from "@deckdeckgo/highlight-code/dist/loader";
-// deckDeckGoHighlightElement();
 
-const Layout = ({ children, isWide }) => {
+const Layout = ({ children }) => {
   const data = useStaticQuery(graphql`
     query SiteTitleQuery {
       site {

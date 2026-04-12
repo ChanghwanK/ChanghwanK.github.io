@@ -9,7 +9,7 @@ const Header = ({ siteTitle }) => (
         {siteTitle}
       </Link>
 
-      <nav className={styles.nav}>
+      <nav className={styles.nav} aria-label="주요 내비게이션">
         <Link
           to="/blog"
           className={styles.navLink}

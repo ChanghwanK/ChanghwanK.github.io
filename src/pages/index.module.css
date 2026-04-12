@@ -1,33 +1,170 @@
-.container {
-    max-width: 708px;
-    margin: 0 auto;
-    padding: 4rem 4rem;
+/* ─── Page wrapper ─────────────────────────────────────────── */
+.pageWrapper {
+  max-width: var(--size-content);
+  margin: 0 auto;
+  padding: 1.5rem 0;
+  display: flex;
+  gap: 5rem;
+  align-items: flex-start;
 }
 
-.text {
-    font-size: 1rem;
-    line-height: 1.8;
-    color: #333;
-    margin-bottom: 1rem;
+/* ─── Left: Profile ─────────────────────────────────────────── */
+.profile {
+  width: 220px;
+  min-width: 220px;
+  position: sticky;
+  top: 2rem;
 }
 
+.profileHeader {
+  margin-bottom: 1.25rem;
+}
+
+.name {
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: var(--color-text);
+  margin: 0 0 0.25rem;
+  letter-spacing: -0.02em;
+}
+
+.role {
+  font-size: 0.9rem;
+  color: var(--color-primary);
+  font-weight: 600;
+  margin: 0;
+}
+
+.bio {
+  font-size: 0.9rem;
+  line-height: 1.75;
+  color: var(--color-text-secondary);
+  margin-bottom: 1.5rem;
+}
+
+/* Tech stack tags */
+.techStack {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin-bottom: 1.75rem;
+}
+
+.techTag {
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--color-primary);
+  background-color: var(--color-primary-bg);
+  border-radius: 4px;
+  padding: 0.2rem 0.55rem;
+}
+
+/* Social links */
 .socialLinks {
-    margin-top: 3rem;
-    display: flex;
-    gap: 1rem;
-    align-items: center;
+  display: flex;
+  flex-direction: row;
+  gap: 0.5rem;
 }
 
 .socialLink {
-    color: #666;
-    text-decoration: none;
-    transition: color 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--color-text-secondary);
+  text-decoration: none;
+  padding: 0.4rem 0.75rem;
+  border-radius: 6px;
+  border: 1px solid var(--color-border);
+  width: fit-content;
+  transition: all 0.15s ease;
 }
 
 .socialLink:hover {
-    color: #333;
+  color: var(--color-primary);
+  border-color: var(--color-primary);
+  background-color: var(--color-primary-bg);
 }
 
-.socialLink svg {
-    display: block;
+/* ─── Right: Career ─────────────────────────────────────────── */
+.career {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.sectionTitle {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--color-text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin: 0 0 0.75rem;
+  width: 100%;
+  text-align: center;
+}
+
+/* Career list */
+.careerList {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  width: 100%;
+}
+
+.careerItem {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  padding: 0.5rem 0;
+}
+
+.careerTop {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 1rem;
+}
+
+.careerCompany {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--color-text);
+}
+
+.careerPeriod {
+  font-size: 0.8rem;
+  color: var(--color-text-muted);
+  white-space: nowrap;
+}
+
+.careerRole {
+  font-size: 0.875rem;
+  color: var(--color-text-secondary);
+}
+
+/* ─── Responsive ────────────────────────────────────────────── */
+@media (max-width: 680px) {
+  .pageWrapper {
+    flex-direction: column;
+    gap: 2.5rem;
+    padding: 2rem 1.25rem;
+  }
+
+  .profile {
+    width: 100%;
+    min-width: unset;
+    position: static;
+    margin-left: 0;
+  }
+
+  .career {
+    width: 100%;
+  }
 }

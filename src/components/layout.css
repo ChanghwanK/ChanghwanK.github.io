@@ -1,7 +1,12 @@
 :root {
   --border-radius: 4px;
-  --color-text: #000000;
+  --color-text: #333333;
+  --color-text-secondary: #666;
+  --color-text-muted: #999;
   --color-primary: #7026b9;
+  --color-primary-bg: #f5f0ff;
+  --color-border: #f0f0f0;
+  --color-bg-subtle: #f5f5f5;
   --color-code-bg: #fff4db;
   --color-code: #8a6534;
   --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial,
@@ -21,8 +26,7 @@
   --space-4: 24px;
   --space-5: 32px;
   --space-6: 64px;
-  --size-content: 54rem;
-  --size-content-wide: 52rem;
+  --size-content: 708px;
   --size-gutter: var(--space-5);
   --size-gap: var(--space-6);
 }
@@ -30,7 +34,6 @@
 html {
   -webkit-text-size-adjust: 100%;
   box-sizing: border-box;
-  font: sans-serif;
   font-size: var(--font-md);
   line-height: var(--line-height-normal);
   overflow-y: scroll;
@@ -40,7 +43,6 @@ body {
   -moz-osx-font-smoothing: grayscale;
   -webkit-font-smoothing: antialiased;
   color: var(--color-text);
-  font-family: sans-serif;
   font-family: var(--font-sans);
   word-wrap: break-word;
 }
@@ -48,7 +50,6 @@ body {
 a {
   background-color: transparent;
   color: var(--color-primary);
-  text-decoration: none;
   font-weight: 500;
   text-decoration: underline;
   text-decoration-thickness: 1.5px;
@@ -85,7 +86,7 @@ h1 {
   letter-spacing: -0.01em;
 }
 
-h1>b {
+h1 > b {
   color: var(--color-primary);
 }
 
@@ -136,7 +137,6 @@ ul,
 ol,
 dl,
 dd,
-
 p {
   margin: 0;
   padding: 0;
@@ -180,8 +180,8 @@ ul li {
   padding-left: 0;
 }
 
-li>ol,
-li>ul {
+li > ol,
+li > ul {
   margin-bottom: calc(var(--space-4) / 2);
   margin-left: var(--space-4);
   margin-top: calc(var(--space-4) / 2);
@@ -199,12 +199,12 @@ p *:last-child {
   margin-bottom: 0;
 }
 
-li>p {
+li > p {
   margin-bottom: calc(var(--space-4) / 2);
 }
 
 p {
-  max-width: 708px;
+  max-width: var(--size-content);
 }
 
 code {

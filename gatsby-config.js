@@ -9,10 +9,14 @@
  */
 module.exports = {
   siteMetadata: {
-    title: `축구 좋아하는 개발자.`,
+    title: `Dev.ch`,
     description: `개인 기술 블로그`,
     author: `@changhwanK`,
-    siteUrl: `https://changhwanK.github.io/`,
+    siteUrl: `https://dev.k10n.me`,
+    authorName: `김창환`,
+    authorRole: `DevOps Engineer`,
+    authorBio: `Cloud, Kubernetes에 관심이 많은 DevOps 엔지니어입니다. 가치 창출을 가속화하는 데 관심이 많습니다.`,
+    techStack: [`Kubernetes`, `AWS`, `Terraform`, `Docker`, `Istio`, `ArgoCD`],
   },
   plugins: [
     `gatsby-plugin-image`,
@@ -60,8 +64,79 @@ module.exports = {
         ],
       },
     },
-    `gatsby-plugin-mdx`,
     `gatsby-transformer-sharp`,
-    `gatsby-plugin-sharp`
+    `gatsby-plugin-sharp`,
+    `gatsby-plugin-sitemap`,
+    {
+      resolve: `gatsby-plugin-manifest`,
+      options: {
+        name: `Lazy - 기술 블로그`,
+        short_name: `Lazy`,
+        start_url: `/`,
+        background_color: `#ffffff`,
+        theme_color: `#7026b9`,
+        display: `minimal-ui`,
+        icon: `src/images/gatsby-icon.png`,
+      },
+    },
+    {
+      resolve: `gatsby-plugin-feed`,
+      options: {
+        query: `
+          {
+            site {
+              siteMetadata {
+                title
+                description
+                siteUrl
+                site_url: siteUrl
+              }
+            }
+          }
+        `,
+        feeds: [
+          {
+            serialize: ({ query: { site, allMarkdownRemark } }) =>
+              allMarkdownRemark.nodes.map(node => ({
+                ...node.frontmatter,
+                description: node.frontmatter.description || node.excerpt,
+                date: node.frontmatter.date,
+                url: site.siteMetadata.siteUrl + node.fields.slug,
+                guid: site.siteMetadata.siteUrl + node.fields.slug,
+                custom_elements: [{ "content:encoded": node.html }],
+              })),
+            query: `{
+              allMarkdownRemark(
+                sort: {frontmatter: {date: DESC}}
+                filter: {frontmatter: {date: {ne: null}}}
+              ) {
+                nodes {
+                  excerpt
+                  html
+                  fields {
+                    slug
+                  }
+                  frontmatter {
+                    title
+                    date
+                    description
+                  }
+                }
+              }
+            }`,
+            output: "/rss.xml",
+            title: "Lazy - 기술 블로그 RSS Feed",
+          },
+        ],
+      },
+    },
+    {
+      resolve: `gatsby-plugin-robots-txt`,
+      options: {
+        host: `https://dev.k10n.me`,
+        sitemap: `https://dev.k10n.me/sitemap-index.xml`,
+        policy: [{ userAgent: `*`, allow: `/` }],
+      },
+    },
   ],
 }

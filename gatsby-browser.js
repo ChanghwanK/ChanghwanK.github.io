@@ -4,6 +4,8 @@
  * See: https://www.gatsbyjs.com/docs/reference/config-files/gatsby-browser/
  */
 
-const { defineCustomElements: deckDeckGoHighlightElement } = require("@deckdeckgo/highlight-code/dist/loader")
+const {
+  defineCustomElements: deckDeckGoHighlightElement,
+} = require("@deckdeckgo/highlight-code/dist/loader")
 
 deckDeckGoHighlightElement()
