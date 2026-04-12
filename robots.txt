@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+Sitemap: https://dev.k10n.me/sitemap-index.xml
+Host: https://dev.k10n.me
