@@ -15,6 +15,7 @@ interface PostNode {
     rawDate: string
     description: string | null
     tags: string[] | null
+    status: string | null
     thumbnail: {
       childImageSharp: {
         gatsbyImageData: IGatsbyImageData
@@ -33,6 +34,7 @@ interface BlogListData {
 interface BlogListPageContext {
   currentPage: number
   numPages: number
+  validStatuses: string[]
 }
 
 const BlogList = ({
@@ -51,7 +53,7 @@ const BlogList = ({
       <div className={styles.container}>
         <div className={styles.postList}>
           {posts.map(post => {
-            const { title, date, rawDate, description, tags, thumbnail } =
+            const { title, date, rawDate, description, tags, status, thumbnail } =
               post.frontmatter
             const { slug } = post.fields
             const thumbnailImage = getImage(thumbnail)
@@ -79,6 +81,15 @@ const BlogList = ({
                       <time className={styles.date} dateTime={rawDate}>
                         {date}
                       </time>
+                      {status && (
+                        <span
+                          className={`${styles.statusBadge} ${
+                            status === "writing" ? styles.statusWriting : styles.statusDeploy
+                          }`}
+                        >
+                          {status}
+                        </span>
+                      )}
                       {tags && tags.length > 0 && (
                         <div className={styles.tags}>
                           {tags.map(tag => (
@@ -139,10 +150,10 @@ export const Head = ({
 }
 
 export const query = graphql`
-  query blogListQuery($skip: Int!, $limit: Int!) {
+  query blogListQuery($skip: Int!, $limit: Int!, $validStatuses: [String]!) {
     allMarkdownRemark(
       sort: { frontmatter: { date: DESC } }
-      filter: { frontmatter: { date: { ne: null } } }
+      filter: { frontmatter: { date: { ne: null }, status: { in: $validStatuses } } }
       limit: $limit
       skip: $skip
     ) {
@@ -156,6 +167,7 @@ export const query = graphql`
           rawDate: date
           description
           tags
+          status
           thumbnail {
             childImageSharp {
               gatsbyImageData(

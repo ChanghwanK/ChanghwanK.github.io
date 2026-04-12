@@ -114,6 +114,26 @@
   padding: 0.15rem 0.45rem;
 }
 
+/* ─── Status Badge ──────────────────────────────────────────── */
+.statusBadge {
+  font-size: 0.68rem;
+  font-weight: 600;
+  border-radius: 4px;
+  padding: 0.15rem 0.45rem;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.statusDeploy {
+  color: #166534;
+  background-color: #dcfce7;
+}
+
+.statusWriting {
+  color: #92400e;
+  background-color: #fef3c7;
+}
+
 /* ─── Pagination ────────────────────────────────────────────── */
 .pagination {
   display: flex;

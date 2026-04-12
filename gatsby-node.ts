@@ -34,11 +34,17 @@ export const createPages: GatsbyNode["createPages"] = async ({
 }) => {
   const { createPage } = actions
 
+  const isDev = process.env.NODE_ENV !== "production"
+  // 개발 환경: 모든 포스트 노출 / 프로덕션: deploy 상태만 노출
+  const statusFilter = isDev
+    ? ``
+    : `, status: { eq: "deploy" }`
+
   const result = await graphql<AllMarkdownRemarkData>(`
     query {
       allMarkdownRemark(
         sort: { frontmatter: { date: DESC } }
-        filter: { frontmatter: { date: { ne: null } } }
+        filter: { frontmatter: { date: { ne: null }${statusFilter} } }
       ) {
         nodes {
           fields {
@@ -79,6 +85,8 @@ export const createPages: GatsbyNode["createPages"] = async ({
         skip: i * postsPerPage,
         numPages,
         currentPage: i + 1,
+        // 페이지 쿼리 필터로 전달 (개발: 전체, 프로덕션: deploy만)
+        validStatuses: isDev ? ["deploy", "writing"] : ["deploy"],
       },
     })
   })

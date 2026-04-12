@@ -101,7 +101,7 @@ const config: GatsbyConfig = {
             query: `{
               allMarkdownRemark(
                 sort: {frontmatter: {date: DESC}}
-                filter: {frontmatter: {date: {ne: null}}}
+                filter: {frontmatter: {date: {ne: null}, status: {eq: "deploy"}}}
               ) {
                 nodes {
                   excerpt
