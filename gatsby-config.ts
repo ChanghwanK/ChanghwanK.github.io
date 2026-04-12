@@ -2,13 +2,13 @@ import type { GatsbyConfig } from "gatsby"
 
 const config: GatsbyConfig = {
   siteMetadata: {
-    title: `Dev.ch`,
+    title: `경험과 생각을 기록합니다.`,
     description: `개인 기술 블로그`,
     author: `@changhwanK`,
     siteUrl: `https://dev.k10n.me`,
     authorName: `김창환`,
     authorRole: `DevOps Engineer`,
-    authorBio: `안녕하세요 Kubernetes에 관심이 많은 DevOps Engineerer 김창환입니다. 불편을 제거하고 시스템을 가속화하는 데 관심이 많습니다.`,
+    authorBio: `안녕하세요 Kubernetes에 관심이 많은 DevOps Engineerer 김창환입니다. 경험과 생각을 기록하고 있습니다.`,
     techStack: [`Kubernetes`, `AWS`, `Terraform`, `Docker`, `Istio`, `ArgoCD`],
   },
   plugins: [

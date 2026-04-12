@@ -63,7 +63,14 @@ const IndexPage = ({ data }: PageProps<HomePageQueryData>) => {
             </div>
           </div>
 
-          <p className={styles.bio}>{authorBio}</p>
+          <p className={styles.bio}>
+            {authorBio.split("\n").map((line, i, arr) => (
+              <React.Fragment key={i}>
+                {line}
+                {i < arr.length - 1 && <br />}
+              </React.Fragment>
+            ))}
+          </p>
 
           <div className={styles.techStack}>
             {techStack.map(tech => (
