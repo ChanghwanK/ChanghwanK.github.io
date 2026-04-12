@@ -15,7 +15,6 @@ interface BlogPostData {
       date: string
       rawDate: string
       description: string | null
-      tags: string[] | null
       thumbnail: { publicURL: string } | null
     }
     excerpt: string
@@ -25,7 +24,7 @@ interface BlogPostData {
 
 const BlogPostTemplate = ({ data }: PageProps<BlogPostData>) => {
   const post = data.markdownRemark
-  const { title, description, date, rawDate, tags } = post.frontmatter
+  const { title, description, date, rawDate } = post.frontmatter
   const [tocVisible, setTocVisible] = useState(false)
 
   const hasToc = (post.tableOfContents ?? "").trim().length > 0
@@ -70,15 +69,6 @@ const BlogPostTemplate = ({ data }: PageProps<BlogPostData>) => {
             <time className={styles.date} dateTime={rawDate}>
               {date}
             </time>
-            {tags && (
-              <ul className={styles.tags}>
-                {tags.map(tag => (
-                  <li key={tag} className={styles.tag}>
-                    #{tag}
-                  </li>
-                ))}
-              </ul>
-            )}
           </div>
         </header>
 
@@ -121,7 +111,6 @@ export const query = graphql`
         date(formatString: "YYYY년 MM월 DD일")
         rawDate: date
         description
-        tags
         thumbnail {
           publicURL
         }

@@ -4,9 +4,6 @@ description: "Kubernetes ConfigMap과 Secret의 설계 철학과 내부 동작 �
 date: 2025-07-16
 status: deploy
 thumbnail: ./kubernetes.png
-tags:
-  - Kubernetes
-  - DevOps
 ---
 
 # ConfigMap과 Secret이란?

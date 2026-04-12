@@ -18,7 +18,7 @@
 }
 
 .subtitle {
-  font-size: 1.4rem;
+  font-size: 1.2rem;
   color: var(--color-text-secondary);
   font-weight: 400;
   margin-bottom: 1.5rem;
@@ -36,23 +36,6 @@
 
 .date {
   white-space: nowrap;
-}
-
-.tags {
-  display: flex;
-  gap: 0.5rem;
-  flex-wrap: wrap;
-  list-style: none;
-  padding: 0;
-  margin: 0;
-}
-
-.tag {
-  font-size: 0.85rem;
-  color: var(--color-primary);
-  background: var(--color-primary-bg);
-  padding: 0.25rem 0.75rem;
-  border-radius: 4px;
 }
 
 .content {

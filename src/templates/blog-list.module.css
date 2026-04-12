@@ -5,6 +5,17 @@
   padding: 2.5rem 2rem;
 }
 
+/* ─── Page Title ────────────────────────────────────────────── */
+.pageTitle {
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: #2d3748;
+  text-align: left;
+  margin: 0;
+  padding-bottom: 1.25rem;
+  border-bottom: 1px solid #ddd;
+}
+
 /* ─── Post List ─────────────────────────────────────────────── */
 .postList {
   display: flex;
@@ -13,9 +24,26 @@
 }
 
 .postItem {
-  border-radius: 8px;
-  transition: background-color 0.15s ease, box-shadow 0.15s ease;
-  margin: 0 -0.75rem;
+  position: relative;
+  transition: background-color 0.15s ease;
+  margin: 0 -1rem;
+  padding: 0 1rem;
+}
+
+.postItem::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 3px;
+  background-color: var(--color-primary);
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+.postItem:hover::before {
+  opacity: 1;
 }
 
 .postItem:not(:last-child) {
@@ -23,7 +51,7 @@
 }
 
 .postItem:hover {
-  background-color: var(--color-bg-subtle);
+  background-color: #faf9fc;
 }
 
 .postLink {
@@ -32,18 +60,19 @@
   display: flex;
   align-items: center;
   gap: 1.75rem;
-  padding: 1.75rem 0.75rem;
+  padding: 1.75rem 0;
 }
 
 /* ─── Thumbnail ─────────────────────────────────────────────── */
 .thumbnailWrapper {
-  width: 120px;
-  min-width: 120px;
-  height: 120px;
-  border-radius: 12px;
+  width: 108px;
+  min-width: 108px;
+  height: 108px;
+  border-radius: 10px;
   overflow: hidden;
-  background-color: white;
+  background-color: #f8f8f8;
   flex-shrink: 0;
+  border: 1px solid var(--color-border);
 }
 
 .thumbnail {
@@ -58,12 +87,12 @@
   min-width: 0;
   display: flex;
   flex-direction: column;
-  gap: 0.5rem;
+  gap: 0.4rem;
 }
 
 .postTitle {
   font-size: 1.15rem;
-  font-weight: 600;
+  font-weight: 700;
   color: var(--color-text);
   margin: 0;
   line-height: 1.4;
@@ -75,7 +104,7 @@
 }
 
 .postExcerpt {
-  font-size: 0.9375rem;
+  font-size: 0.9rem;
   color: var(--color-text-secondary);
   line-height: 1.6;
   margin: 0;
@@ -91,37 +120,23 @@
   align-items: center;
   gap: 0.5rem;
   flex-wrap: wrap;
-  margin-top: 0.15rem;
+  margin-top: 0.2rem;
 }
 
 .date {
-  font-size: 0.8rem;
+  font-size: 0.775rem;
   color: var(--color-text-muted);
-}
-
-.tags {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.3rem;
-}
-
-.tag {
-  font-size: 0.72rem;
-  font-weight: 500;
-  color: var(--color-primary);
-  background-color: var(--color-primary-bg);
-  border-radius: 4px;
-  padding: 0.15rem 0.45rem;
+  font-variant-numeric: tabular-nums;
 }
 
 /* ─── Status Badge ──────────────────────────────────────────── */
 .statusBadge {
-  font-size: 0.68rem;
-  font-weight: 600;
-  border-radius: 4px;
-  padding: 0.15rem 0.45rem;
+  font-size: 0.65rem;
+  font-weight: 700;
+  border-radius: 100px;
+  padding: 0.15rem 0.55rem;
   text-transform: uppercase;
-  letter-spacing: 0.03em;
+  letter-spacing: 0.05em;
 }
 
 .statusDeploy {
@@ -163,7 +178,6 @@
 .paginationLink:last-child {
   width: auto;
   padding: 0 1rem;
-  border-radius: 8px;
 }
 
 .paginationLink:hover {

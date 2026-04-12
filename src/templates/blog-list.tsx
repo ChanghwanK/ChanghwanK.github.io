@@ -14,7 +14,6 @@ interface PostNode {
     date: string
     rawDate: string
     description: string | null
-    tags: string[] | null
     status: string | null
     thumbnail: {
       childImageSharp: {
@@ -51,9 +50,10 @@ const BlogList = ({
   return (
     <Layout>
       <div className={styles.container}>
+        <h1 className={styles.pageTitle}>Recent Posts</h1>
         <div className={styles.postList}>
           {posts.map(post => {
-            const { title, date, rawDate, description, tags, status, thumbnail } =
+            const { title, date, rawDate, description, status, thumbnail } =
               post.frontmatter
             const { slug } = post.fields
             const thumbnailImage = getImage(thumbnail)
@@ -89,15 +89,6 @@ const BlogList = ({
                         >
                           {status}
                         </span>
-                      )}
-                      {tags && tags.length > 0 && (
-                        <div className={styles.tags}>
-                          {tags.map(tag => (
-                            <span key={tag} className={styles.tag}>
-                              {tag}
-                            </span>
-                          ))}
-                        </div>
                       )}
                     </div>
                   </div>
@@ -166,7 +157,6 @@ export const query = graphql`
           date(formatString: "YYYY년 MM월 DD일")
           rawDate: date
           description
-          tags
           status
           thumbnail {
             childImageSharp {
