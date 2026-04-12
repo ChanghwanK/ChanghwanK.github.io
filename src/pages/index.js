@@ -31,8 +31,18 @@ const IndexPage = ({ data }) => {
         {/* 좌측: 프로필 */}
         <aside className={styles.profile}>
           <div className={styles.profileHeader}>
-            <h1 className={styles.name}>{authorName}</h1>
-            <p className={styles.role}>{authorRole}</p>
+            <img
+              src="/profile.png"
+              alt={authorName}
+              className={styles.profileImage}
+              onError={e => {
+                e.currentTarget.src = "/profile.jpg"
+              }}
+            />
+            <div>
+              <h1 className={styles.name}>{authorName}</h1>
+              <p className={styles.role}>{authorRole}</p>
+            </div>
           </div>
 
           <p className={styles.bio}>{authorBio}</p>

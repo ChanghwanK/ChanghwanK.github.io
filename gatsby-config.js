@@ -15,7 +15,7 @@ module.exports = {
     siteUrl: `https://dev.k10n.me`,
     authorName: `김창환`,
     authorRole: `DevOps Engineer`,
-    authorBio: `Cloud, Kubernetes에 관심이 많은 DevOps 엔지니어입니다. 가치 창출을 가속화하는 데 관심이 많습니다.`,
+    authorBio: `안녕하세요 Kubernetes에 관심이 많은 DevOps Engineerer 김창환입니다. 불편을 제거하고 시스템을 가속화하는 데 관심이 많습니다.`,
     techStack: [`Kubernetes`, `AWS`, `Terraform`, `Docker`, `Istio`, `ArgoCD`],
   },
   plugins: [
@@ -70,8 +70,8 @@ module.exports = {
     {
       resolve: `gatsby-plugin-manifest`,
       options: {
-        name: `Lazy - 기술 블로그`,
-        short_name: `Lazy`,
+        name: `Dev.ch - 기술 블로그`,
+        short_name: `Dev.ch`,
         start_url: `/`,
         background_color: `#ffffff`,
         theme_color: `#7026b9`,
