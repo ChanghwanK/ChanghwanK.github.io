@@ -1,195 +1,163 @@
-/* ─── Page wrapper ─────────────────────────────────────────── */
-.pageWrapper {
-  max-width: var(--size-content);
+/* ─── Page root ─────────────────────────────────────────────── */
+.darkPage {
+  min-height: 100vh;
+  background: var(--bg-page);
+  padding: 3.5rem 1.5rem 6rem;
+}
+
+.container {
+  max-width: 560px;
   margin: 0 auto;
-  padding: 1.5rem 0;
-  display: flex;
-  gap: 5rem;
-  align-items: flex-start;
 }
 
-/* ─── Left: Profile ─────────────────────────────────────────── */
-.profile {
-  width: 220px;
-  min-width: 220px;
-  position: sticky;
-  top: 2rem;
-}
-
-.profileHeader {
+/* ─── Profile header ─────────────────────────────────────────── */
+.avatarRow {
   display: flex;
   align-items: center;
-  gap: 0.9rem;
-  margin-bottom: 1.25rem;
+  gap: 1.25rem;
 }
 
-.profileImage {
-  width: 80px;
-  height: 80px;
+.avatar {
+  width: 64px;
+  height: 64px;
   border-radius: 50%;
   object-fit: cover;
   flex-shrink: 0;
-  border: 3px solid var(--color-profile-border);
+  border: 2px solid var(--border-avatar);
   margin: 0;
   display: block;
 }
 
+.profileInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.nameRow {
+  display: flex;
+  align-items: baseline;
+  gap: 0.5rem;
+  line-height: 1;
+}
+
 .name {
-  font-size: 1.75rem;
+  font-size: 1.2rem;
   font-weight: 700;
-  color: var(--color-text);
-  margin: 0 0 0.25rem;
-  letter-spacing: -0.02em;
+  color: var(--text-primary);
+  margin: 0;
+  letter-spacing: -0.01em;
+}
+
+.handle {
+  font-size: 0.9rem;
+  color: var(--text-faint);
 }
 
 .role {
-  font-size: 0.9rem;
-  color: var(--color-primary);
-  font-weight: 600;
-  margin: 0;
-}
-
-.bio {
-  font-size: 0.9rem;
-  line-height: 1.75;
-  color: var(--color-text-secondary);
-  margin-bottom: 1.5rem;
-}
-
-/* Tech stack tags */
-.techStack {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.4rem;
-  margin-bottom: 1.75rem;
-}
-
-.techTag {
-  font-size: 0.75rem;
-  font-weight: 500;
-  color: var(--color-primary);
-  background-color: var(--color-primary-bg);
-  border-radius: 4px;
-  padding: 0.2rem 0.55rem;
-}
-
-/* Social links */
-.socialLinks {
-  display: flex;
-  flex-direction: row;
-  gap: 0.5rem;
-}
-
-.socialLink {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5rem;
   font-size: 0.875rem;
-  font-weight: 500;
-  color: var(--color-text-secondary);
-  text-decoration: none;
-  padding: 0.4rem 0.75rem;
-  border-radius: 6px;
-  border: 1px solid var(--color-border);
-  width: fit-content;
-  transition: all var(--transition-fast);
-}
-
-.socialLink:hover {
-  color: var(--color-primary);
-  border-color: var(--color-primary);
-  background-color: var(--color-primary-bg);
-}
-
-/* ─── Right: Career ─────────────────────────────────────────── */
-.career {
-  flex: 1;
-  min-width: 0;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-
-.sectionTitle {
-  font-size: 1rem;
-  font-weight: 700;
-  color: var(--color-text-muted);
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-  margin: 0 0 0.75rem;
-  width: 100%;
-  text-align: center;
-}
-
-/* Career list */
-.careerList {
-  list-style: none;
+  color: var(--text-ghost);
   margin: 0;
-  padding: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 0;
-  width: 100%;
 }
 
-.careerItem {
-  display: flex;
-  flex-direction: column;
-  gap: 0.15rem;
-  padding: 0.5rem 0;
-}
-
-.careerTop {
+/* ─── Tab bar ────────────────────────────────────────────────── */
+.tabBar {
   display: flex;
   justify-content: space-between;
-  align-items: baseline;
-  gap: 1rem;
+  align-items: center;
+  border-bottom: 1px solid var(--border-base);
+  margin-top: 1.75rem;
 }
 
-.careerCompany {
+.tabs {
+  display: flex;
+  gap: 0.1rem;
+}
+
+.tab {
   font-size: 1rem;
-  font-weight: 600;
-  color: var(--color-text);
+  color: var(--text-faint);
+  padding: 0.6rem 0.75rem;
+  text-decoration: none;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -1px;
+  transition: color 0.15s ease;
 }
 
-.careerPeriod {
-  font-size: 0.8rem;
-  color: var(--color-text-muted);
-  white-space: nowrap;
+.tab:hover {
+  color: var(--text-hover);
+  text-decoration: none;
 }
 
-.careerRole {
-  font-size: 0.875rem;
-  color: var(--color-text-secondary);
+.tabActive {
+  color: var(--text-primary);
+  border-bottom-color: var(--text-primary);
 }
 
-/* ─── Responsive ────────────────────────────────────────────── */
-@media (max-width: 680px) {
-  .pageWrapper {
-    flex-direction: column;
-    gap: 2.5rem;
-    padding: 2rem 1.25rem;
-  }
-
-  .profile {
-    width: 100%;
-    min-width: unset;
-    position: static;
-    margin-left: 0;
-  }
-
-  .career {
-    width: 100%;
-  }
+/* ─── Social icons ───────────────────────────────────────────── */
+.socialIcons {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding-bottom: 2px;
 }
 
-@media (max-width: 480px) {
-  .pageWrapper {
-    padding: 1.5rem 1rem;
-    gap: 2rem;
-  }
+.iconLink {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  color: var(--text-ghost);
+  text-decoration: none;
+  border-radius: 4px;
+  transition: color 0.15s ease;
+}
 
-  .name {
-    font-size: 1.5rem;
+.iconLink:hover {
+  color: var(--text-hover-strong);
+  text-decoration: none;
+}
+
+/* ─── Theme toggle ───────────────────────────────────────────── */
+.themeToggle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  color: var(--text-ghost);
+  background: none;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  padding: 0;
+  transition: color 0.15s ease;
+}
+
+.themeToggle:hover {
+  color: var(--text-hover-strong);
+}
+
+/* ─── Bio ────────────────────────────────────────────────────── */
+.bio {
+  margin-top: 1.75rem;
+}
+
+.bioParagraph {
+  font-size: 1rem;
+  line-height: 1.75;
+  color: var(--text-body);
+  margin-bottom: 1rem;
+}
+
+.bioParagraph:last-child {
+  margin-bottom: 0;
+}
+
+/* ─── Responsive ─────────────────────────────────────────────── */
+@media (max-width: 600px) {
+  .darkPage {
+    padding: 2.5rem 1.25rem 5rem;
   }
 }

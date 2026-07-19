@@ -1,41 +1,62 @@
-/* ─── Container ─────────────────────────────────────────────── */
-.container {
-  max-width: var(--size-content);
-  margin: 0 auto;
-  padding: 2.5rem 2rem;
+/* ─── Page root ─────────────────────────────────────────────── */
+.darkPage {
+  min-height: 100vh;
+  background: var(--bg-page);
+  padding: 3.5rem 1.5rem 6rem;
 }
 
-/* ─── Page Title ────────────────────────────────────────────── */
-.pageTitle {
-  font-size: 1.4rem;
-  font-weight: 700;
-  color: var(--color-heading);
-  text-align: center;
-  margin: 0;
-  padding-bottom: 1.25rem;
-  border-bottom: 1px solid var(--color-border-strong);
+.container {
+  max-width: 660px;
+  margin: 0 auto;
+}
+
+/* ─── Page nav ───────────────────────────────────────────────── */
+.pageNav {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 2.25rem;
+  font-size: 1rem;
+}
+
+.navHome {
+  color: var(--text-faint);
+  text-decoration: none;
+  transition: color 0.15s ease;
+}
+
+.navHome:hover {
+  color: var(--text-hover);
+  text-decoration: none;
+}
+
+.navSep {
+  color: var(--text-whisper);
+}
+
+.navCurrent {
+  color: var(--text-secondary);
 }
 
 /* ─── Post List ─────────────────────────────────────────────── */
 .postList {
   display: flex;
   flex-direction: column;
-  gap: 0;
 }
 
 .postItem {
-  transition: background-color var(--transition-fast);
-  margin: 0 -1rem;
-  padding: 0 1rem;
-  border-radius: 8px;
+  transition: background-color 0.15s ease;
+  margin: 0 -0.75rem;
+  padding: 0 0.75rem;
+  border-radius: 6px;
 }
 
 .postItem:not(:last-child) {
-  border-bottom: 1px solid var(--color-border);
+  border-bottom: 1px solid var(--border-subtle);
 }
 
 .postItem:hover {
-  background-color: #f0f0f0;
+  background-color: var(--bg-elevated);
 }
 
 .postLink {
@@ -43,20 +64,24 @@
   color: inherit;
   display: flex;
   align-items: center;
-  gap: 1.75rem;
+  gap: 1.5rem;
   padding: 1.75rem 0;
+}
+
+.postLink:hover {
+  text-decoration: none;
 }
 
 /* ─── Thumbnail ─────────────────────────────────────────────── */
 .thumbnailWrapper {
-  width: 108px;
-  min-width: 108px;
-  height: 108px;
-  border-radius: 10px;
+  width: 100px;
+  min-width: 100px;
+  height: 100px;
+  border-radius: 8px;
   overflow: hidden;
-  background-color: var(--color-bg-thumbnail);
+  background-color: var(--bg-elevated);
   flex-shrink: 0;
-  border: 1px solid var(--color-border);
+  border: 1px solid var(--border-base);
 }
 
 .thumbnail {
@@ -71,22 +96,20 @@
   min-width: 0;
   display: flex;
   flex-direction: column;
-  gap: 0.4rem;
+  gap: 0.45rem;
 }
 
 .postTitle {
-  font-size: 1.15rem;
-  font-weight: 700;
-  color: var(--color-text);
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--text-code);
   margin: 0;
-  line-height: 1.4;
-  transition: color var(--transition-fast);
+  line-height: 1.45;
 }
 
-
 .postExcerpt {
-  font-size: 0.9rem;
-  color: var(--color-text-secondary);
+  font-size: 0.925rem;
+  color: var(--text-ghost);
   line-height: 1.6;
   margin: 0;
   display: -webkit-box;
@@ -101,12 +124,12 @@
   align-items: center;
   gap: 0.5rem;
   flex-wrap: wrap;
-  margin-top: 0.2rem;
+  margin-top: 0.1rem;
 }
 
 .date {
-  font-size: 0.775rem;
-  color: var(--color-text-muted);
+  font-size: 0.825rem;
+  color: var(--text-whisper);
   font-variant-numeric: tabular-nums;
 }
 
@@ -114,20 +137,20 @@
 .statusBadge {
   font-size: 0.65rem;
   font-weight: 700;
-  border-radius: var(--border-radius-pill);
+  border-radius: 100px;
   padding: 0.15rem 0.55rem;
   text-transform: uppercase;
   letter-spacing: 0.05em;
 }
 
 .statusDeploy {
-  color: var(--color-status-deploy-text);
-  background-color: var(--color-status-deploy-bg);
+  color: #166534;
+  background-color: #052e16;
 }
 
 .statusWriting {
-  color: var(--color-status-writing-text);
-  background-color: var(--color-status-writing-bg);
+  color: #92400e;
+  background-color: #1c0a00;
 }
 
 /* ─── Pagination ────────────────────────────────────────────── */
@@ -142,70 +165,56 @@
 
 .paginationLink {
   text-decoration: none;
-  color: var(--color-text-secondary);
-  width: 38px;
-  height: 38px;
-  border-radius: var(--border-radius-lg);
+  color: var(--text-ghost);
+  width: 34px;
+  height: 34px;
+  border-radius: 6px;
   display: flex;
   align-items: center;
   justify-content: center;
-  border: 1px solid var(--color-border);
-  font-size: 0.875rem;
-  transition: all var(--transition-fast);
-  background-color: white;
+  border: 1px solid var(--border-base);
+  font-size: 0.825rem;
+  transition: all 0.15s ease;
+  background: transparent;
 }
 
 .paginationLink:first-child,
 .paginationLink:last-child {
   width: auto;
-  padding: 0 1rem;
+  padding: 0 0.875rem;
 }
 
 .paginationLink:hover {
-  background-color: var(--color-primary-bg);
-  border-color: var(--color-primary);
-  color: var(--color-primary);
+  color: var(--text-primary);
+  border-color: var(--border-accent);
+  text-decoration: none;
 }
 
 .activeLink {
-  background-color: var(--color-primary);
-  color: white;
-  border-color: var(--color-primary);
+  color: var(--text-primary);
+  border-color: var(--border-accent);
+  background: var(--bg-card);
   font-weight: 600;
 }
 
 .activeLink:hover {
-  background-color: var(--color-primary-dark);
-  color: white;
-  border-color: var(--color-primary-dark);
+  color: var(--text-primary);
 }
 
-/* ─── Responsive ────────────────────────────────────────────── */
-@media (max-width: 768px) {
-  .container {
-    padding: 2rem 1.25rem;
-  }
-
-  .postLink {
-    gap: 1.25rem;
+/* ─── Responsive ─────────────────────────────────────────────── */
+@media (max-width: 600px) {
+  .darkPage {
+    padding: 2.5rem 1.25rem 5rem;
   }
 
   .thumbnailWrapper {
-    width: 88px;
-    min-width: 88px;
-    height: 88px;
-  }
-
-  .postTitle {
-    font-size: 1.05rem;
+    width: 80px;
+    min-width: 80px;
+    height: 80px;
   }
 }
 
 @media (max-width: 480px) {
-  .container {
-    padding: 1.5rem 1rem;
-  }
-
   .postLink {
     flex-direction: column;
     gap: 0.75rem;
@@ -216,25 +225,6 @@
   .thumbnailWrapper {
     width: 100%;
     min-width: unset;
-    height: 160px;
-    border-radius: var(--border-radius);
-  }
-
-  .postTitle {
-    font-size: 1rem;
-  }
-
-  .postExcerpt {
-    -webkit-line-clamp: 3;
-  }
-
-  .pagination {
-    margin-top: 2rem;
-  }
-
-  .paginationLink {
-    width: 34px;
-    height: 34px;
-    font-size: 0.8rem;
+    height: 140px;
   }
 }

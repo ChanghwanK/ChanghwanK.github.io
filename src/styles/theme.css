@@ -1,0 +1,85 @@
+/* ─── Theme variables ────────────────────────────────────────── */
+:root {
+  /* Backgrounds */
+  --bg-page: #0d0d0d;
+  --bg-elevated: #111111;
+  --bg-card: #141414;
+  --bg-code: #161616;
+
+  /* Borders */
+  --border-subtle: #1a1a1a;
+  --border-base: #1e1e1e;
+  --border-strong: #222222;
+  --border-avatar: #2a2a2a;
+  --border-accent: #333333;
+  --border-blockquote: #363636;
+
+  /* Text — display / headings */
+  --text-display: #e8e8e8;
+  --text-primary: #e2e2e2;
+  --text-h1: #e0e0e0;
+  --text-h2: #d4d4d4;
+  --text-h3: #cccccc;
+  --text-h4: #bbbbbb;
+  --text-strong: #dedede;
+  --text-code: #c8c8c8;
+
+  /* Text — body / muted */
+  --text-body: #9a9a9a;
+  --text-emphasis: #a0a0a0;
+  --text-secondary: #888888;
+  --text-dim: #777777;
+  --text-muted: #666666;
+  --text-faint: #555555;
+  --text-ghost: #444444;
+  --text-whisper: #333333;
+
+  /* Text — interactive */
+  --text-hover: #999999;
+  --text-hover-strong: #bbbbbb;
+}
+
+[data-theme="light"] {
+  /* Backgrounds */
+  --bg-page: #ffffff;
+  --bg-elevated: #f5f5f5;
+  --bg-card: #eeeeee;
+  --bg-code: #e8e8e8;
+
+  /* Borders */
+  --border-subtle: #e8e8e8;
+  --border-base: #e0e0e0;
+  --border-strong: #d4d4d4;
+  --border-avatar: #cccccc;
+  --border-accent: #bbbbbb;
+  --border-blockquote: #aaaaaa;
+
+  /* Text — display / headings */
+  --text-display: #0a0a0a;
+  --text-primary: #111111;
+  --text-h1: #111111;
+  --text-h2: #1a1a1a;
+  --text-h3: #222222;
+  --text-h4: #333333;
+  --text-strong: #0a0a0a;
+  --text-code: #333333;
+
+  /* Text — body / muted */
+  --text-body: #444444;
+  --text-emphasis: #333333;
+  --text-secondary: #555555;
+  --text-dim: #666666;
+  --text-muted: #777777;
+  --text-faint: #888888;
+  --text-ghost: #999999;
+  --text-whisper: #aaaaaa;
+
+  /* Text — interactive */
+  --text-hover: #222222;
+  --text-hover-strong: #111111;
+}
+
+body {
+  background-color: var(--bg-page);
+  transition: background-color 0.2s ease, color 0.2s ease;
+}

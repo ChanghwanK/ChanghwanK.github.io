@@ -2,13 +2,13 @@ import type { GatsbyConfig } from "gatsby"
 
 const config: GatsbyConfig = {
   siteMetadata: {
-    title: `경험과 생각을 기록합니다.`,
+    title: `N@vis`,
     description: `개인 기술 블로그`,
     author: `@changhwanK`,
     siteUrl: `https://dev.k10n.me`,
-    authorName: `김창환`,
+    authorName: `N@vis`,
     authorRole: `DevOps Engineer`,
-    authorBio: `안녕하세요 Kubernetes에 관심이 많은 DevOps Engineerer 김창환입니다. 경험과 생각을 기록하고 있습니다.`,
+    authorBio: `안녕하세요 힙합과 러닝을 즐기는 DevOps Egineer 김창환입니다. \n\n 현재 클라우드 네이티브 환경에서, 제품팀이 더 빠르고 안전하게 제품을 만들 수 있는 플랫폼을 설계하고 운영하고 있으며, 몰입하며 문제를 해결하는 과정을 즐깁니다. \n\n 탐구하는 과정과 생각을 기록하고 회고 하기 위해 블로그를 시작했습니다.`,
     techStack: [`Kubernetes`, `AWS`, `Terraform`, `Docker`, `Istio`, `ArgoCD`],
   },
   plugins: [
@@ -63,13 +63,13 @@ const config: GatsbyConfig = {
     {
       resolve: `gatsby-plugin-manifest`,
       options: {
-        name: `Dev.ch - 기술 블로그`,
-        short_name: `Dev.ch`,
+        name: `N@vis`,
+        short_name: `Changhwan`,
         start_url: `/`,
         background_color: `#ffffff`,
         theme_color: `#7026b9`,
         display: `minimal-ui`,
-        icon: `src/images/gatsby-icon.png`,
+        icon: `src/images/navis-icon.png`,
       },
     },
     {
@@ -118,7 +118,7 @@ const config: GatsbyConfig = {
               }
             }`,
             output: "/rss.xml",
-            title: "Lazy - 기술 블로그 RSS Feed",
+            title: "N@vis",
           },
         ],
       },

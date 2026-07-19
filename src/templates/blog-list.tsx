@@ -48,9 +48,14 @@ const BlogList = ({
   const nextPage = `/blog/${currentPage + 1}`
 
   return (
-    <Layout>
+    <Layout hideHeader>
+      <div className={styles.darkPage}>
       <div className={styles.container}>
-        <h1 className={styles.pageTitle}>Recent Posts</h1>
+        <nav className={styles.pageNav} aria-label="브레드크럼">
+          <Link to="/" className={styles.navHome}>김창환</Link>
+          <span className={styles.navSep}>/</span>
+          <span className={styles.navCurrent}>Post</span>
+        </nav>
         <div className={styles.postList}>
           {posts.map(post => {
             const { title, date, rawDate, description, status, thumbnail } =
@@ -128,6 +133,7 @@ const BlogList = ({
           </nav>
         )}
       </div>
+      </div>
     </Layout>
   )
 }
@@ -137,7 +143,9 @@ export const Head = ({
 }: HeadProps<BlogListData, BlogListPageContext>) => {
   const pathname =
     pageContext.currentPage === 1 ? "/blog" : `/blog/${pageContext.currentPage}`
-  return <Seo title="Blog" pathname={pathname} />
+  return (
+    <Seo title="Blog" pathname={pathname} />
+  )
 }
 
 export const query = graphql`

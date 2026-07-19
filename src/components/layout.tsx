@@ -6,6 +6,7 @@ import "./layout.css"
 
 interface LayoutProps {
   children: React.ReactNode
+  hideHeader?: boolean
 }
 
 interface SiteTitleQueryData {
@@ -16,7 +17,7 @@ interface SiteTitleQueryData {
   }
 }
 
-const Layout = ({ children }: LayoutProps) => {
+const Layout = ({ children, hideHeader = false }: LayoutProps) => {
   const data = useStaticQuery<SiteTitleQueryData>(graphql`
     query SiteTitleQuery {
       site {
@@ -29,7 +30,9 @@ const Layout = ({ children }: LayoutProps) => {
 
   return (
     <>
-      <Header siteTitle={data.site.siteMetadata?.title || `Title`} />
+      {!hideHeader && (
+        <Header siteTitle={data.site.siteMetadata?.title || `Title`} />
+      )}
       <main>{children}</main>
     </>
   )

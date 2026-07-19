@@ -53,34 +53,41 @@ const BlogPostTemplate = ({ data }: PageProps<BlogPostData>) => {
   }, [hasToc])
 
   return (
-    <Layout>
-      {hasToc && (
-        <aside
-          className={`${styles.toc} ${tocVisible ? styles.tocVisible : ""}`}
-          dangerouslySetInnerHTML={{ __html: post.tableOfContents }}
-        />
-      )}
-      <article className={styles.article}>
-        <header className={styles.header}>
-          <h1 className={styles.title}>{title}</h1>
-          {description && <h2 className={styles.subtitle}>{description}</h2>}
+    <Layout hideHeader>
+      <div className={styles.darkPage}>
+        {hasToc && (
+          <aside
+            className={`${styles.toc} ${tocVisible ? styles.tocVisible : ""}`}
+            dangerouslySetInnerHTML={{ __html: post.tableOfContents }}
+          />
+        )}
+        <nav className={styles.pageNav} aria-label="브레드크럼">
+          <Link to="/" className={styles.navHome}>김창환</Link>
+          <span className={styles.navSep}>/</span>
+          <Link to="/blog" className={styles.navHome}>Post</Link>
+        </nav>
+        <article className={styles.article}>
+          <header className={styles.header}>
+            <h1 className={styles.title}>{title}</h1>
+            {description && <h2 className={styles.subtitle}>{description}</h2>}
 
-          <div className={styles.meta}>
-            <time className={styles.date} dateTime={rawDate}>
-              {date}
-            </time>
-          </div>
-        </header>
+            <div className={styles.meta}>
+              <time className={styles.date} dateTime={rawDate}>
+                {date}
+              </time>
+            </div>
+          </header>
 
-        <div
-          className={styles.content}
-          dangerouslySetInnerHTML={{ __html: post.html }}
-        />
+          <div
+            className={styles.content}
+            dangerouslySetInnerHTML={{ __html: post.html }}
+          />
 
-        <footer className={styles.footer}>
-          <Link to="/blog">← 목록으로</Link>
-        </footer>
-      </article>
+          <footer className={styles.footer}>
+            <Link to="/blog">← posts</Link>
+          </footer>
+        </article>
+      </div>
     </Layout>
   )
 }
@@ -89,13 +96,15 @@ export const Head = ({ data }: HeadProps<BlogPostData>) => {
   const post = data.markdownRemark
   const image = post.frontmatter.thumbnail?.publicURL
   return (
-    <Seo
-      title={post.frontmatter.title}
-      description={post.frontmatter.description || post.excerpt}
-      image={image}
-      pathname={post.fields.slug}
-      ogType="article"
-    />
+    <>
+      <Seo
+        title={post.frontmatter.title}
+        description={post.frontmatter.description || post.excerpt}
+        image={image}
+        pathname={post.fields.slug}
+        ogType="article"
+      />
+    </>
   )
 }
 

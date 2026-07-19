@@ -21,6 +21,8 @@ const Header = ({ siteTitle }: HeaderProps) => (
         >
           Posts
         </Link>
+        {/* About 페이지는 유지하되, 메뉴에서는 임시로 숨깁니다. */}
+        {/*
         <Link
           to="/about"
           className={styles.navLink}
@@ -28,6 +30,7 @@ const Header = ({ siteTitle }: HeaderProps) => (
         >
           About Me
         </Link>
+        */}
       </nav>
     </div>
   </header>
