@@ -10,56 +10,6 @@
   margin: 0 auto;
 }
 
-/* ─── Profile header ─────────────────────────────────────────── */
-.avatarRow {
-  display: flex;
-  align-items: center;
-  gap: 1.25rem;
-}
-
-.avatar {
-  width: 64px;
-  height: 64px;
-  border-radius: 50%;
-  object-fit: cover;
-  flex-shrink: 0;
-  border: 2px solid var(--border-avatar);
-  margin: 0;
-  display: block;
-}
-
-.profileInfo {
-  display: flex;
-  flex-direction: column;
-  gap: 0.2rem;
-}
-
-.nameRow {
-  display: flex;
-  align-items: baseline;
-  gap: 0.5rem;
-  line-height: 1;
-}
-
-.name {
-  font-size: 1.2rem;
-  font-weight: 700;
-  color: var(--text-primary);
-  margin: 0;
-  letter-spacing: -0.01em;
-}
-
-.handle {
-  font-size: 0.9rem;
-  color: var(--text-faint);
-}
-
-.role {
-  font-size: 0.875rem;
-  color: var(--text-ghost);
-  margin: 0;
-}
-
 /* ─── Tab bar ────────────────────────────────────────────────── */
 .tabBar {
   display: flex;
@@ -92,51 +42,6 @@
 .tabActive {
   color: var(--text-primary);
   border-bottom-color: var(--text-primary);
-}
-
-/* ─── Social icons ───────────────────────────────────────────── */
-.socialIcons {
-  display: flex;
-  align-items: center;
-  gap: 0.25rem;
-  padding-bottom: 2px;
-}
-
-.iconLink {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 28px;
-  height: 28px;
-  color: var(--text-ghost);
-  text-decoration: none;
-  border-radius: 4px;
-  transition: color 0.15s ease;
-}
-
-.iconLink:hover {
-  color: var(--text-hover-strong);
-  text-decoration: none;
-}
-
-/* ─── Theme toggle ───────────────────────────────────────────── */
-.themeToggle {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 28px;
-  height: 28px;
-  color: var(--text-ghost);
-  background: none;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-  padding: 0;
-  transition: color 0.15s ease;
-}
-
-.themeToggle:hover {
-  color: var(--text-hover-strong);
 }
 
 /* ─── Bio ────────────────────────────────────────────────────── */

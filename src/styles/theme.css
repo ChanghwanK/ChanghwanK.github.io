@@ -1,5 +1,12 @@
 /* ─── Theme variables ────────────────────────────────────────── */
 :root {
+  --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial,
+    sans-serif, "Apple Color Emoji", "Segoe UI Emoji";
+  --font-mono: SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono",
+    "Courier New", monospace;
+  --line-height-normal: 1.5;
+  --size-content: 760px;
+
   /* Backgrounds */
   --bg-page: #0d0d0d;
   --bg-elevated: #111111;
@@ -14,7 +21,7 @@
   --border-accent: #333333;
   --border-blockquote: #363636;
 
-  /* Text — display / headings */
+  /* Text: display and headings */
   --text-display: #e8e8e8;
   --text-primary: #e2e2e2;
   --text-h1: #e0e0e0;
@@ -24,7 +31,7 @@
   --text-strong: #dedede;
   --text-code: #c8c8c8;
 
-  /* Text — body / muted */
+  /* Text: body and muted */
   --text-body: #9a9a9a;
   --text-emphasis: #a0a0a0;
   --text-secondary: #888888;
@@ -34,9 +41,11 @@
   --text-ghost: #444444;
   --text-whisper: #333333;
 
-  /* Text — interactive */
+  /* Text: interactive */
   --text-hover: #999999;
   --text-hover-strong: #bbbbbb;
+  --text-link: #c5b3ff;
+  --text-link-hover: #dfd6ff;
 }
 
 [data-theme="light"] {
@@ -54,7 +63,7 @@
   --border-accent: #bbbbbb;
   --border-blockquote: #aaaaaa;
 
-  /* Text — display / headings */
+  /* Text: display and headings */
   --text-display: #0a0a0a;
   --text-primary: #111111;
   --text-h1: #111111;
@@ -64,7 +73,7 @@
   --text-strong: #0a0a0a;
   --text-code: #333333;
 
-  /* Text — body / muted */
+  /* Text: body and muted */
   --text-body: #444444;
   --text-emphasis: #333333;
   --text-secondary: #555555;
@@ -74,12 +83,9 @@
   --text-ghost: #999999;
   --text-whisper: #aaaaaa;
 
-  /* Text — interactive */
+  /* Text: interactive */
   --text-hover: #222222;
   --text-hover-strong: #111111;
-}
-
-body {
-  background-color: var(--bg-page);
-  transition: background-color 0.2s ease, color 0.2s ease;
+  --text-link: #5b3cc4;
+  --text-link-hover: #432a9b;
 }

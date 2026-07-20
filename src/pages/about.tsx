@@ -6,11 +6,13 @@ import Seo from "../components/seo"
 import * as styles from "./about.module.css"
 
 const AboutPage = () => (
-  <Layout hideHeader>
+  <Layout>
     <div className={styles.darkPage}>
       <div className={styles.container}>
         <nav className={styles.pageNav} aria-label="브레드크럼">
-          <Link to="/" className={styles.navHome}>김창환</Link>
+          <Link to="/" className={styles.navHome}>
+            김창환
+          </Link>
           <span className={styles.navSep}>/</span>
           <span className={styles.navCurrent}>About Me</span>
         </nav>

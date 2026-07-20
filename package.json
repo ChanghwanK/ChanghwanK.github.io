@@ -36,6 +36,7 @@
   "license": "0BSD",
   "scripts": {
     "build": "gatsby build",
+    "typecheck": "tsc --noEmit",
     "develop": "gatsby develop",
     "format": "prettier --write \"**/*.{js,jsx,ts,tsx,json,md,css}\"",
     "start": "gatsby develop",

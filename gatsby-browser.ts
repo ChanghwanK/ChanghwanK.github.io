@@ -1,11 +1,10 @@
 import "./src/styles/theme.css"
+import "./src/styles/global.css"
 import { defineCustomElements } from "@deckdeckgo/highlight-code/dist/loader"
+import { applyTheme, getStoredTheme } from "./src/utils/theme"
 
 defineCustomElements()
 
 export const onClientEntry = () => {
-  const saved =
-    typeof localStorage !== "undefined" ? localStorage.getItem("theme") : null
-  const theme = saved || "dark"
-  document.documentElement.setAttribute("data-theme", theme)
+  applyTheme(getStoredTheme())
 }

@@ -44,6 +44,13 @@
   flex-direction: column;
 }
 
+.emptyState {
+  color: var(--text-ghost);
+  margin: 0;
+  padding: 2rem 0;
+  text-align: center;
+}
+
 .postItem {
   transition: background-color 0.15s ease;
   margin: 0 -0.75rem;

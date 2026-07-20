@@ -1,0 +1,35 @@
+.socialIcons {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding-bottom: 2px;
+}
+
+.iconLink,
+.themeToggle {
+  display: flex;
+  width: 28px;
+  height: 28px;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+  color: var(--text-ghost);
+  transition: color 0.15s ease;
+}
+
+.iconLink {
+  text-decoration: none;
+}
+
+.iconLink:hover,
+.themeToggle:hover {
+  color: var(--text-hover-strong);
+  text-decoration: none;
+}
+
+.themeToggle {
+  padding: 0;
+  border: none;
+  background: none;
+  cursor: pointer;
+}

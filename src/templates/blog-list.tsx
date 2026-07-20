@@ -48,91 +48,106 @@ const BlogList = ({
   const nextPage = `/blog/${currentPage + 1}`
 
   return (
-    <Layout hideHeader>
+    <Layout>
       <div className={styles.darkPage}>
-      <div className={styles.container}>
-        <nav className={styles.pageNav} aria-label="브레드크럼">
-          <Link to="/" className={styles.navHome}>김창환</Link>
-          <span className={styles.navSep}>/</span>
-          <span className={styles.navCurrent}>Post</span>
-        </nav>
-        <div className={styles.postList}>
-          {posts.map(post => {
-            const { title, date, rawDate, description, status, thumbnail } =
-              post.frontmatter
-            const { slug } = post.fields
-            const thumbnailImage = getImage(thumbnail)
-
-            return (
-              <article key={slug} className={styles.postItem}>
-                <Link to={slug} className={styles.postLink}>
-                  {thumbnailImage && (
-                    <div className={styles.thumbnailWrapper}>
-                      <GatsbyImage
-                        image={thumbnailImage}
-                        alt={title}
-                        className={styles.thumbnail}
-                        style={{ width: "100%", height: "100%" }}
-                        imgStyle={{ objectFit: "contain", objectPosition: "center" }}
-                      />
-                    </div>
-                  )}
-                  <div className={styles.postContent}>
-                    <h2 className={styles.postTitle}>{title}</h2>
-                    <p className={styles.postExcerpt}>
-                      {description || post.excerpt}
-                    </p>
-                    <div className={styles.metaContainer}>
-                      <time className={styles.date} dateTime={rawDate}>
-                        {date}
-                      </time>
-                      {status && (
-                        <span
-                          className={`${styles.statusBadge} ${
-                            status === "writing" ? styles.statusWriting : styles.statusDeploy
-                          }`}
-                        >
-                          {status}
-                        </span>
-                      )}
-                    </div>
-                  </div>
-                </Link>
-              </article>
-            )
-          })}
-        </div>
-
-        {/* Pagination */}
-        {numPages > 1 && (
-          <nav className={styles.pagination} aria-label="페이지 내비게이션">
-            {!isFirst && (
-              <Link to={prevPage} className={styles.paginationLink}>
-                ← Prev
-              </Link>
-            )}
-
-            {Array.from({ length: numPages }, (_, i) => (
-              <Link
-                key={`pagination-number${i + 1}`}
-                to={i === 0 ? "/blog" : `/blog/${i + 1}`}
-                className={`${styles.paginationLink} ${
-                  i + 1 === currentPage ? styles.activeLink : ""
-                }`}
-                {...(i + 1 === currentPage ? { "aria-current": "page" as const } : {})}
-              >
-                {i + 1}
-              </Link>
-            ))}
-
-            {!isLast && (
-              <Link to={nextPage} className={styles.paginationLink}>
-                Next →
-              </Link>
-            )}
+        <div className={styles.container}>
+          <nav className={styles.pageNav} aria-label="브레드크럼">
+            <Link to="/" className={styles.navHome}>
+              김창환
+            </Link>
+            <span className={styles.navSep}>/</span>
+            <span className={styles.navCurrent}>Post</span>
           </nav>
-        )}
-      </div>
+          <div className={styles.postList}>
+            {posts.length === 0 ? (
+              <p className={styles.emptyState}>
+                아직 공개된 포스트가 없습니다.
+              </p>
+            ) : (
+              posts.map(post => {
+                const { title, date, rawDate, description, status, thumbnail } =
+                  post.frontmatter
+                const { slug } = post.fields
+                const thumbnailImage = getImage(thumbnail)
+
+                return (
+                  <article key={slug} className={styles.postItem}>
+                    <Link to={slug} className={styles.postLink}>
+                      {thumbnailImage && (
+                        <div className={styles.thumbnailWrapper}>
+                          <GatsbyImage
+                            image={thumbnailImage}
+                            alt={title}
+                            className={styles.thumbnail}
+                            style={{ width: "100%", height: "100%" }}
+                            imgStyle={{
+                              objectFit: "contain",
+                              objectPosition: "center",
+                            }}
+                          />
+                        </div>
+                      )}
+                      <div className={styles.postContent}>
+                        <h2 className={styles.postTitle}>{title}</h2>
+                        <p className={styles.postExcerpt}>
+                          {description || post.excerpt}
+                        </p>
+                        <div className={styles.metaContainer}>
+                          <time className={styles.date} dateTime={rawDate}>
+                            {date}
+                          </time>
+                          {status && (
+                            <span
+                              className={`${styles.statusBadge} ${
+                                status === "writing"
+                                  ? styles.statusWriting
+                                  : styles.statusDeploy
+                              }`}
+                            >
+                              {status}
+                            </span>
+                          )}
+                        </div>
+                      </div>
+                    </Link>
+                  </article>
+                )
+              })
+            )}
+          </div>
+
+          {/* Pagination */}
+          {numPages > 1 && (
+            <nav className={styles.pagination} aria-label="페이지 내비게이션">
+              {!isFirst && (
+                <Link to={prevPage} className={styles.paginationLink}>
+                  ← Prev
+                </Link>
+              )}
+
+              {Array.from({ length: numPages }, (_, i) => (
+                <Link
+                  key={`pagination-number${i + 1}`}
+                  to={i === 0 ? "/blog" : `/blog/${i + 1}`}
+                  className={`${styles.paginationLink} ${
+                    i + 1 === currentPage ? styles.activeLink : ""
+                  }`}
+                  {...(i + 1 === currentPage
+                    ? { "aria-current": "page" as const }
+                    : {})}
+                >
+                  {i + 1}
+                </Link>
+              ))}
+
+              {!isLast && (
+                <Link to={nextPage} className={styles.paginationLink}>
+                  Next →
+                </Link>
+              )}
+            </nav>
+          )}
+        </div>
       </div>
     </Layout>
   )
@@ -143,16 +158,16 @@ export const Head = ({
 }: HeadProps<BlogListData, BlogListPageContext>) => {
   const pathname =
     pageContext.currentPage === 1 ? "/blog" : `/blog/${pageContext.currentPage}`
-  return (
-    <Seo title="Blog" pathname={pathname} />
-  )
+  return <Seo title="Blog" pathname={pathname} />
 }
 
 export const query = graphql`
   query blogListQuery($skip: Int!, $limit: Int!, $validStatuses: [String]!) {
     allMarkdownRemark(
       sort: { frontmatter: { date: DESC } }
-      filter: { frontmatter: { date: { ne: null }, status: { in: $validStatuses } } }
+      filter: {
+        frontmatter: { date: { ne: null }, status: { in: $validStatuses } }
+      }
       limit: $limit
       skip: $skip
     ) {

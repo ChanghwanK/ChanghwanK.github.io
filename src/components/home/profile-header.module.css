@@ -1,0 +1,48 @@
+.avatarRow {
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+}
+
+.avatar {
+  display: block;
+  width: 64px;
+  height: 64px;
+  flex-shrink: 0;
+  margin: 0;
+  border: 2px solid var(--border-avatar);
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.profileInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.nameRow {
+  display: flex;
+  align-items: baseline;
+  gap: 0.5rem;
+  line-height: 1;
+}
+
+.name {
+  margin: 0;
+  color: var(--text-primary);
+  font-size: 1.2rem;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+
+.handle {
+  color: var(--text-faint);
+  font-size: 0.9rem;
+}
+
+.role {
+  margin: 0;
+  color: var(--text-ghost);
+  font-size: 0.875rem;
+}

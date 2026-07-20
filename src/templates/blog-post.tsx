@@ -53,7 +53,7 @@ const BlogPostTemplate = ({ data }: PageProps<BlogPostData>) => {
   }, [hasToc])
 
   return (
-    <Layout hideHeader>
+    <Layout>
       <div className={styles.darkPage}>
         {hasToc && (
           <aside
@@ -62,9 +62,13 @@ const BlogPostTemplate = ({ data }: PageProps<BlogPostData>) => {
           />
         )}
         <nav className={styles.pageNav} aria-label="브레드크럼">
-          <Link to="/" className={styles.navHome}>김창환</Link>
+          <Link to="/" className={styles.navHome}>
+            김창환
+          </Link>
           <span className={styles.navSep}>/</span>
-          <Link to="/blog" className={styles.navHome}>Post</Link>
+          <Link to="/blog" className={styles.navHome}>
+            Post
+          </Link>
         </nav>
         <article className={styles.article}>
           <header className={styles.header}>
