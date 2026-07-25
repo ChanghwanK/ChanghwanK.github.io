@@ -1,6 +1,6 @@
 export type Theme = "dark" | "light"
 
-const DEFAULT_THEME: Theme = "dark"
+const DEFAULT_THEME: Theme = "light"
 
 const isTheme = (value: string | null): value is Theme =>
   value === "dark" || value === "light"

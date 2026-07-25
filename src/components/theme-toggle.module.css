@@ -1,0 +1,33 @@
+.toggleGroup {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  padding: 2px;
+  border: 1px solid var(--border-base);
+  border-radius: 100px;
+  background: var(--bg-elevated);
+}
+
+.toggleOption {
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  font-family: var(--font-sans);
+  font-size: 0.7rem;
+  font-weight: 600;
+  line-height: 1;
+  padding: 0.3rem 0.6rem;
+  border-radius: 100px;
+  color: var(--text-faint);
+  transition: color 0.15s ease, background-color 0.15s ease;
+}
+
+.toggleOption:hover {
+  color: var(--text-hover);
+}
+
+.toggleOptionActive,
+.toggleOptionActive:hover {
+  color: var(--text-primary);
+  background: var(--bg-card);
+}

@@ -1,0 +1,13 @@
+.themeToggleBar {
+  position: fixed;
+  top: 1.25rem;
+  right: 1.5rem;
+  z-index: 50;
+}
+
+@media (max-width: 600px) {
+  .themeToggleBar {
+    top: 1rem;
+    right: 1rem;
+  }
+}
