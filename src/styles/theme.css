@@ -1,91 +1,93 @@
 /* ─── Theme variables ────────────────────────────────────────── */
 :root {
-  --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial,
-    sans-serif, "Apple Color Emoji", "Segoe UI Emoji";
+  --font-sans: "Pretendard Variable", Pretendard, -apple-system,
+    BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif,
+    "Apple Color Emoji", "Segoe UI Emoji";
+  --font-serif: "Noto Serif KR", Georgia, "Times New Roman", serif;
   --font-mono: SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono",
     "Courier New", monospace;
   --line-height-normal: 1.5;
   --size-content: 760px;
 
-  /* Backgrounds */
-  --bg-page: #0d0d0d;
-  --bg-elevated: #111111;
-  --bg-card: #141414;
-  --bg-code: #161616;
+  /* Backgrounds: warm oat (Anthropic-style light default) */
+  --bg-page: #f5f3ec;
+  --bg-elevated: #efebde;
+  --bg-card: #eae4d3;
+  --bg-code: #ede7d8;
 
   /* Borders */
-  --border-subtle: #1a1a1a;
-  --border-base: #1e1e1e;
-  --border-strong: #222222;
-  --border-avatar: #2a2a2a;
-  --border-accent: #333333;
-  --border-blockquote: #363636;
+  --border-subtle: #e4ddc9;
+  --border-base: #d8cfb4;
+  --border-strong: #c9be9e;
+  --border-avatar: #c9be9e;
+  --border-accent: #b8ac87;
+  --border-blockquote: #c9855c;
 
   /* Text: display and headings */
-  --text-display: #e8e8e8;
-  --text-primary: #e2e2e2;
-  --text-h1: #e0e0e0;
-  --text-h2: #d4d4d4;
-  --text-h3: #cccccc;
-  --text-h4: #bbbbbb;
-  --text-strong: #dedede;
-  --text-code: #c8c8c8;
+  --text-display: #1f1d19;
+  --text-primary: #262420;
+  --text-h1: #201e1a;
+  --text-h2: #292620;
+  --text-h3: #322e26;
+  --text-h4: #3b362c;
+  --text-strong: #201e1a;
+  --text-code: #3b362c;
 
   /* Text: body and muted */
-  --text-body: #9a9a9a;
-  --text-emphasis: #a0a0a0;
-  --text-secondary: #888888;
-  --text-dim: #777777;
-  --text-muted: #666666;
-  --text-faint: #555555;
-  --text-ghost: #444444;
-  --text-whisper: #333333;
+  --text-body: #45423a;
+  --text-emphasis: #3b372e;
+  --text-secondary: #5a5548;
+  --text-dim: #6b6555;
+  --text-muted: #7d7562;
+  --text-faint: #8f8570;
+  --text-ghost: #a0967e;
+  --text-whisper: #b2a78d;
 
   /* Text: interactive */
-  --text-hover: #999999;
-  --text-hover-strong: #bbbbbb;
-  --text-link: #c5b3ff;
-  --text-link-hover: #dfd6ff;
+  --text-hover: #2f2b23;
+  --text-hover-strong: #1f1d19;
+  --text-link: #b5502f;
+  --text-link-hover: #9a4326;
 }
 
-[data-theme="light"] {
-  /* Backgrounds */
-  --bg-page: #ffffff;
-  --bg-elevated: #f5f5f5;
-  --bg-card: #eeeeee;
-  --bg-code: #e8e8e8;
+[data-theme="dark"] {
+  /* Backgrounds: warm charcoal (not pure black) */
+  --bg-page: #17140f;
+  --bg-elevated: #1e1a14;
+  --bg-card: #221d16;
+  --bg-code: #201b14;
 
   /* Borders */
-  --border-subtle: #e8e8e8;
-  --border-base: #e0e0e0;
-  --border-strong: #d4d4d4;
-  --border-avatar: #cccccc;
-  --border-accent: #bbbbbb;
-  --border-blockquote: #aaaaaa;
+  --border-subtle: #241f18;
+  --border-base: #2a251c;
+  --border-strong: #322c21;
+  --border-avatar: #3b3527;
+  --border-accent: #4d4735;
+  --border-blockquote: #6b5138;
 
   /* Text: display and headings */
-  --text-display: #0a0a0a;
-  --text-primary: #111111;
-  --text-h1: #111111;
-  --text-h2: #1a1a1a;
-  --text-h3: #222222;
-  --text-h4: #333333;
-  --text-strong: #0a0a0a;
-  --text-code: #333333;
+  --text-display: #f0ece2;
+  --text-primary: #e8e3d6;
+  --text-h1: #e6e1d3;
+  --text-h2: #dbd5c5;
+  --text-h3: #cfc8b6;
+  --text-h4: #bfb8a4;
+  --text-strong: #eae5d8;
+  --text-code: #cfc8b6;
 
   /* Text: body and muted */
-  --text-body: #444444;
-  --text-emphasis: #333333;
-  --text-secondary: #555555;
-  --text-dim: #666666;
-  --text-muted: #777777;
-  --text-faint: #888888;
-  --text-ghost: #999999;
-  --text-whisper: #aaaaaa;
+  --text-body: #a8a08c;
+  --text-emphasis: #ada584;
+  --text-secondary: #96907a;
+  --text-dim: #857f6b;
+  --text-muted: #746e5c;
+  --text-faint: #625d4d;
+  --text-ghost: #514c3f;
+  --text-whisper: #403c31;
 
   /* Text: interactive */
-  --text-hover: #222222;
-  --text-hover-strong: #111111;
-  --text-link: #5b3cc4;
-  --text-link-hover: #432a9b;
+  --text-hover: #aca684;
+  --text-hover-strong: #cac2a2;
+  --text-link: #e2896a;
+  --text-link-hover: #efa688;
 }

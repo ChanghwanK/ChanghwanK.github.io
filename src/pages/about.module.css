@@ -47,10 +47,10 @@
 
 .title {
   font-size: 1.6rem;
-  font-weight: 700;
+  font-weight: 800;
   color: var(--text-display);
   margin-bottom: 0.4rem;
-  letter-spacing: -0.02em;
+  letter-spacing: -0.03em;
 }
 
 .subtitle {
@@ -72,6 +72,7 @@
 }
 
 .text {
+  font-family: var(--font-serif);
   font-size: 1rem;
   line-height: 1.85;
   color: var(--text-body);
@@ -83,14 +84,14 @@
 }
 
 .text a {
-  color: #7a5af8;
+  color: var(--text-link);
   text-decoration: underline;
   text-underline-offset: 2px;
   text-decoration-thickness: 1px;
 }
 
 .text a:hover {
-  color: #9d7cd8;
+  color: var(--text-link-hover);
   text-decoration: none;
 }
 

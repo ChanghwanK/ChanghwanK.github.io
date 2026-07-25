@@ -53,7 +53,7 @@ const BlogList = ({
         <div className={styles.container}>
           <nav className={styles.pageNav} aria-label="브레드크럼">
             <Link to="/" className={styles.navHome}>
-              김창환
+              N@vis
             </Link>
             <span className={styles.navSep}>/</span>
             <span className={styles.navCurrent}>Post</span>
