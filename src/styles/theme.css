@@ -35,7 +35,7 @@
 
   /* Text: body and muted */
   --text-body: #45423a;
-  --text-post-body: #3a3a39;
+  --text-prose: #3a3a39;
   --text-emphasis: #3b372e;
   --text-secondary: #5a5548;
   --text-dim: #6b6555;
@@ -78,7 +78,7 @@
 
   /* Text: body and muted */
   --text-body: #a8a08c;
-  --text-post-body: #a8a08c;
+  --text-prose: #a8a08c;
   --text-emphasis: #ada584;
   --text-secondary: #96907a;
   --text-dim: #857f6b;

@@ -11,7 +11,7 @@ const config: GatsbyConfig = {
     authorHandle: `@changhwanK`,
     githubUrl: `https://github.com/changhwanK`,
     linkedInUrl: `https://www.linkedin.com/in/changhwan-kim-767139219/`,
-    authorBio: `안녕하세요. DevOps Egineer 김창환입니다. \n\n 현재 클라우드 네이티브 환경에서, 제품팀이 더 빠르고 안전하게 제품을 만들 수 있는 플랫폼을 설계하고 운영하고 있으며, 몰입하여 문제를 해결하는 과정을 즐깁니다. \n\n 탐구하는 과정과 생각을 기록하고 회고 하기 위해 블로그를 시작했습니다.`,
+    authorBio: `안녕하세요. DevOps Egineer 김창환입니다. \n\n 소프트웨어 개발부터 배포, 운영까지의 흐름을 더 효율적이고 안정적으로 만드는 방법을 고민하며, 클라우드 네이티브 인프라를 설계하고 운영하고 있습니다.`,
     techStack: [`Kubernetes`, `AWS`, `Terraform`, `Docker`, `Istio`, `ArgoCD`],
   },
   plugins: [
