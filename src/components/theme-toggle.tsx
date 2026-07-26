@@ -1,9 +1,9 @@
 import * as React from "react"
-import { getStoredTheme, saveTheme, type Theme } from "../utils/theme"
+import { DEFAULT_THEME, getStoredTheme, saveTheme, type Theme } from "../utils/theme"
 import * as styles from "./theme-toggle.module.css"
 
 const ThemeToggle = () => {
-  const [theme, setTheme] = React.useState<Theme>("light")
+  const [theme, setTheme] = React.useState<Theme>(DEFAULT_THEME)
 
   React.useEffect(() => {
     setTheme(getStoredTheme())

@@ -10,7 +10,7 @@
   --size-content: 760px;
 
   /* Backgrounds: warm oat (Anthropic-style light default) */
-  --bg-page: #f5f3ec;
+  --bg-page: #faf9f5;
   --bg-elevated: #efebde;
   --bg-card: #eae4d3;
   --bg-code: #ede7d8;
@@ -35,6 +35,7 @@
 
   /* Text: body and muted */
   --text-body: #45423a;
+  --text-post-body: #3a3a39;
   --text-emphasis: #3b372e;
   --text-secondary: #5a5548;
   --text-dim: #6b6555;
@@ -77,6 +78,7 @@
 
   /* Text: body and muted */
   --text-body: #a8a08c;
+  --text-post-body: #a8a08c;
   --text-emphasis: #ada584;
   --text-secondary: #96907a;
   --text-dim: #857f6b;
