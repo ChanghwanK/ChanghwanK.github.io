@@ -16,13 +16,14 @@
   align-items: center;
   gap: 0.5rem;
   margin-bottom: 2.25rem;
-  font-size: 1rem;
+  font-size: 1.15rem;
 }
 
 .navHome {
   color: var(--text-faint);
   text-decoration: none;
   transition: color 0.15s ease;
+  font-weight: 600;
 }
 
 .navHome:hover {
@@ -84,7 +85,6 @@
   width: 100px;
   min-width: 100px;
   height: 100px;
-  padding: 0.85rem;
   border-radius: 8px;
   overflow: hidden;
   background-color: var(--bg-elevated);
@@ -153,11 +153,6 @@
   letter-spacing: 0.05em;
 }
 
-.statusDeploy {
-  color: #166534;
-  background-color: #052e16;
-}
-
 .statusWriting {
   color: #92400e;
   background-color: #1c0a00;
@@ -221,7 +216,6 @@
     width: 80px;
     min-width: 80px;
     height: 80px;
-    padding: 0.65rem;
   }
 }
 
@@ -237,6 +231,5 @@
     width: 100%;
     min-width: unset;
     height: 140px;
-    padding: 1.25rem;
   }
 }

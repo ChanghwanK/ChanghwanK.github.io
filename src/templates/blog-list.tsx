@@ -96,13 +96,9 @@ const BlogList = ({
                           <time className={styles.date} dateTime={rawDate}>
                             {date}
                           </time>
-                          {status && (
+                          {status === "writing" && (
                             <span
-                              className={`${styles.statusBadge} ${
-                                status === "writing"
-                                  ? styles.statusWriting
-                                  : styles.statusDeploy
-                              }`}
+                              className={`${styles.statusBadge} ${styles.statusWriting}`}
                             >
                               {status}
                             </span>
@@ -185,6 +181,7 @@ export const query = graphql`
             childImageSharp {
               gatsbyImageData(
                 width: 200
+                height: 200
                 placeholder: BLURRED
                 formats: [AUTO, WEBP]
               )
