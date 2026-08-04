@@ -72,7 +72,7 @@ const config: GatsbyConfig = {
         background_color: `#ffffff`,
         theme_color: `#7026b9`,
         display: `minimal-ui`,
-        icon: `src/images/navis-icon.png`,
+        icon: `src/images/navis-7e.png`,
       },
     },
     {

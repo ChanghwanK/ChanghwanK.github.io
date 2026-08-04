@@ -1,4 +1,5 @@
 import * as React from "react"
+import navisLogo from "../../images/navis-7e.png"
 import * as styles from "./profile-header.module.css"
 
 interface ProfileHeaderProps {
@@ -8,18 +9,12 @@ interface ProfileHeaderProps {
 }
 
 const ProfileHeader = ({ name, role, handle }: ProfileHeaderProps) => {
-  const useFallbackImage = (event: React.SyntheticEvent<HTMLImageElement>) => {
-    event.currentTarget.onerror = null
-    event.currentTarget.src = "/profile.jpg"
-  }
-
   return (
     <div className={styles.avatarRow}>
       <img
-        src="/profile.png"
+        src={navisLogo}
         alt={name}
         className={styles.avatar}
-        onError={useFallbackImage}
       />
       <div className={styles.profileInfo}>
         <div className={styles.nameRow}>
