@@ -57,6 +57,12 @@ const config: GatsbyConfig = {
               removeAccents: true,
             },
           },
+          {
+            resolve: `gatsby-remark-katex`,
+            options: {
+              strict: `ignore`,
+            },
+          },
         ],
       },
     },
