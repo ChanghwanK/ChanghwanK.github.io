@@ -7,7 +7,7 @@
 
 /* ─── Page nav ───────────────────────────────────────────────── */
 .pageNav {
-  max-width: 680px;
+  max-width: 735px;
   margin: 0 auto 2.5rem;
   display: flex;
   align-items: center;
@@ -37,7 +37,7 @@
 
 /* ─── Article ────────────────────────────────────────────────── */
 .article {
-  max-width: 680px;
+  max-width: 735px;
   margin: 0 auto;
   color: var(--text-body);
 }
@@ -293,7 +293,7 @@
 .toc {
   position: fixed;
   top: 140px;
-  left: calc(50% - 340px - 400px);
+  left: calc(50% - 375px - 400px);
   width: 260px;
   opacity: 0;
   visibility: hidden;
