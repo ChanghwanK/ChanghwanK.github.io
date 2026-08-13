@@ -138,7 +138,7 @@ export const createPages: GatsbyNode["createPages"] = async ({
 
   // 2. 블로그 리스트 페이지 생성 (페이지네이션)
   const postsPerPage = 6
-  // 배포 가능한 포스트가 없어도 홈에서 연결하는 /blog 페이지는 유지한다.
+  // 배포 가능한 포스트가 없어도 /blog 리스트 페이지는 유지한다.
   const numPages = Math.max(1, Math.ceil(posts.length / postsPerPage))
 
   Array.from({ length: numPages }).forEach((_, i) => {

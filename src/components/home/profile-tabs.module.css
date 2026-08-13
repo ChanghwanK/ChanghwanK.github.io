@@ -1,0 +1,33 @@
+.tabBar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid var(--border-base);
+  margin-top: 1.75rem;
+}
+
+.tabs {
+  display: flex;
+  gap: 0.1rem;
+}
+
+.tab {
+  font-size: 1.1rem;
+  font-weight: 500;
+  color: var(--text-faint);
+  padding: 0.6rem 0.75rem;
+  text-decoration: none;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -1px;
+  transition: color 0.15s ease;
+}
+
+.tab:hover {
+  color: var(--text-hover);
+  text-decoration: none;
+}
+
+.tabActive {
+  color: var(--text-primary);
+  border-bottom-color: var(--text-primary);
+}

@@ -4,6 +4,8 @@ import type { PageProps, HeadProps } from "gatsby"
 import { GatsbyImage, getImage } from "gatsby-plugin-image"
 import type { IGatsbyImageData } from "gatsby-plugin-image"
 import Layout from "../components/layout"
+import ProfileHeader from "../components/home/profile-header"
+import ProfileTabs from "../components/home/profile-tabs"
 import Seo from "../components/seo"
 import * as styles from "./blog-list.module.css"
 
@@ -25,6 +27,15 @@ interface PostNode {
 }
 
 interface BlogListData {
+  site: {
+    siteMetadata: {
+      authorName: string
+      authorRole: string
+      authorHandle: string
+      githubUrl: string
+      linkedInUrl: string
+    }
+  }
   allMarkdownRemark: {
     nodes: PostNode[]
   }
@@ -41,6 +52,8 @@ const BlogList = ({
   pageContext,
 }: PageProps<BlogListData, BlogListPageContext>) => {
   const posts = data.allMarkdownRemark.nodes
+  const { authorName, authorRole, authorHandle, githubUrl, linkedInUrl } =
+    data.site.siteMetadata
   const { currentPage, numPages } = pageContext
   const isFirst = currentPage === 1
   const isLast = currentPage === numPages
@@ -51,13 +64,16 @@ const BlogList = ({
     <Layout>
       <div className={styles.darkPage}>
         <div className={styles.container}>
-          <nav className={styles.pageNav} aria-label="브레드크럼">
-            <Link to="/" className={styles.navHome}>
-              N@vis
-            </Link>
-            <span className={styles.navSep}>/</span>
-            <span className={styles.navCurrent}>Post</span>
-          </nav>
+          <ProfileHeader
+            name={authorName}
+            role={authorRole}
+            handle={authorHandle}
+          />
+          <ProfileTabs
+            activeTab="post"
+            githubUrl={githubUrl}
+            linkedInUrl={linkedInUrl}
+          />
           <div className={styles.postList}>
             {posts.length === 0 ? (
               <p className={styles.emptyState}>
@@ -152,13 +168,22 @@ const BlogList = ({
 export const Head = ({
   pageContext,
 }: HeadProps<BlogListData, BlogListPageContext>) => {
-  const pathname =
-    pageContext.currentPage === 1 ? "/blog" : `/blog/${pageContext.currentPage}`
+  const isFirst = pageContext.currentPage === 1
+  const pathname = isFirst ? "/blog" : `/blog/${pageContext.currentPage}`
   return <Seo title="Blog" pathname={pathname} />
 }
 
 export const query = graphql`
   query blogListQuery($skip: Int!, $limit: Int!, $validStatuses: [String]!) {
+    site {
+      siteMetadata {
+        authorName
+        authorRole
+        authorHandle
+        githubUrl
+        linkedInUrl
+      }
+    }
     allMarkdownRemark(
       sort: { frontmatter: { date: DESC } }
       filter: {

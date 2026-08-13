@@ -6,51 +6,16 @@
 }
 
 .container {
-  max-width: 560px;
+  max-width: 720px;
   margin: 0 auto;
 }
 
-/* ─── Tab bar ────────────────────────────────────────────────── */
-.tabBar {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  border-bottom: 1px solid var(--border-base);
+/* ─── Content ────────────────────────────────────────────────── */
+.content {
   margin-top: 1.75rem;
 }
 
-.tabs {
-  display: flex;
-  gap: 0.1rem;
-}
-
-.tab {
-  font-size: 1.1rem;
-  font-weight: 500;
-  color: var(--text-faint);
-  padding: 0.6rem 0.75rem;
-  text-decoration: none;
-  border-bottom: 2px solid transparent;
-  margin-bottom: -1px;
-  transition: color 0.15s ease;
-}
-
-.tab:hover {
-  color: var(--text-hover);
-  text-decoration: none;
-}
-
-.tabActive {
-  color: var(--text-primary);
-  border-bottom-color: var(--text-primary);
-}
-
-/* ─── Bio ────────────────────────────────────────────────────── */
-.bio {
-  margin-top: 1.75rem;
-}
-
-.bioParagraph {
+.text {
   font-family: var(--font-serif);
   font-size: 1rem;
   line-height: 1.75;
@@ -58,8 +23,20 @@
   margin-bottom: 1rem;
 }
 
-.bioParagraph:last-child {
+.text:last-child {
   margin-bottom: 0;
+}
+
+.text a {
+  color: var(--text-link);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  text-decoration-thickness: 1px;
+}
+
+.text a:hover {
+  color: var(--text-link-hover);
+  text-decoration: none;
 }
 
 /* ─── Responsive ─────────────────────────────────────────────── */

@@ -8,27 +8,15 @@ export const onRenderBody: GatsbySSR["onRenderBody"] = ({
   setHtmlAttributes({ lang: `ko` })
   setHeadComponents([
     React.createElement("link", {
-      key: "preconnect-google-fonts",
+      key: "preconnect-jsdelivr",
       rel: "preconnect",
-      href: "https://fonts.googleapis.com",
-    }),
-    React.createElement("link", {
-      key: "preconnect-gstatic",
-      rel: "preconnect",
-      href: "https://fonts.gstatic.com",
+      href: "https://cdn.jsdelivr.net",
       crossOrigin: "anonymous",
     }),
     React.createElement("link", {
-      key: "pretendard-variable",
+      key: "spoqa-han-sans-neo",
       rel: "stylesheet",
-      as: "style",
-      crossOrigin: "anonymous",
-      href: "https://cdn.jsdelivr.net/gh/orioncactus/pretendard@latest/dist/web/variable/pretendardvariable-dynamic-subset.css",
-    }),
-    React.createElement("link", {
-      key: "noto-serif-kr",
-      rel: "stylesheet",
-      href: "https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;500;600;700&display=swap",
+      href: "https://cdn.jsdelivr.net/gh/spoqa/spoqa-han-sans@latest/css/SpoqaHanSansNeo.css",
     }),
   ])
 }
