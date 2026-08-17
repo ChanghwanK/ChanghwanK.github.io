@@ -1,0 +1,8 @@
+{
+  "name": "gatsby-remark-shiki",
+  "version": "1.0.0",
+  "private": true,
+  "description": "빌드타임에 shiki로 코드 블록을 하이라이팅하는 로컬 gatsby-transformer-remark 플러그인",
+  "main": "index.js",
+  "license": "0BSD"
+}

@@ -41,13 +41,7 @@ const config: GatsbyConfig = {
               showCaptions: true,
             },
           },
-          {
-            resolve: `gatsby-remark-highlight-code`,
-            options: {
-              terminal: "carbon",
-              theme: "one-dark",
-            },
-          },
+          `gatsby-remark-shiki`,
           {
             resolve: `gatsby-remark-autolink-headers`,
             options: {
