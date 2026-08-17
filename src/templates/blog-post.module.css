@@ -192,9 +192,10 @@
 }
 
 .content code {
-  background: var(--bg-code);
+  background: var(--bg-card);
   color: var(--text-code);
-  padding: 0.2rem 0.45rem;
+  border: 1px solid var(--border-base);
+  padding: 0.15rem 0.42rem;
   border-radius: 5px;
   font-size: 0.85em;
   font-family: var(--font-mono);
