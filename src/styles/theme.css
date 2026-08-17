@@ -33,9 +33,9 @@
   --text-code: #333333;
 
   /* Text: body and muted */
-  --text-body: #383838;
-  --text-prose: #333333;
-  --text-emphasis: #2e2e2e;
+  --text-body: #222222;
+  --text-prose: #1e1e1e;
+  --text-emphasis: #1a1a1a;
   --text-secondary: #555555;
   --text-dim: #666666;
   --text-muted: #767676;
