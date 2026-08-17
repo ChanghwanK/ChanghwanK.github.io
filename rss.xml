@@ -1,144 +1,66 @@
-<?xml version="1.0" encoding="UTF-8"?><rss xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:atom="http://www.w3.org/2005/Atom" version="2.0"><channel><title><![CDATA[N@vis]]></title><description><![CDATA[개인 기술 블로그]]></description><link>https://dev.k10n.me</link><generator>GatsbyJS</generator><lastBuildDate>Thu, 13 Aug 2026 04:24:52 GMT</lastBuildDate><item><title><![CDATA[Kubernetes ConfigMap, Secret 깊게 이해하기]]></title><description><![CDATA[Kubernetes ConfigMap과 Secret의 설계 철학과 내부 동작 원리를 OS 프로세스 모델부터 kubelet 메커니즘까지 깊게 이해한다.]]></description><link>https://dev.k10n.me/2025-07-16-why-kuebertes/</link><guid isPermaLink="false">https://dev.k10n.me/2025-07-16-why-kuebertes/</guid><pubDate>Wed, 16 Jul 2025 00:00:00 GMT</pubDate><content:encoded>&lt;h1 id=&quot;configmap과-secret이란&quot;&gt;ConfigMap과 Secret이란?&lt;/h1&gt;
-&lt;p&gt;ConfigMap과 Secret은 컨테이너화된 애플리케이션의 설정을 이미지와 분리하기 위해 탄생한 쿠버네티스 API 오브젝트로 이는 &lt;a href=&quot;https://en.wikipedia.org/wiki/Twelve-Factor_App_methodology&quot;&gt;12-Factor App&lt;/a&gt; 원칙 중 하나인 &lt;code&gt;Config(주요 설정은 환경변수로 저장하거나 저장소에 커밋되지 않는 파일에 저장한다.)철학&lt;/code&gt;을 쿠버네티스 환경에서 구현하는 핵심적인 방법이다.&lt;/p&gt;
-&lt;h2 id=&quot;configmap을-알아보자&quot;&gt;ConfigMap을 알아보자&lt;/h2&gt;
-&lt;p&gt;ConfigMap은 민감하지 않은 설정 데이터를 &lt;code&gt;Key-Value&lt;/code&gt; 형태로 저장하는데 사용하는 API 오브젝트이다. Pod는 &lt;code&gt;볼륨&lt;/code&gt;, &lt;code&gt;ENV&lt;/code&gt;, &lt;code&gt;커맨드 라인&lt;/code&gt; 등으로 ConfigMap을 활용할 수 있다.&lt;/p&gt;
-&lt;p&gt;예를 들어 로깅 레벨 지정, 외부 서비스 엔드 포인트, 기능 플래그 등이 해당되며, ConfigMap을 사용하면 컨테이너 이미지에서 환경별 구성을 분리하여, 애플리케이션을 쉽게 이식할 수 있다.&lt;/p&gt;
-&lt;p&gt;추가로 ConfigMap은 많은 양의 데이터를 보유하도록 설계되지 않았다. 컨피그맵에 저장된 데이터는 1MiB를 초과할 수 없으며 이 제한보다 큰 설정을 저장해야 하는 경우, 볼륨 마운트하는 것을 고려하거나 별도의 데이터베이스 또는 파일 서비스를 사용할 수 있다.&lt;/p&gt;
-&lt;h2 id=&quot;secret을-알아보자&quot;&gt;Secret을 알아보자&lt;/h2&gt;
-&lt;p&gt;Secret은 민감한 데이터를 저장하기 위해 특별히 설계되었다. API Key, 데이터베이스 패스워드, TLS 인증서, OAuth 토근 등이 여기에 해당된다. 따라서 Secret을 사용하면 사용자의 기밀 데이터를 애플리케이션에 넣을 필요가 없다.&lt;/p&gt;
-&lt;p&gt;주의사항&lt;/p&gt;
+<?xml version="1.0" encoding="UTF-8"?><rss xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:atom="http://www.w3.org/2005/Atom" version="2.0"><channel><title><![CDATA[N@vis]]></title><description><![CDATA[개인 기술 블로그]]></description><link>https://dev.k10n.me</link><generator>GatsbyJS</generator><lastBuildDate>Mon, 17 Aug 2026 04:40:52 GMT</lastBuildDate><item><title><![CDATA[ConfigMap이랑 Secret, 왜 이렇게 따로 나눠놨을까]]></title><description><![CDATA[ConfigMap과 Secret이 왜 두 개의 API로 쪼개져 있는지, env로 넣은 값은 왜 재시작 전엔 안 바뀌는지 하나씩 파본 기록]]></description><link>https://dev.k10n.me/2026-08-17-configmap-secret-v2/</link><guid isPermaLink="false">https://dev.k10n.me/2026-08-17-configmap-secret-v2/</guid><pubDate>Mon, 17 Aug 2026 00:00:00 GMT</pubDate><content:encoded>&lt;p&gt;Kubernetes 매니페스트를 쓰다 보면 다들 한 번쯤 이런 의문이 든다. ConfigMap이랑 Secret, 그냥 하나로 합쳐도 될 것 같은데 왜 굳이 API를 나눠놨을까. 그리고 env로 넣은 값은 Pod를 재시작해야만 바뀌는데, 왜 볼륨으로 마운트한 값은 재시작 없이 자동으로 갱신될까. 사소해 보이지만 파고들면 파고들수록 쿠버네티스 설계 철학이랑 리눅스 프로세스 모델까지 이어지는 재밌는 질문이라 한번 정리해봤다.&lt;/p&gt;
+&lt;h2 id=&quot;1-configmap이랑-secret은-뭐가-다른가&quot;&gt;1. ConfigMap이랑 Secret은 뭐가 다른가&lt;/h2&gt;
+&lt;p&gt;ConfigMap이랑 Secret은 컨테이너 이미지에서 설정을 분리하기 위해 만들어진 오브젝트다. &lt;a href=&quot;https://en.wikipedia.org/wiki/Twelve-Factor_App_methodology&quot;&gt;12-Factor App&lt;/a&gt;에서 말하는 &lt;code&gt;설정은 환경변수나 저장소에 커밋되지 않는 파일에 저장한다&lt;/code&gt;는 원칙을 쿠버네티스식으로 구현한 결과라고 보면 된다.&lt;/p&gt;
+&lt;p&gt;ConfigMap은 민감하지 않은 Key-Value 설정을 담는다. 로깅 레벨, 외부 서비스 엔드포인트, 기능 플래그 같은 것들이다. 볼륨/ENV/커맨드라인으로 Pod에 흘려 넣을 수 있는데, 1MiB를 넘는 데이터는 애초에 담을 수 없게 설계돼 있다. 그 이상이면 볼륨 마운트나 별도 DB/파일 서비스를 쓰라는 뜻이다.&lt;/p&gt;
+&lt;p&gt;Secret은 API Key, DB 패스워드, TLS 인증서, OAuth 토큰처럼 민감한 데이터를 위한 오브젝트다. 그런데 여기서 하나 짚고 가야 할 게 있다. Secret은 기본적으로 etcd에 평문으로 저장된다. 암호화되지 않은 채로 저장된다는 뜻이라 API 접근 권한이 있거나 etcd에 직접 접근할 수 있는 사람은 누구나 조회·수정이 가능하고, 심지어 특정 네임스페이스에 파드 생성 권한만 있어도 그 네임스페이스의 모든 Secret을 읽을 수 있다. 그래서 실무에서는 최소한 이 정도는 챙겨야 한다.&lt;/p&gt;
 &lt;ul&gt;
-&lt;li&gt;Secret은 기본적으로 ETCD에 암호화되지 않고 평문으로 저장된다.&lt;/li&gt;
-&lt;li&gt;그렇기 때문에 API Access 권한이 있는 모든 사용자 또는 etcd에 접근할 수 있는 모든 사용자는 시크릿을 조회하거나 수정할 수 있다.&lt;/li&gt;
-&lt;li&gt;또한 네임스페이스에서 파드 생성 권한이 있는 사람은 누구나 해당 접근을 사용하여 해당 네임스페이스의 모든 시크릿을 읽을 수 있다.&lt;/li&gt;
+&lt;li&gt;Secret에 Encryption at Rest를 켠다.&lt;/li&gt;
+&lt;li&gt;RBAC으로 Secret 접근 권한을 최소한으로 제한한다.&lt;/li&gt;
+&lt;li&gt;필요한 컨테이너에만 Secret을 노출한다.&lt;/li&gt;
+&lt;li&gt;가능하면 외부 Secret 저장소(Vault, AWS Secrets Manager 등) 연동을 고려한다.&lt;/li&gt;
 &lt;/ul&gt;
-&lt;p&gt;권장되는 사용법&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;Secret에 대해 Encryption at Rest를 활성화한다.&lt;/li&gt;
-&lt;li&gt;Secret에 대한 최소한의 접근 권한을 지니도록 RBAC 규칙을 활성화 또는 구성한다.&lt;/li&gt;
-&lt;li&gt;특정 컨테이너에서만 시크릿에 접근하도록 한다.&lt;/li&gt;
-&lt;li&gt;외부 시크릿 저장소 제공 서비스를 사용하는 것을 고려한다.&lt;/li&gt;
-&lt;/ul&gt;
-&lt;p&gt;스펙 정리&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;type
-&lt;ul&gt;
-&lt;li&gt;&lt;code&gt;Opaque:&lt;/code&gt; 가장 일반적인 타입으로 정해진 형식 없는 임의의 데이터를 저장한다.&lt;/li&gt;
-&lt;li&gt;&lt;code&gt;kubernetes.io/service-account-token:&lt;/code&gt; ServiceAccount의 자격증명을 저장하며, 자동으로 생성되고 파괴된다.&lt;/li&gt;
-&lt;li&gt;&lt;code&gt;kubernetes.io/dockerconfigjson:&lt;/code&gt; Private Docker Registry 에 접근하기 위한 인증 정보를 &lt;code&gt;.docker/config.json&lt;/code&gt; 형태로 저장한다. data 필드에 .dockerconfigjson 이라는 Key가 반드시 필요하다.&lt;/li&gt;
-&lt;li&gt;&lt;code&gt;kubernetes.io/basic-auth:&lt;/code&gt; 기본 인증을 위한 자격증명을 저장한다. data 필드에 username과 password 키가 필요하다.&lt;/li&gt;
-&lt;li&gt;&lt;code&gt;kubernetes.io/ssh-auth:&lt;/code&gt; SSH 키 페어를 저장한다. data 필드에 ssh-privatekey, ssh-publickey 키가 필요하다.&lt;/li&gt;
-&lt;li&gt;&lt;code&gt;kubernetes.io/tls:&lt;/code&gt; TLS 인증서와 개인키를 저장한다. Ingress TLS Offloading 등에 사용된다. data 필드에 tls.crt, tls.key 키가 반드시 필요하다.&lt;/li&gt;
-&lt;/ul&gt;
-&lt;/li&gt;
-&lt;li&gt;data
-&lt;ul&gt;
-&lt;li&gt;Secret의 실제 데이터를 key-value 형태로 저장하는 필드이다. value는 반드시 base64로 인코딩된 문자열이어야 하며, key 이름은 영문, 숫자, &lt;code&gt;-&lt;/code&gt;,&lt;code&gt;_&lt;/code&gt;,&lt;code&gt;.&lt;/code&gt; 문자만 포함할 수 있다.&lt;/li&gt;
-&lt;/ul&gt;
-&lt;/li&gt;
-&lt;li&gt;stringdata
-&lt;ul&gt;
-&lt;li&gt;data 필드의 편의성을 위한 필드이다. 여기에 key-value를 일반 문자열로 입력하면 api server가 이를 자동으로 base64 인코딩하여 data 필드에 반영한다. 이 필드는 쓰기 전용 이며, &lt;code&gt;kubectl get secret -o yaml&lt;/code&gt; 등으로 조회하면 &lt;code&gt;stringData&lt;/code&gt; 필드는 보이지 않고 data 필드에 인코딩된 값만 나타난다.&lt;/li&gt;
-&lt;/ul&gt;
-&lt;/li&gt;
-&lt;/ul&gt;
-&lt;h1 id=&quot;왜-secret과-config를-분리하였을까&quot;&gt;왜 Secret과 Config를 분리하였을까?&lt;/h1&gt;
-&lt;blockquote&gt;
-&lt;p&gt;Config나 Secret은 Pod 입장에서 주입받는 방법이나 활용 방법이 크게 다르지 않다. 그렇다면 쿠버네티스는 왜 두 Workload를 분리하여 운영할까?&lt;/p&gt;
-&lt;/blockquote&gt;
-&lt;ol&gt;
-&lt;li&gt;최소 권한:&lt;/li&gt;
-&lt;/ol&gt;
-&lt;ul&gt;
-&lt;li&gt;RBAC을 통해 Secret 같은 민감 데이터는 접근 제어가 가능해진다. 만약, ConfigMap에 모든 데이터가 다 담긴다면 노출하고 싶지 않은 데이터를 방지할 방법이 복잡해진다.&lt;/li&gt;
-&lt;li&gt;또, 그렇다고 ConfigMap 자체에 접근제한을 걸면 ConfigMap을 공유하거나 이용해야 하는 경우 복잡성이 높아진다. 따라서 ConfigMap에는 민감하지 않는 데이터를 담아 불필요한 접근제어를 제거하고 Secret에만 접근 제어를 진행하여 명확하게 권한 기반으로 제어할 수 있게된다.&lt;/li&gt;
-&lt;/ul&gt;
-&lt;ol start=&quot;2&quot;&gt;
-&lt;li&gt;확장성 및 생태계 통합:&lt;/li&gt;
-&lt;/ol&gt;
-&lt;ul&gt;
-&lt;li&gt;Secret을 별도의 API Kind로 정의한 덕분에 HashiCorp Vault나 AWS Secrets Manager 같은 외부 시스템은 Secret 객체만을 명확한 대상으로 삼는 컨트롤러(예: External Secrets Operator)를 통해 쿠버네티스와 매끄럽게 연동될 수 있다.&lt;/li&gt;
-&lt;li&gt;결과적으로, 이는 단순히 Secret을 외부에 저장하는 것을 넘어, 동적 Secret 생성, 자동 순환, 중앙화된 감사 등 쿠버네티스 네이티브 기능만으로는 어려운 고급 보안 관리 기능을 위임하여 클러스터에 확장할 수 있게 만들어준다.&lt;/li&gt;
-&lt;/ul&gt;
-&lt;hr&gt;
-&lt;h1 id=&quot;env와-secret의-주입-방식-이해&quot;&gt;ENV와 Secret의 주입 방식 이해&lt;/h1&gt;
-&lt;blockquote&gt;
-&lt;p&gt;ConfigMap과 Secret을 Pod의 Container에 전달하는 방법은 크게 2가지 방법이 있으며 각 사용의 장단이 뚜렷하다.&lt;/p&gt;
-&lt;/blockquote&gt;
-&lt;h3 id=&quot;1-환경-변수로-주입&quot;&gt;1) 환경 변수로 주입&lt;/h3&gt;
-&lt;blockquote&gt;
-&lt;p&gt;env 또는 envFrom 필드를 사용해 ConfigMap 이나 Secret의 key-value를 컨테이너 환경 변수로 직접 매핑할 수 있다.&lt;/p&gt;
-&lt;/blockquote&gt;
-&lt;p&gt;장점&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;사용이 가장 간편하고, 대부분의 애플리케이션의 추가적인 코드 수정 없이 환경 변수로부터 설정을 읽을 수 있다.&lt;/li&gt;
-&lt;/ul&gt;
-&lt;p&gt;단점&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;Pod이 시작된 후에는 ConfigMap 이나 Secret의 변경 사항이 반영되지 않는다. 업데이트를 적용하려면 파드를 재시작해야 한다.&lt;/li&gt;
-&lt;li&gt;환경 변수는 /proc/[pid]/environ 파일을 통해 Pod 내 다른 프로세스나 권한 있는 사용자에게 노출될 수 있어 보안적으로 덜 안전하다.&lt;/li&gt;
-&lt;/ul&gt;
-&lt;p&gt;예시&lt;/p&gt;
-&lt;deckgo-highlight-code language=&quot;yaml&quot; terminal=&quot;carbon&quot; theme=&quot;one-dark&quot;  &gt;
-          &lt;code slot=&quot;code&quot;&gt;# 예시: 특정 key를 선택하여 환경 변수로 주입
-apiVersion: v1
-kind: Pod
-metadata:
-  name: my-pod
-spec:
-  containers:
-    - name: my-container
-      image: redis
-      env:
-        - name: MY_ENV_VARIABLE
-          valueFrom:
-            configMapKeyRef:
-              name: my-configmap # 참조할 ConfigMap 이름
-              key: my-key # 사용할 key&lt;/code&gt;
-        &lt;/deckgo-highlight-code&gt;
-&lt;h3 id=&quot;2-볼륨-마운트로-주입&quot;&gt;2) 볼륨 마운트로 주입&lt;/h3&gt;
-&lt;blockquote&gt;
-&lt;p&gt;ConfigMap이나 Secret을 정의하고, 이를 &lt;code&gt;volumeMounts&lt;/code&gt; 를 통해 컨테이너 내부 특정 경로에 파일 형태로 마운트한다. 각 key는 파일명이 되고, value는 해당 파일의 내용이된다.&lt;/p&gt;
-&lt;/blockquote&gt;
-&lt;p&gt;장점&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;Hot Reload가 가능하다. ConfigMap 이나 Secret이 업데이트되면, 잠시 후(kubelet의 동기화 주기에 맞게) Pod 재시작 없이도 컨테이너 내의 파일 내용이 자동으로 동기화된다.&lt;/li&gt;
-&lt;/ul&gt;
-&lt;p&gt;단점&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;애플리케이션이 파일 시스템에서 설정을 읽도록 구현되어 있어야 한다.따라서 properties, conf, toml등의 파일을 볼륨 마운트로 Pod에 주입하여 사용하는 방법에 적합하다.&lt;/li&gt;
-&lt;/ul&gt;
-&lt;p&gt;예시&lt;/p&gt;
-&lt;deckgo-highlight-code language=&quot;yaml&quot; terminal=&quot;carbon&quot; theme=&quot;one-dark&quot;  &gt;
-          &lt;code slot=&quot;code&quot;&gt;---
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: test-config
-data:
-  APP_NAME: &amp;quot;MyTestApp&amp;quot;
-  DATABASE_HOST: &amp;quot;db.example.com&amp;quot;
-  DATABASE_PORT: &amp;quot;5432&amp;quot;
-  LOG_LEVEL: &amp;quot;INFO&amp;quot;
----
-apiVersion: v1
-kind: Pod
-metadata:
-  name: test-pod-volume-only
-spec:
-  containers:
-    - name: main-container
-      image: busybox
-      command: [&amp;quot;sh&amp;quot;, &amp;quot;-c&amp;quot;, &amp;quot;sleep 3600&amp;quot;]
-      volumeMounts:
-        - name: config-volume
-          mountPath: /etc/config
-  volumes:
-    - name: config-volume
-      configMap:
-        name: test-config
-  restartPolicy: Never&lt;/code&gt;
-        &lt;/deckgo-highlight-code&gt;
+&lt;p&gt;Secret의 type도 종류가 여러 개인데, 가장 흔히 쓰는 &lt;code&gt;Opaque&lt;/code&gt; 외에 ServiceAccount 토큰용 &lt;code&gt;kubernetes.io/service-account-token&lt;/code&gt;, Private Registry 인증용 &lt;code&gt;kubernetes.io/dockerconfigjson&lt;/code&gt;, TLS 인증서용 &lt;code&gt;kubernetes.io/tls&lt;/code&gt; 등이 있다. data 필드는 반드시 base64로 인코딩된 문자열이어야 하고, stringData는 그 인코딩을 API Server가 대신해주는 쓰기 전용 필드다(조회하면 안 보이고 data 필드에 인코딩된 값만 남는다).&lt;/p&gt;
+&lt;p&gt;그럼 이 둘을 왜 별도 API로 쪼개놨을까. 크게 두 가지 이유가 있다고 본다.&lt;/p&gt;
+&lt;p&gt;첫 번째는 최소 권한이다. 만약 ConfigMap 하나에 민감한 값까지 다 들어간다면 노출하면 안 되는 값만 걸러서 접근 제어하기가 복잡해진다. 반대로 ConfigMap 자체를 다 잠가버리면 여러 팀·서비스가 공유해서 쓰기 어려워진다. 그래서 ConfigMap에는 아예 민감하지 않은 것만 담아 접근 제어를 걷어내고, Secret에만 RBAC을 걸어서 권한 경계를 명확하게 만든 것이다.&lt;/p&gt;
+&lt;p&gt;두 번째는 확장성이다. Secret을 별도 Kind로 정의해뒀기 때문에 HashiCorp Vault나 AWS Secrets Manager 같은 외부 시스템이 External Secrets Operator 같은 컨트롤러를 통해 Secret 객체만 정확히 타겟팅해서 연동할 수 있다. 그 덕에 동적 Secret 생성, 자동 순환, 중앙화된 감사처럼 쿠버네티스 네이티브 기능만으로는 어려운 고급 보안 기능까지 위임할 수 있게 된다.&lt;/p&gt;
+&lt;h2 id=&quot;2-pod에-집어넣는-방법은-두-가지다&quot;&gt;2. Pod에 집어넣는 방법은 두 가지다&lt;/h2&gt;
+&lt;p&gt;ConfigMap·Secret을 Container에 전달하는 방법은 크게 env와 볼륨 마운트, 두 가지다. 이 둘의 차이가 이 글의 진짜 시작점이다.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;env로 주입하기.&lt;/strong&gt; &lt;code&gt;env&lt;/code&gt;나 &lt;code&gt;envFrom&lt;/code&gt; 필드로 ConfigMap·Secret의 key-value를 컨테이너 환경 변수로 바로 매핑할 수 있다. 가장 간편한 방법이고, 대부분 애플리케이션은 코드 수정 없이 환경 변수를 읽기만 하면 된다.&lt;/p&gt;
+&lt;div class=&quot;shiki-code-block&quot;&gt;&lt;button type=&quot;button&quot; class=&quot;shiki-copy-btn&quot; aria-label=&quot;코드 복사&quot;&gt;&lt;svg viewBox=&quot;0 0 16 16&quot; fill=&quot;none&quot; stroke=&quot;currentColor&quot; stroke-width=&quot;1.4&quot;&gt;&lt;rect x=&quot;5.5&quot; y=&quot;5.5&quot; width=&quot;9&quot; height=&quot;9&quot; rx=&quot;1.5&quot;&gt;&lt;/rect&gt;&lt;path d=&quot;M3.5 10.5h-1a1 1 0 0 1-1-1v-7a1 1 0 0 1 1-1h7a1 1 0 0 1 1 1v1&quot;&gt;&lt;/path&gt;&lt;/svg&gt;&lt;/button&gt;&lt;pre class=&quot;shiki shiki-themes github-light one-dark-pro&quot; style=&quot;--shiki-light:#24292e;--shiki-dark:#abb2bf;--shiki-light-bg:#fff;--shiki-dark-bg:#282c34&quot; tabindex=&quot;0&quot;&gt;&lt;code&gt;&lt;span class=&quot;line&quot;&gt;&lt;span style=&quot;--shiki-light:#6A737D;--shiki-light-font-style:inherit;--shiki-dark:#7F848E;--shiki-dark-font-style:italic&quot;&gt;# 예시: 특정 key를 선택하여 환경 변수로 주입&lt;/span&gt;&lt;/span&gt;
+&lt;span class=&quot;line&quot;&gt;&lt;span style=&quot;--shiki-light:#22863A;--shiki-dark:#E06C75&quot;&gt;apiVersion&lt;/span&gt;&lt;span style=&quot;--shiki-light:#24292E;--shiki-dark:#ABB2BF&quot;&gt;: &lt;/span&gt;&lt;span style=&quot;--shiki-light:#032F62;--shiki-dark:#98C379&quot;&gt;v1&lt;/span&gt;&lt;/span&gt;
+&lt;span class=&quot;line&quot;&gt;&lt;span style=&quot;--shiki-light:#22863A;--shiki-dark:#E06C75&quot;&gt;kind&lt;/span&gt;&lt;span style=&quot;--shiki-light:#24292E;--shiki-dark:#ABB2BF&quot;&gt;: &lt;/span&gt;&lt;span style=&quot;--shiki-light:#032F62;--shiki-dark:#98C379&quot;&gt;Pod&lt;/span&gt;&lt;/span&gt;
+&lt;span class=&quot;line&quot;&gt;&lt;span style=&quot;--shiki-light:#22863A;--shiki-dark:#E06C75&quot;&gt;metadata&lt;/span&gt;&lt;span style=&quot;--shiki-light:#24292E;--shiki-dark:#ABB2BF&quot;&gt;:&lt;/span&gt;&lt;/span&gt;
+&lt;span class=&quot;line&quot;&gt;&lt;span style=&quot;--shiki-light:#22863A;--shiki-dark:#E06C75&quot;&gt;  name&lt;/span&gt;&lt;span style=&quot;--shiki-light:#24292E;--shiki-dark:#ABB2BF&quot;&gt;: &lt;/span&gt;&lt;span style=&quot;--shiki-light:#032F62;--shiki-dark:#98C379&quot;&gt;my-pod&lt;/span&gt;&lt;/span&gt;
+&lt;span class=&quot;line&quot;&gt;&lt;span style=&quot;--shiki-light:#22863A;--shiki-dark:#E06C75&quot;&gt;spec&lt;/span&gt;&lt;span style=&quot;--shiki-light:#24292E;--shiki-dark:#ABB2BF&quot;&gt;:&lt;/span&gt;&lt;/span&gt;
+&lt;span class=&quot;line&quot;&gt;&lt;span style=&quot;--shiki-light:#22863A;--shiki-dark:#E06C75&quot;&gt;  containers&lt;/span&gt;&lt;span style=&quot;--shiki-light:#24292E;--shiki-dark:#ABB2BF&quot;&gt;:&lt;/span&gt;&lt;/span&gt;
+&lt;span class=&quot;line&quot;&gt;&lt;span style=&quot;--shiki-light:#24292E;--shiki-dark:#ABB2BF&quot;&gt;    - &lt;/span&gt;&lt;span style=&quot;--shiki-light:#22863A;--shiki-dark:#E06C75&quot;&gt;name&lt;/span&gt;&lt;span style=&quot;--shiki-light:#24292E;--shiki-dark:#ABB2BF&quot;&gt;: &lt;/span&gt;&lt;span style=&quot;--shiki-light:#032F62;--shiki-dark:#98C379&quot;&gt;my-container&lt;/span&gt;&lt;/span&gt;
+&lt;span class=&quot;line&quot;&gt;&lt;span style=&quot;--shiki-light:#22863A;--shiki-dark:#E06C75&quot;&gt;      image&lt;/span&gt;&lt;span style=&quot;--shiki-light:#24292E;--shiki-dark:#ABB2BF&quot;&gt;: &lt;/span&gt;&lt;span style=&quot;--shiki-light:#032F62;--shiki-dark:#98C379&quot;&gt;redis&lt;/span&gt;&lt;/span&gt;
+&lt;span class=&quot;line&quot;&gt;&lt;span style=&quot;--shiki-light:#22863A;--shiki-dark:#E06C75&quot;&gt;      env&lt;/span&gt;&lt;span style=&quot;--shiki-light:#24292E;--shiki-dark:#ABB2BF&quot;&gt;:&lt;/span&gt;&lt;/span&gt;
+&lt;span class=&quot;line&quot;&gt;&lt;span style=&quot;--shiki-light:#24292E;--shiki-dark:#ABB2BF&quot;&gt;        - &lt;/span&gt;&lt;span style=&quot;--shiki-light:#22863A;--shiki-dark:#E06C75&quot;&gt;name&lt;/span&gt;&lt;span style=&quot;--shiki-light:#24292E;--shiki-dark:#ABB2BF&quot;&gt;: &lt;/span&gt;&lt;span style=&quot;--shiki-light:#032F62;--shiki-dark:#98C379&quot;&gt;MY_ENV_VARIABLE&lt;/span&gt;&lt;/span&gt;
+&lt;span class=&quot;line&quot;&gt;&lt;span style=&quot;--shiki-light:#22863A;--shiki-dark:#E06C75&quot;&gt;          valueFrom&lt;/span&gt;&lt;span style=&quot;--shiki-light:#24292E;--shiki-dark:#ABB2BF&quot;&gt;:&lt;/span&gt;&lt;/span&gt;
+&lt;span class=&quot;line&quot;&gt;&lt;span style=&quot;--shiki-light:#22863A;--shiki-dark:#E06C75&quot;&gt;            configMapKeyRef&lt;/span&gt;&lt;span style=&quot;--shiki-light:#24292E;--shiki-dark:#ABB2BF&quot;&gt;:&lt;/span&gt;&lt;/span&gt;
+&lt;span class=&quot;line&quot;&gt;&lt;span style=&quot;--shiki-light:#22863A;--shiki-dark:#E06C75&quot;&gt;              name&lt;/span&gt;&lt;span style=&quot;--shiki-light:#24292E;--shiki-dark:#ABB2BF&quot;&gt;: &lt;/span&gt;&lt;span style=&quot;--shiki-light:#032F62;--shiki-dark:#98C379&quot;&gt;my-configmap&lt;/span&gt;&lt;/span&gt;
+&lt;span class=&quot;line&quot;&gt;&lt;span style=&quot;--shiki-light:#22863A;--shiki-dark:#E06C75&quot;&gt;              key&lt;/span&gt;&lt;span style=&quot;--shiki-light:#24292E;--shiki-dark:#ABB2BF&quot;&gt;: &lt;/span&gt;&lt;span style=&quot;--shiki-light:#032F62;--shiki-dark:#98C379&quot;&gt;my-key&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;그런데 이 방식은 Pod가 뜬 후에는 ConfigMap·Secret이 바뀌어도 절대 반영이 안 된다. 업데이트하려면 무조건 Pod를 재시작해야 한다. 게다가 환경 변수는 &lt;code&gt;/proc/[pid]/environ&lt;/code&gt; 파일로 노출되기 때문에 같은 노드의 다른 프로세스나 권한 있는 사용자가 들여다볼 수 있어서 보안적으로도 살짝 아쉽다.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;볼륨으로 마운트하기.&lt;/strong&gt; ConfigMap·Secret을 정의해두고 &lt;code&gt;volumeMounts&lt;/code&gt;로 컨테이너 내부 경로에 파일로 마운트하는 방식이다. key는 파일명이 되고 value는 파일 내용이 된다.&lt;/p&gt;
+&lt;div class=&quot;shiki-code-block&quot;&gt;&lt;button type=&quot;button&quot; class=&quot;shiki-copy-btn&quot; aria-label=&quot;코드 복사&quot;&gt;&lt;svg viewBox=&quot;0 0 16 16&quot; fill=&quot;none&quot; stroke=&quot;currentColor&quot; stroke-width=&quot;1.4&quot;&gt;&lt;rect x=&quot;5.5&quot; y=&quot;5.5&quot; width=&quot;9&quot; height=&quot;9&quot; rx=&quot;1.5&quot;&gt;&lt;/rect&gt;&lt;path d=&quot;M3.5 10.5h-1a1 1 0 0 1-1-1v-7a1 1 0 0 1 1-1h7a1 1 0 0 1 1 1v1&quot;&gt;&lt;/path&gt;&lt;/svg&gt;&lt;/button&gt;&lt;pre class=&quot;shiki shiki-themes github-light one-dark-pro&quot; style=&quot;--shiki-light:#24292e;--shiki-dark:#abb2bf;--shiki-light-bg:#fff;--shiki-dark-bg:#282c34&quot; tabindex=&quot;0&quot;&gt;&lt;code&gt;&lt;span class=&quot;line&quot;&gt;&lt;span style=&quot;--shiki-light:#6F42C1;--shiki-dark:#ABB2BF&quot;&gt;---&lt;/span&gt;&lt;/span&gt;
+&lt;span class=&quot;line&quot;&gt;&lt;span style=&quot;--shiki-light:#22863A;--shiki-dark:#E06C75&quot;&gt;apiVersion&lt;/span&gt;&lt;span style=&quot;--shiki-light:#24292E;--shiki-dark:#ABB2BF&quot;&gt;: &lt;/span&gt;&lt;span style=&quot;--shiki-light:#032F62;--shiki-dark:#98C379&quot;&gt;v1&lt;/span&gt;&lt;/span&gt;
+&lt;span class=&quot;line&quot;&gt;&lt;span style=&quot;--shiki-light:#22863A;--shiki-dark:#E06C75&quot;&gt;kind&lt;/span&gt;&lt;span style=&quot;--shiki-light:#24292E;--shiki-dark:#ABB2BF&quot;&gt;: &lt;/span&gt;&lt;span style=&quot;--shiki-light:#032F62;--shiki-dark:#98C379&quot;&gt;ConfigMap&lt;/span&gt;&lt;/span&gt;
+&lt;span class=&quot;line&quot;&gt;&lt;span style=&quot;--shiki-light:#22863A;--shiki-dark:#E06C75&quot;&gt;metadata&lt;/span&gt;&lt;span style=&quot;--shiki-light:#24292E;--shiki-dark:#ABB2BF&quot;&gt;:&lt;/span&gt;&lt;/span&gt;
+&lt;span class=&quot;line&quot;&gt;&lt;span style=&quot;--shiki-light:#22863A;--shiki-dark:#E06C75&quot;&gt;  name&lt;/span&gt;&lt;span style=&quot;--shiki-light:#24292E;--shiki-dark:#ABB2BF&quot;&gt;: &lt;/span&gt;&lt;span style=&quot;--shiki-light:#032F62;--shiki-dark:#98C379&quot;&gt;test-config&lt;/span&gt;&lt;/span&gt;
+&lt;span class=&quot;line&quot;&gt;&lt;span style=&quot;--shiki-light:#22863A;--shiki-dark:#E06C75&quot;&gt;data&lt;/span&gt;&lt;span style=&quot;--shiki-light:#24292E;--shiki-dark:#ABB2BF&quot;&gt;:&lt;/span&gt;&lt;/span&gt;
+&lt;span class=&quot;line&quot;&gt;&lt;span style=&quot;--shiki-light:#22863A;--shiki-dark:#E06C75&quot;&gt;  APP_NAME&lt;/span&gt;&lt;span style=&quot;--shiki-light:#24292E;--shiki-dark:#ABB2BF&quot;&gt;: &lt;/span&gt;&lt;span style=&quot;--shiki-light:#032F62;--shiki-dark:#98C379&quot;&gt;&quot;MyTestApp&quot;&lt;/span&gt;&lt;/span&gt;
+&lt;span class=&quot;line&quot;&gt;&lt;span style=&quot;--shiki-light:#22863A;--shiki-dark:#E06C75&quot;&gt;  DATABASE_HOST&lt;/span&gt;&lt;span style=&quot;--shiki-light:#24292E;--shiki-dark:#ABB2BF&quot;&gt;: &lt;/span&gt;&lt;span style=&quot;--shiki-light:#032F62;--shiki-dark:#98C379&quot;&gt;&quot;db.example.com&quot;&lt;/span&gt;&lt;/span&gt;
+&lt;span class=&quot;line&quot;&gt;&lt;span style=&quot;--shiki-light:#22863A;--shiki-dark:#E06C75&quot;&gt;  DATABASE_PORT&lt;/span&gt;&lt;span style=&quot;--shiki-light:#24292E;--shiki-dark:#ABB2BF&quot;&gt;: &lt;/span&gt;&lt;span style=&quot;--shiki-light:#032F62;--shiki-dark:#98C379&quot;&gt;&quot;5432&quot;&lt;/span&gt;&lt;/span&gt;
+&lt;span class=&quot;line&quot;&gt;&lt;span style=&quot;--shiki-light:#22863A;--shiki-dark:#E06C75&quot;&gt;  LOG_LEVEL&lt;/span&gt;&lt;span style=&quot;--shiki-light:#24292E;--shiki-dark:#ABB2BF&quot;&gt;: &lt;/span&gt;&lt;span style=&quot;--shiki-light:#032F62;--shiki-dark:#98C379&quot;&gt;&quot;INFO&quot;&lt;/span&gt;&lt;/span&gt;
+&lt;span class=&quot;line&quot;&gt;&lt;span style=&quot;--shiki-light:#6F42C1;--shiki-dark:#ABB2BF&quot;&gt;---&lt;/span&gt;&lt;/span&gt;
+&lt;span class=&quot;line&quot;&gt;&lt;span style=&quot;--shiki-light:#22863A;--shiki-dark:#E06C75&quot;&gt;apiVersion&lt;/span&gt;&lt;span style=&quot;--shiki-light:#24292E;--shiki-dark:#ABB2BF&quot;&gt;: &lt;/span&gt;&lt;span style=&quot;--shiki-light:#032F62;--shiki-dark:#98C379&quot;&gt;v1&lt;/span&gt;&lt;/span&gt;
+&lt;span class=&quot;line&quot;&gt;&lt;span style=&quot;--shiki-light:#22863A;--shiki-dark:#E06C75&quot;&gt;kind&lt;/span&gt;&lt;span style=&quot;--shiki-light:#24292E;--shiki-dark:#ABB2BF&quot;&gt;: &lt;/span&gt;&lt;span style=&quot;--shiki-light:#032F62;--shiki-dark:#98C379&quot;&gt;Pod&lt;/span&gt;&lt;/span&gt;
+&lt;span class=&quot;line&quot;&gt;&lt;span style=&quot;--shiki-light:#22863A;--shiki-dark:#E06C75&quot;&gt;metadata&lt;/span&gt;&lt;span style=&quot;--shiki-light:#24292E;--shiki-dark:#ABB2BF&quot;&gt;:&lt;/span&gt;&lt;/span&gt;
+&lt;span class=&quot;line&quot;&gt;&lt;span style=&quot;--shiki-light:#22863A;--shiki-dark:#E06C75&quot;&gt;  name&lt;/span&gt;&lt;span style=&quot;--shiki-light:#24292E;--shiki-dark:#ABB2BF&quot;&gt;: &lt;/span&gt;&lt;span style=&quot;--shiki-light:#032F62;--shiki-dark:#98C379&quot;&gt;test-pod-volume-only&lt;/span&gt;&lt;/span&gt;
+&lt;span class=&quot;line&quot;&gt;&lt;span style=&quot;--shiki-light:#22863A;--shiki-dark:#E06C75&quot;&gt;spec&lt;/span&gt;&lt;span style=&quot;--shiki-light:#24292E;--shiki-dark:#ABB2BF&quot;&gt;:&lt;/span&gt;&lt;/span&gt;
+&lt;span class=&quot;line&quot;&gt;&lt;span style=&quot;--shiki-light:#22863A;--shiki-dark:#E06C75&quot;&gt;  containers&lt;/span&gt;&lt;span style=&quot;--shiki-light:#24292E;--shiki-dark:#ABB2BF&quot;&gt;:&lt;/span&gt;&lt;/span&gt;
+&lt;span class=&quot;line&quot;&gt;&lt;span style=&quot;--shiki-light:#24292E;--shiki-dark:#ABB2BF&quot;&gt;    - &lt;/span&gt;&lt;span style=&quot;--shiki-light:#22863A;--shiki-dark:#E06C75&quot;&gt;name&lt;/span&gt;&lt;span style=&quot;--shiki-light:#24292E;--shiki-dark:#ABB2BF&quot;&gt;: &lt;/span&gt;&lt;span style=&quot;--shiki-light:#032F62;--shiki-dark:#98C379&quot;&gt;main-container&lt;/span&gt;&lt;/span&gt;
+&lt;span class=&quot;line&quot;&gt;&lt;span style=&quot;--shiki-light:#22863A;--shiki-dark:#E06C75&quot;&gt;      image&lt;/span&gt;&lt;span style=&quot;--shiki-light:#24292E;--shiki-dark:#ABB2BF&quot;&gt;: &lt;/span&gt;&lt;span style=&quot;--shiki-light:#032F62;--shiki-dark:#98C379&quot;&gt;busybox&lt;/span&gt;&lt;/span&gt;
+&lt;span class=&quot;line&quot;&gt;&lt;span style=&quot;--shiki-light:#22863A;--shiki-dark:#E06C75&quot;&gt;      command&lt;/span&gt;&lt;span style=&quot;--shiki-light:#24292E;--shiki-dark:#ABB2BF&quot;&gt;: [&lt;/span&gt;&lt;span style=&quot;--shiki-light:#032F62;--shiki-dark:#98C379&quot;&gt;&quot;sh&quot;&lt;/span&gt;&lt;span style=&quot;--shiki-light:#24292E;--shiki-dark:#ABB2BF&quot;&gt;, &lt;/span&gt;&lt;span style=&quot;--shiki-light:#032F62;--shiki-dark:#98C379&quot;&gt;&quot;-c&quot;&lt;/span&gt;&lt;span style=&quot;--shiki-light:#24292E;--shiki-dark:#ABB2BF&quot;&gt;, &lt;/span&gt;&lt;span style=&quot;--shiki-light:#032F62;--shiki-dark:#98C379&quot;&gt;&quot;sleep 3600&quot;&lt;/span&gt;&lt;span style=&quot;--shiki-light:#24292E;--shiki-dark:#ABB2BF&quot;&gt;]&lt;/span&gt;&lt;/span&gt;
+&lt;span class=&quot;line&quot;&gt;&lt;span style=&quot;--shiki-light:#22863A;--shiki-dark:#E06C75&quot;&gt;      volumeMounts&lt;/span&gt;&lt;span style=&quot;--shiki-light:#24292E;--shiki-dark:#ABB2BF&quot;&gt;:&lt;/span&gt;&lt;/span&gt;
+&lt;span class=&quot;line&quot;&gt;&lt;span style=&quot;--shiki-light:#24292E;--shiki-dark:#ABB2BF&quot;&gt;        - &lt;/span&gt;&lt;span style=&quot;--shiki-light:#22863A;--shiki-dark:#E06C75&quot;&gt;name&lt;/span&gt;&lt;span style=&quot;--shiki-light:#24292E;--shiki-dark:#ABB2BF&quot;&gt;: &lt;/span&gt;&lt;span style=&quot;--shiki-light:#032F62;--shiki-dark:#98C379&quot;&gt;config-volume&lt;/span&gt;&lt;/span&gt;
+&lt;span class=&quot;line&quot;&gt;&lt;span style=&quot;--shiki-light:#22863A;--shiki-dark:#E06C75&quot;&gt;          mountPath&lt;/span&gt;&lt;span style=&quot;--shiki-light:#24292E;--shiki-dark:#ABB2BF&quot;&gt;: &lt;/span&gt;&lt;span style=&quot;--shiki-light:#032F62;--shiki-dark:#98C379&quot;&gt;/etc/config&lt;/span&gt;&lt;/span&gt;
+&lt;span class=&quot;line&quot;&gt;&lt;span style=&quot;--shiki-light:#22863A;--shiki-dark:#E06C75&quot;&gt;  volumes&lt;/span&gt;&lt;span style=&quot;--shiki-light:#24292E;--shiki-dark:#ABB2BF&quot;&gt;:&lt;/span&gt;&lt;/span&gt;
+&lt;span class=&quot;line&quot;&gt;&lt;span style=&quot;--shiki-light:#24292E;--shiki-dark:#ABB2BF&quot;&gt;    - &lt;/span&gt;&lt;span style=&quot;--shiki-light:#22863A;--shiki-dark:#E06C75&quot;&gt;name&lt;/span&gt;&lt;span style=&quot;--shiki-light:#24292E;--shiki-dark:#ABB2BF&quot;&gt;: &lt;/span&gt;&lt;span style=&quot;--shiki-light:#032F62;--shiki-dark:#98C379&quot;&gt;config-volume&lt;/span&gt;&lt;/span&gt;
+&lt;span class=&quot;line&quot;&gt;&lt;span style=&quot;--shiki-light:#22863A;--shiki-dark:#E06C75&quot;&gt;      configMap&lt;/span&gt;&lt;span style=&quot;--shiki-light:#24292E;--shiki-dark:#ABB2BF&quot;&gt;:&lt;/span&gt;&lt;/span&gt;
+&lt;span class=&quot;line&quot;&gt;&lt;span style=&quot;--shiki-light:#22863A;--shiki-dark:#E06C75&quot;&gt;        name&lt;/span&gt;&lt;span style=&quot;--shiki-light:#24292E;--shiki-dark:#ABB2BF&quot;&gt;: &lt;/span&gt;&lt;span style=&quot;--shiki-light:#032F62;--shiki-dark:#98C379&quot;&gt;test-config&lt;/span&gt;&lt;/span&gt;
+&lt;span class=&quot;line&quot;&gt;&lt;span style=&quot;--shiki-light:#22863A;--shiki-dark:#E06C75&quot;&gt;  restartPolicy&lt;/span&gt;&lt;span style=&quot;--shiki-light:#24292E;--shiki-dark:#ABB2BF&quot;&gt;: &lt;/span&gt;&lt;span style=&quot;--shiki-light:#032F62;--shiki-dark:#98C379&quot;&gt;Never&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 &lt;p&gt;&lt;figure class=&quot;gatsby-resp-image-figure&quot; style=&quot;&quot;&gt;
     &lt;span
       class=&quot;gatsby-resp-image-wrapper&quot;
@@ -172,205 +94,80 @@ spec:
     &lt;/span&gt;
     &lt;figcaption class=&quot;gatsby-resp-image-figcaption&quot;&gt;ConfigMap 이미지&lt;/figcaption&gt;
   &lt;/figure&gt;&lt;/p&gt;
-&lt;h2 id=&quot;그렇다면-왜-두-가지-방식을-지원할까&quot;&gt;그렇다면, 왜 두 가지 방식을 지원할까?&lt;/h2&gt;
-&lt;p&gt;결론부터 말하면, 이는 &apos;예측 가능한 안정성(Immutability)&apos;과 &apos;운영상의 유연성(Dynamic Update)&apos; 이라는, 서로 다른 두 설계 목표를 모두 지원하기 위함이다.&lt;/p&gt;
-&lt;h3 id=&quot;1-envenvfrom방식-불변성을-통한-안정성-확보&quot;&gt;1) &lt;code&gt;env/envFrom 방식:&lt;/code&gt; 불변성을 통한 안정성 확보&lt;/h3&gt;
-&lt;p&gt;이 방식으로 주입된 환경 변수는 컨테이너 시작 시 메모리에 주입되어 절대 변하지 않는 불변(Immutable) 값이 된다. 이는 &quot;설정이 바뀌면, Pod를 새로 배포한다&quot;는 불변 인프라(Immutable Infrastructure) 철학을 강제하여, 런타임 중 설정 변경으로 인한 예측 불가능한 오류를 원천적으로 차단한다.&lt;/p&gt;
-&lt;p&gt;하지만 이 &apos;불변성&apos;이라는 특징 때문에, Pod 재시작 없이는 설정을 변경할 수 없어 동적인 Hot Reload는 지원되지 않는다.&lt;/p&gt;
-&lt;h3 id=&quot;2-volumesvolumemounts방식-동적-업데이트를-통한-유연성-확보&quot;&gt;2) &lt;code&gt;volumes/volumeMounts 방식:&lt;/code&gt; 동적 업데이트를 통한 유연성 확보&lt;/h3&gt;
-&lt;p&gt;반면 이 방식은 ConfigMap/Secret을 파일 시스템의 리소스로 마운트한다. Kubelet이 원본 리소스의 변경을 감지하면 마운트된 파일을 원자적으로(atomically) 교체해주므로, 애플리케이션이 이를 감지해 Pod 재시작 없이 Hot Reload하는 것이 가능하다.&lt;/p&gt;
-&lt;p&gt;이는 로깅 레벨 변경이나 기능 플래그 전환처럼, 서비스 중단 없이 즉각적인 설정 변경이 필요한 운영상의 요구를 충족시키기 위한 강력한 유연성을 제공한다.&lt;/p&gt;
-&lt;h2 id=&quot;env-주입-과정-알아보기&quot;&gt;ENV 주입 과정 알아보기&lt;/h2&gt;
-&lt;p&gt;환경 변수가 일단 주입된 후에 불변한 이유는 쿠버네티스의 정책은 아니고 OS의 프로세스 모델의 구조 때문이다. 컨테이너도 OS 관점에서 프로세스이기에 동일한 원리를 따른다. 보통 새로운 프로세스가 생성될 때, &lt;code&gt;fork()&lt;/code&gt;와 &lt;code&gt;execve()&lt;/code&gt; 라는 두 개의 System Call을 통해 이루어진다.&lt;/p&gt;
+&lt;p&gt;이 방식의 특징은 Hot Reload다. ConfigMap·Secret이 바뀌면 kubelet 동기화 주기에 맞춰 잠시 후 컨테이너 내 파일 내용이 Pod 재시작 없이 자동으로 갱신된다. 대신 애플리케이션이 파일 시스템에서 설정을 다시 읽도록 구현돼 있어야 하니, properties·conf·toml류 설정 파일에 특히 잘 맞는다.&lt;/p&gt;
+&lt;p&gt;여기서 궁금해지는 지점이 하나 생긴다. 왜 굳이 이렇게 성격이 다른 두 가지 방식을 다 지원할까? 결론부터 말하면 &apos;예측 가능한 안정성(Immutability)&apos;과 &apos;운영상의 유연성(Dynamic Update)&apos;이라는, 서로 다른 두 설계 목표를 동시에 만족시키기 위해서다.&lt;/p&gt;
+&lt;p&gt;env 방식은 컨테이너 시작 시점에 메모리에 박히는 불변 값이다. &quot;설정이 바뀌면 Pod를 새로 배포한다&quot;는 불변 인프라(Immutable Infrastructure) 철학을 강제해서, 런타임 중 설정이 슬쩍 바뀌어 생기는 예측 불가능한 오류를 원천 차단한다. 그 대신 Hot Reload는 포기해야 한다.&lt;/p&gt;
+&lt;p&gt;volumeMounts 방식은 반대로 kubelet이 원본 리소스 변경을 감지하면 마운트된 파일을 원자적으로 교체해준다. 그래서 애플리케이션이 파일 변경을 감지하기만 하면 Pod 재시작 없이 Hot Reload가 가능하다. 로깅 레벨 변경이나 기능 플래그 전환처럼 서비스 중단 없이 즉시 반영해야 하는 운영 요구를 만족시키기 위한 선택이다.&lt;/p&gt;
+&lt;p&gt;그런데 이 설명, 어디서 많이 본 것 같지 않은가. 사실 이건 쿠버네티스만의 특별한 정책이 아니라 리눅스 프로세스 모델 그 자체에서 오는 특성이다. 왜 그런지 하나씩 따라가보자.&lt;/p&gt;
+&lt;h2 id=&quot;3-env는-왜-재시작-전엔-절대-안-바뀔까&quot;&gt;3. env는 왜 재시작 전엔 절대 안 바뀔까&lt;/h2&gt;
+&lt;p&gt;컨테이너도 OS 입장에서는 그냥 프로세스다. 그러니 새 프로세스가 만들어지는 원리를 그대로 따른다. 새 프로세스는 보통 &lt;code&gt;fork()&lt;/code&gt;와 &lt;code&gt;execve()&lt;/code&gt;, 이 두 시스템 콜로 만들어진다.&lt;/p&gt;
 &lt;ol&gt;
-&lt;li&gt;&lt;code&gt;fork()&lt;/code&gt; 를 실행하면 부모 프로세스는 자신과 똑같은 복제본인 자식 프로세스를 만들고 이 때 자식은 부모의 메모리, 파일 디스크립터, 그리고 환경 변수까지 복사해 물려 받는다.&lt;/li&gt;
-&lt;li&gt;&lt;code&gt;execve()&lt;/code&gt; 자식 프로세스는 이 시스템 콜을 통해 자기 자신을 새로운 프로세스로 교체하는데, 이 함수를 호출 할 때, 새로운 프로세스에 전달할 초기 환경 변수 목록을 인자로 넘겨준다.&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;fork()&lt;/code&gt;를 호출하면 부모 프로세스는 자신과 똑같은 복제본인 자식 프로세스를 만든다. 이때 자식은 부모의 메모리, 파일 디스크립터, 환경 변수까지 그대로 물려받는다.&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;execve()&lt;/code&gt;는 자식 프로세스가 자기 자신을 새로운 프로세스로 완전히 교체하는 시스템 콜이다. 이 함수를 부를 때 새 프로세스에 넘길 초기 환경 변수 목록을 인자로 함께 전달한다.&lt;/li&gt;
 &lt;/ol&gt;
-&lt;p&gt;이 과정은 컨테이너가 시작될 때도 동일하게 일어난다.&lt;/p&gt;
+&lt;p&gt;컨테이너가 시작될 때도 똑같은 흐름을 탄다.&lt;/p&gt;
 &lt;ol&gt;
-&lt;li&gt;&lt;code&gt;kubelet(부모 프로세스) 역할:&lt;/code&gt; kubelet은 컨테이너 런타임에게 Pod Spec에 정의된 환경 변수 목록을 전달한다.&lt;/li&gt;
-&lt;li&gt;&lt;code&gt;컨테이너 런타임:&lt;/code&gt; 이 정보를 받아 컨테이너 내부에서 실행될 메인 프로세스를 execve()로 실행하면서 전달받은 환경 변수들로 초기화된다.&lt;/li&gt;
+&lt;li&gt;kubelet(부모 프로세스 역할)이 컨테이너 런타임에게 Pod Spec에 정의된 환경 변수 목록을 전달한다.&lt;/li&gt;
+&lt;li&gt;컨테이너 런타임은 이 정보를 받아 컨테이너 내부 메인 프로세스를 &lt;code&gt;execve()&lt;/code&gt;로 실행하면서, 전달받은 환경 변수로 초기화한다.&lt;/li&gt;
 &lt;/ol&gt;
-&lt;h2 id=&quot;kubelet의-동작-원리---deep-dive&quot;&gt;Kubelet의 동작 원리 - Deep Dive&lt;/h2&gt;
-&lt;blockquote&gt;
-&lt;p&gt;Kubelet은 ConfigMap/Secret을 컨테이너에 전달하는 실질적인 역할을 하는데, 그 과정이 어떻게 되는지 조금 더 자세히 알아보자.&lt;/p&gt;
-&lt;/blockquote&gt;
+&lt;p&gt;kubelet이 실제로 이 값을 어디서 어떻게 가져오는지 조금 더 들어가보면 이렇다.&lt;/p&gt;
 &lt;ol&gt;
-&lt;li&gt;&lt;code&gt;감시:&lt;/code&gt; 각 노드의 kubelet은 Control Plane의 API Server를 지속적으로 Watch 하고 있다. 이 때 자신에게 할당된 (&lt;code&gt;spec.nodeName&lt;/code&gt;이 자신의 노드 이름인 경우) Pod가 있는지 체크한다.&lt;/li&gt;
-&lt;li&gt;&lt;code&gt;Pod 인지 및 명세 확인:&lt;/code&gt; 스케줄러에 의해 특정 Pod이 노드에 할당되면, kubelet은 해당 Pod의 명세를 API Server로 요청하여 읽어들인다. 이 때 어떤 ConfigMap이나 Secret을 필요로 하는지 파악한다.&lt;/li&gt;
-&lt;li&gt;&lt;code&gt;데이터 요청(Fetch):&lt;/code&gt; kubelet은 Pod 명세에 따라 필요한 ConfigMap과 Secret 객체의 내용을 API 서버에 명시적으로 요청하여 가져온다. 이 통신은 TLS로 암호화 되며, kubelet은 ServiceAccount나 인증서를 통해 API 서버로부터 인증/인가를 받아야한다.&lt;/li&gt;
-&lt;li&gt;&lt;code&gt;주입 메커니즘 실행&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;감시&lt;/strong&gt;: 각 노드의 kubelet은 API Server를 계속 Watch하면서 &lt;code&gt;spec.nodeName&lt;/code&gt;이 자기 노드인 Pod가 있는지 체크한다.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Pod 인지&lt;/strong&gt;: 스케줄러가 Pod를 노드에 할당하면, kubelet은 API Server에서 해당 Pod 명세를 읽어 어떤 ConfigMap·Secret이 필요한지 파악한다.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;데이터 Fetch&lt;/strong&gt;: kubelet이 필요한 ConfigMap·Secret 객체를 API Server에 명시적으로 요청해서 가져온다. 이 통신은 TLS로 암호화되고, kubelet은 ServiceAccount나 인증서로 인증·인가를 받는다.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;주입&lt;/strong&gt;: env 방식이면 가져온 key-value를 메모리에 들고 있다가 CRI에 컨테이너 생성을 요청할 때 환경 변수로 같이 넘긴다. 컨테이너 런타임은 이걸 받아 첫 프로세스 실행 시 환경 변수로 설정한다.&lt;/li&gt;
 &lt;/ol&gt;
-&lt;h3 id=&quot;주입-메커니즘-실행&quot;&gt;주입 메커니즘 실행&lt;/h3&gt;
-&lt;p&gt;A. 환경 변수로 주입인 경우&lt;/p&gt;
+&lt;p&gt;여기까지 보면 답은 명확하다. 환경 변수는 &lt;code&gt;execve()&lt;/code&gt;가 프로세스를 초기화하는 그 순간에 한 번 각인되고, 그 이후에는 OS가 실행 중인 프로세스의 환경 변수를 외부에서 바꿀 방법을 아예 제공하지 않는다. 프로세스도 마찬가지로 일단 실행되면 다른 프로세스로부터 격리된다. 만약 이게 가능했다면 임의의 프로세스가 다른 프로세스의 &lt;code&gt;PATH&lt;/code&gt;나 &lt;code&gt;DB_PASSWORD&lt;/code&gt;를 마음대로 바꿔치기할 수 있다는 뜻이 되니, 프로세스 격리 원칙을 지키려면 env는 불변일 수밖에 없다.&lt;/p&gt;
+&lt;h2 id=&quot;4-volumemount는-어떻게-재시작-없이-갱신될까&quot;&gt;4. volumeMount는 어떻게 재시작 없이 갱신될까&lt;/h2&gt;
+&lt;p&gt;반면 볼륨 마운트가 Hot Reload를 지원하는 이유는 파일 시스템 마운트라는 메커니즘 자체가 애초에 여러 프로세스 간 데이터 공유를 위해 설계됐기 때문이다. kubelet이 실제로 파일을 어떻게 배치하는지 보면 답이 나온다.&lt;/p&gt;
 &lt;ol&gt;
-&lt;li&gt;kubelet은 가져온 ENV(key-value 데이터)를 메모리에 유지한다.&lt;/li&gt;
-&lt;li&gt;CRI에 컨테이너 생성 요청을 할 때 이 ENV 데이터를 컨테이너 설정의 환경 변수 부분에 포함하여 전달한다.&lt;/li&gt;
-&lt;li&gt;컨테이너 런타임은 이 정보를 받아 컨테이너의 첫 번째 프로세스를 실행할 때 환경 변수로 설정해준다.&lt;/li&gt;
+&lt;li&gt;kubelet은 호스트 노드의 특정 경로(&lt;code&gt;/var/lib/kubelet/pods/&amp;#x3C;pod-uid&gt;/volumes/kubernetes.io~configmap/&amp;#x3C;volume-name&gt;&lt;/code&gt;)에 디렉터리를 만든다.&lt;/li&gt;
+&lt;li&gt;가져온 데이터의 key를 파일명으로, value를 파일 내용으로 써서 그 디렉터리에 파일을 생성한다.&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;..data&lt;/code&gt;라는 심볼릭 링크를 만들어 방금 만든 타임스탬프 디렉터리를 가리키게 한다.&lt;/li&gt;
+&lt;li&gt;컨테이너 런타임에게 &quot;호스트의 이 경로를 컨테이너의 mountPath로 마운트하라&quot;고 지시하면, 런타임은 이 &lt;code&gt;..data&lt;/code&gt; 심볼릭 링크를 컨테이너에 바인드 마운트한다.&lt;/li&gt;
 &lt;/ol&gt;
-&lt;p&gt;B. 볼륨 마운트로 주입인 경우&lt;/p&gt;
-&lt;ol&gt;
-&lt;li&gt;호스트에 디렉토리 생성: kubelet은 호스트 노드의 특정 경로(일반적으론 &lt;code&gt;/var/lib/kubelet/pods/&amp;#x3C;pod-uid&gt;/volumes/kubernetes.io~configmap/&amp;#x3C;volume-name&gt;&lt;/code&gt;) 에 디렉토리를 생성한다.&lt;/li&gt;
-&lt;li&gt;데이터 기록: 가져온 데이터의 각 key를 파일이름으로, 각 value를 파일 내용으로 하여 해당 디렉토리에 파일을 생성한다.&lt;/li&gt;
-&lt;li&gt;심볼릭 링크 생성: kubelet은 &lt;code&gt;..data(가칭)&lt;/code&gt; 라는 이름의 심볼릭 링크를 만들어, 방금 생성한 타임스탬프 디렉토리를 가리키도록 한다.&lt;/li&gt;
-&lt;li&gt;컨테이너 마운트: Kubelet이 컨테이너 런타임에 컨테이너 생성을 요청할 때, &quot;호스트의 이 경로를 컨테이너 내부의 저 경로(mountPath)로 마운트하라&quot;고 지시하고 컨테이너 런타임이 이 지시에 따라 &lt;code&gt;..data&lt;/code&gt; 디렉토리를 컨테이너 바인드 마운트한다.&lt;/li&gt;
-&lt;/ol&gt;
-&lt;h2 id=&quot;왜-env는-불변하고-volumemount-방식은-가능한가&quot;&gt;왜 ENV는 불변하고 volumeMount 방식은 가능한가?&lt;/h2&gt;
-&lt;p&gt;환경 변수는 &lt;code&gt;execve()&lt;/code&gt; 함수에 의해 최초 초기화될 때 컨테이너나 프로세스에 각인되며 kubelet에 의해 컨테이너가 시작되면 격리되어 변경할 방법이 없다. 프로세스도 마찬가지로 실행되면 다른 프로세스로부터 격리된다. 따라서 환경 변수 값을 수정할 수 있는 방법을 OS 레벨에서 제공하지 않기에 변경할 방법이 없다.&lt;/p&gt;
-&lt;p&gt;만약, 이게 가능하다면 프로세스가 다른 프로세스의 &lt;code&gt;PATH&lt;/code&gt; 환경 변수를 마음대로 바꾸거나, &lt;code&gt;DB_PASSWORD&lt;/code&gt; 를 바꾸는 등의 끔찍한 보안 및 안정성 문제를 일으킬 수 있다. 따라서 프로세스 격리 원칙을 지키기 위해 ENV 값들은 불변하다.&lt;/p&gt;
-&lt;h2 id=&quot;볼륨-마운트-방식이-가능한-이유---hot-reload-원리&quot;&gt;볼륨 마운트 방식이 가능한 이유 - Hot reload 원리&lt;/h2&gt;
-&lt;p&gt;반면, 볼륨 마운트를 통한 업데이트가 가능한 이유는 파일 시스템을 마운트 하는 방식이 처음부터 여러 프로세스 간 데이터 공유를 위해 설계된 표준적인 메커니즘이기 때문인데 조금더 자세히 알아보자&lt;/p&gt;
-&lt;p&gt;이유: 심볼릭 링크&lt;/p&gt;
+&lt;p&gt;즉 컨테이너에 실제로 마운트되는 건 원본 디렉터리가 아니라 &lt;code&gt;..data&lt;/code&gt;라는 심볼릭 링크다. 그래서 ConfigMap·Secret이 업데이트되면 kubelet은 새 타임스탬프 디렉터리를 만들어 새 데이터를 쓴 다음, &lt;code&gt;..data&lt;/code&gt;가 가리키는 대상만 원자적으로 바꿔치기한다. 파일 내용을 직접 덮어쓰는 게 아니라 링크가 가리키는 대상을 통째로 스왑하는 방식이라, 애플리케이션이 파일을 읽는 도중에 절반만 갱신된 내용을 보는 일이 없다.&lt;/p&gt;
+&lt;h2 id=&quot;5-이-환경-변수는-프로세스-메모리-어디에-있을까&quot;&gt;5. 이 환경 변수는 프로세스 메모리 어디에 있을까&lt;/h2&gt;
+&lt;p&gt;여기까지 오니 하나 더 궁금해졌다. &lt;code&gt;execve()&lt;/code&gt;가 각인해준다는 그 환경 변수, 프로세스 메모리 안에서 정확히 어디에 앉아 있을까. 결론부터 말하면 Stack 세그먼트 바로 위, 가상 메모리에서 가장 높은 주소 영역이다.&lt;/p&gt;
+&lt;div class=&quot;shiki-code-block&quot;&gt;&lt;button type=&quot;button&quot; class=&quot;shiki-copy-btn&quot; aria-label=&quot;코드 복사&quot;&gt;&lt;svg viewBox=&quot;0 0 16 16&quot; fill=&quot;none&quot; stroke=&quot;currentColor&quot; stroke-width=&quot;1.4&quot;&gt;&lt;rect x=&quot;5.5&quot; y=&quot;5.5&quot; width=&quot;9&quot; height=&quot;9&quot; rx=&quot;1.5&quot;&gt;&lt;/rect&gt;&lt;path d=&quot;M3.5 10.5h-1a1 1 0 0 1-1-1v-7a1 1 0 0 1 1-1h7a1 1 0 0 1 1 1v1&quot;&gt;&lt;/path&gt;&lt;/svg&gt;&lt;/button&gt;&lt;pre class=&quot;shiki shiki-themes github-light one-dark-pro&quot; style=&quot;--shiki-light:#24292e;--shiki-dark:#abb2bf;--shiki-light-bg:#fff;--shiki-dark-bg:#282c34&quot; tabindex=&quot;0&quot;&gt;&lt;code&gt;&lt;span class=&quot;line&quot;&gt;&lt;span&gt;+------------------------+ &amp;#x3C;-- Highest Memory Address&lt;/span&gt;&lt;/span&gt;
+&lt;span class=&quot;line&quot;&gt;&lt;span&gt;| Kernel Space           | (프로세스에서 직접 접근 불가)&lt;/span&gt;&lt;/span&gt;
+&lt;span class=&quot;line&quot;&gt;&lt;span&gt;+------------------------+&lt;/span&gt;&lt;/span&gt;
+&lt;span class=&quot;line&quot;&gt;&lt;span&gt;|                        |&lt;/span&gt;&lt;/span&gt;
+&lt;span class=&quot;line&quot;&gt;&lt;span&gt;| Environment Variables  |&lt;/span&gt;&lt;/span&gt;
+&lt;span class=&quot;line&quot;&gt;&lt;span&gt;| Command-line Arguments |&lt;/span&gt;&lt;/span&gt;
+&lt;span class=&quot;line&quot;&gt;&lt;span&gt;+------------------------+&lt;/span&gt;&lt;/span&gt;
+&lt;span class=&quot;line&quot;&gt;&lt;span&gt;| Stack (스택)            | (아래 방향으로 자람)&lt;/span&gt;&lt;/span&gt;
+&lt;span class=&quot;line&quot;&gt;&lt;span&gt;|      ↓                 |&lt;/span&gt;&lt;/span&gt;
+&lt;span class=&quot;line&quot;&gt;&lt;span&gt;+------------------------+&lt;/span&gt;&lt;/span&gt;
+&lt;span class=&quot;line&quot;&gt;&lt;span&gt;|                        |&lt;/span&gt;&lt;/span&gt;
+&lt;span class=&quot;line&quot;&gt;&lt;span&gt;| (Unmapped Memory)      |&lt;/span&gt;&lt;/span&gt;
+&lt;span class=&quot;line&quot;&gt;&lt;span&gt;|                        |&lt;/span&gt;&lt;/span&gt;
+&lt;span class=&quot;line&quot;&gt;&lt;span&gt;+------------------------+&lt;/span&gt;&lt;/span&gt;
+&lt;span class=&quot;line&quot;&gt;&lt;span&gt;|      ↑                 |&lt;/span&gt;&lt;/span&gt;
+&lt;span class=&quot;line&quot;&gt;&lt;span&gt;| Heap (힙)              | (위 방향으로 자람)&lt;/span&gt;&lt;/span&gt;
+&lt;span class=&quot;line&quot;&gt;&lt;span&gt;+------------------------+&lt;/span&gt;&lt;/span&gt;
+&lt;span class=&quot;line&quot;&gt;&lt;span&gt;| BSS Segment            |&lt;/span&gt;&lt;/span&gt;
+&lt;span class=&quot;line&quot;&gt;&lt;span&gt;+------------------------+&lt;/span&gt;&lt;/span&gt;
+&lt;span class=&quot;line&quot;&gt;&lt;span&gt;| Data Segment           |&lt;/span&gt;&lt;/span&gt;
+&lt;span class=&quot;line&quot;&gt;&lt;span&gt;+------------------------+&lt;/span&gt;&lt;/span&gt;
+&lt;span class=&quot;line&quot;&gt;&lt;span&gt;| Text Segment (Code)    |&lt;/span&gt;&lt;/span&gt;
+&lt;span class=&quot;line&quot;&gt;&lt;span&gt;+------------------------+ &amp;#x3C;-- Lowest Memory Address&lt;/span&gt;&lt;/span&gt;
+&lt;span class=&quot;line&quot;&gt;&lt;span&gt;| (Reserved)             |&lt;/span&gt;&lt;/span&gt;
+&lt;span class=&quot;line&quot;&gt;&lt;span&gt;+------------------------+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;컨테이너의 본질이 프로세스이니 이 구조도 그대로 따라간다. 그런데 왜 하필 Stack 위일까. Text·Data·BSS 사이나 Heap 아래에 둬도 될 것 같은데 말이다.&lt;/p&gt;
+&lt;p&gt;먼저 Text·Data·BSS 사이에 두지 않는 이유는 프로세스 생성이 복잡해지고 느려지기 때문이다. 커널 로더가 execve를 처리할 때 디스크의 Text·Data 세그먼트를 &lt;code&gt;mmap()&lt;/code&gt;으로 가상 메모리에 거의 그대로 매핑하는데, 이건 파일의 연속된 바이트가 메모리에서도 연속되는 굉장히 빠른 작업이다. 만약 Text와 Data 사이에 가변 크기인 환경 변수 블록을 끼워 넣는다면, 커널은 Text를 매핑하고, 환경 변수 크기를 계산하고, 그만큼 빈 공간을 확보하고, 그 다음에 Data를 매핑하는 식으로 훨씬 복잡한 절차를 거쳐야 한다. 게다가 Text·Data 사이 거리가 실행마다 달라져서 디버깅과 프로파일링도 어려워진다. 여기에 더해 Text는 보통 읽기·실행(r-x), Data·BSS는 읽기·쓰기(rw-) 권한을 갖는데, 세그먼트 사이에 다른 데이터를 끼워 넣으면 페이지 단위로 권한을 관리하는 MMU 설정까지 복잡해진다.&lt;/p&gt;
+&lt;p&gt;그럼 BSS와 Heap 사이는 어떨까. Text·Data·BSS는 컴파일·링크 시점에 크기가 정해지고, 정적 데이터 영역이 끝나는 주소를 &lt;code&gt;_end&lt;/code&gt;(또는 &lt;code&gt;__bss_end__&lt;/code&gt;) 심볼로 실행 파일 안에 박아둔다. &lt;code&gt;libc&lt;/code&gt;의 &lt;code&gt;malloc&lt;/code&gt; 구현은 커널에 물어볼 필요 없이 이 &lt;code&gt;_end&lt;/code&gt; 심볼만 읽으면 힙의 시작점을 알 수 있다. 그런데 만약 BSS와 Heap 사이에 크기가 매번 달라지는 ENV가 끼어든다면, malloc이 힙 시작점을 알기 위해 반드시 커널과 통신해야 하는 상황이 생긴다. 커널이 execve 결과로 새 힙 시작 주소를 넘겨주거나, libc가 별도 시스템 콜로 물어봐야 한다는 뜻이다. 이렇게 되면 커널과 libc 사이에 새로운 의존성이 생기고, 커널은 유저 스페이스 라이브러리인 malloc의 구현 방식까지 신경 써야 하니 시스템 복잡도만 올라간다.&lt;/p&gt;
+&lt;p&gt;반면 Stack은 사정이 다르다. Stack은 CPU(하드웨어)와 커널이 직접 관리하는 영역이라 &lt;code&gt;ESP&lt;/code&gt;·&lt;code&gt;RSP&lt;/code&gt; 레지스터 하나로 관리된다. execve 시점에 커널이 환경 변수와 인자를 스택 최상단에 쌓고, 최종 주소를 RSP 레지스터에 딱 한 번 설정해주면 끝이다. 이후로는 &lt;code&gt;call&lt;/code&gt;, &lt;code&gt;ret&lt;/code&gt;, &lt;code&gt;push&lt;/code&gt;, &lt;code&gt;pop&lt;/code&gt; 같은 기계어 명령어에 의해 RSP가 하드웨어 레벨에서 알아서 오르내린다. 유저 스페이스 라이브러리가 스택 시작점을 따로 알 필요가 없다. 반면 Heap은 관리 주체가 &lt;code&gt;libc&lt;/code&gt;라는 순수 소프트웨어이고, &lt;code&gt;malloc&lt;/code&gt;·&lt;code&gt;free&lt;/code&gt;가 자체 자료구조(free list, bins 등)를 초기화하려면 반드시 고정된 기준점(&lt;code&gt;_end&lt;/code&gt; 심볼)이 필요하다.&lt;/p&gt;
+&lt;p&gt;정리하면, Stack은 커널이 CPU 레지스터에 초기값 한 번 찍어주면 끝나지만, Heap은 소프트웨어(libc)가 자기 관리 체계를 시작하기 위한 고정 기준점이 필요하다는 근본적인 차이가 있다. 그래서 크기가 가변적인 ENV는 하드웨어가 알아서 관리해주는 Stack 바로 위에 얹는 게 가장 단순하고 효율적인 선택이 된 것이다.&lt;/p&gt;
+&lt;h2 id=&quot;6-secret은-왜-굳이-base64로-인코딩되어-있을까&quot;&gt;6. Secret은 왜 굳이 base64로 인코딩되어 있을까&lt;/h2&gt;
+&lt;p&gt;마지막으로 하나 더. Secret의 data 필드는 base64로 인코딩돼 있는데, 이걸 처음 보면 &apos;이게 뭔가 암호화되어 있는 건가&apos; 싶을 수 있다. 결론부터 말하면 base64 인코딩은 보안과는 아무 상관이 없다.&lt;/p&gt;
+&lt;p&gt;Secret의 data 필드는 임의의 바이너리 데이터를 담을 수 있게 설계됐다. 그런데 YAML·JSON 매니페스트는 기본적으로 Text 기반이라, 줄바꿈이나 null 문자(&lt;code&gt;\0&lt;/code&gt;) 같은 제어 문자가 섞인 바이너리 데이터(예: id_rsa 개인키, .p12 인증서)를 그대로 넣으면 파싱 오류가 나거나 데이터가 깨질 수 있다. 그래서 모든 바이너리 데이터를 ASCII로 안전하게 변환하는 base64를 쓴 것이다. 변환된 문자열은 YAML·JSON에 아무 문제 없이 들어간다.&lt;/p&gt;
+&lt;p&gt;그럼 왜 기본적으로 암호화까지는 안 해줄까. 쿠버네티스가 확장 가능성을 핵심 설계 원칙으로 삼고 있기 때문이다. 만약 쿠버네티스가 특정 암호화 방식을 내장해서 강제했다면, 사용자들은 자기 환경에 맞는 KMS를 도입하는 데 큰 제약을 받았을 것이다. 대신 쿠버네티스는 Encryption at Rest라는 플러그형 메커니즘만 제공하고, 사용자가 자기 환경에 맞는 KMS Provider를 골라 API Server와 연동하도록 열어뒀다. 특정 기술에 종속되지 않으면서도 원하는 만큼 강력한 보안을 붙일 수 있게 설계한 셈이다.&lt;/p&gt;
+&lt;p&gt;끝&lt;/p&gt;
 &lt;ul&gt;
-&lt;li&gt;위에서 말한 것처럼 컨테이너에 마운트되는 것은 심볼릭 링크로 원본 디렉토리를 바라보고 있다.&lt;/li&gt;
-&lt;li&gt;따라서 kubelet은 이를 이용해 심볼릭 링크를 원자적으로 업데이트 하는 방식을 사용하기 때문이다.&lt;/li&gt;
-&lt;/ul&gt;
-&lt;p&gt;과정:&lt;/p&gt;
-&lt;ol&gt;
-&lt;li&gt;컨테이너에는 &lt;code&gt;..data&lt;/code&gt; 심볼릭 링크가 마운트 되어있다. (위에서 설명)&lt;/li&gt;
-&lt;li&gt;ConfigMap/Secret이 업데이트되면, &lt;code&gt;kubelet&lt;/code&gt; 은 새로운 타임스탬프 디렉토리(2025.v2)를 만들고 새 데이터를 쓴 뒤, &lt;code&gt;..data&lt;/code&gt; 심볼릭 링크가 가리키는 대상을 새 디렉토리로 교체한다.&lt;/li&gt;
-&lt;/ol&gt;
-&lt;h2 id=&quot;주입받은-환경-변수는-프로세스-메모리-중-어떤-영역에-존재할까&quot;&gt;주입받은 환경 변수는 프로세스 메모리 중 어떤 영역에 존재할까?&lt;/h2&gt;
-&lt;p&gt;결론:&lt;/p&gt;
-&lt;blockquote&gt;
-&lt;p&gt;환경 변수는 프로세스의 가상 메모리 중 Stack 세그먼트 위인 가장 높은 주소 영역에 위치한다.&lt;/p&gt;
-&lt;/blockquote&gt;
-&lt;p&gt;컨테이너의 본질은 프로세스이다. 따라서 컨테이너의 환경 변수는 프로세스와 동일한 메모리 구조로 맵핑된다. 환경 변수는 프로세스의 가상 메모리 중 Stack 세그먼트 위인 가장 높은 주소 영역에 위치하며, 프로세스 생성 시 호출되는 &lt;code&gt;execve()&lt;/code&gt;System Call 결과 다음과 같은 메모리 구조를 가지게된다.&lt;/p&gt;
-&lt;deckgo-highlight-code  terminal=&quot;carbon&quot; theme=&quot;one-dark&quot;  &gt;
-          &lt;code slot=&quot;code&quot;&gt;+------------------------+ &amp;lt;-- Highest Memory Address
-| Kernel Space           | (프로세스에서 직접 접근 불가)
-+------------------------+
-|                        |
-| Environment Variables  |
-| Command-line Arguments |
-+------------------------+
-| Stack (스택)            | (아래 방향으로 자람)
-|      ↓                 |
-+------------------------+
-|                        |
-| (Unmapped Memory)      |
-|                        |
-+------------------------+
-|      ↑                 |
-| Heap (힙)              | (위 방향으로 자람)
-+------------------------+
-| BSS Segment            |
-+------------------------+
-| Data Segment           |
-+------------------------+
-| Text Segment (Code)    |
-+------------------------+ &amp;lt;-- Lowest Memory Address
-| (Reserved)             |
-+------------------------+&lt;/code&gt;
-        &lt;/deckgo-highlight-code&gt;
-&lt;h2 id=&quot;그렇다면-왜-stack-위일까&quot;&gt;그렇다면 왜 Stack 위일까?&lt;/h2&gt;
-&lt;blockquote&gt;
-&lt;p&gt;불변의 값을 나열하는 것이면 &lt;code&gt;Text Segment&lt;/code&gt;, &lt;code&gt;Data Segment&lt;/code&gt;, &lt;code&gt;BSS Segment&lt;/code&gt; 사이나 &lt;code&gt;Heap&lt;/code&gt; 아래여도 될 것 같은데 왜 Stack 위일까?&lt;/p&gt;
-&lt;/blockquote&gt;
-&lt;p&gt;초기화 과정과 메모리 영역의 특성을 파악해보자&lt;/p&gt;
-&lt;p&gt;프로세스 메모리 영역 구성은 위에서 본 것처럼 &lt;code&gt;Text&lt;/code&gt;, &lt;code&gt;Data&lt;/code&gt;, &lt;code&gt;BSS&lt;/code&gt;, &lt;code&gt;Heap&lt;/code&gt;, &lt;code&gt;Unmapped Memory&lt;/code&gt;, &lt;code&gt;Stack&lt;/code&gt;, &lt;code&gt;ENV&lt;/code&gt; 이렇게 구성되어 있다. 각, 영역의 특성을 이해하면 Stack 위에 위치하는 것이 합리적이다 라는 것을 알 수 있다.&lt;/p&gt;
-&lt;p&gt;우선, Text, Data, BSS 영역에 위치하지 않는 이유는 다음과 같다.&lt;/p&gt;
-&lt;blockquote&gt;
-&lt;p&gt;프로세스 생성 과정이 복잡해지고 생성 지연을 최소화 하기 위함&lt;/p&gt;
-&lt;/blockquote&gt;
-&lt;ul&gt;
-&lt;li&gt;
-&lt;p&gt;실행 파일과의 직접적인 매핑: 커널의 로더(loader)가 execve를 처리할 때, 디스크에 있는 실행 파일의 Text Segment와 Data Segment를 가상 메모리 공간으로 거의 그대로 &lt;code&gt;mmap()&lt;/code&gt;을 통해 매핑한다.
-즉, 파일에서의 연속된 바이트들이 메모리에서도 연속된 공간에 매핑되는데 이는 매우 빠르고 효율적인 작업이다.&lt;/p&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;가변 크기 데이터의 문제: 만약 Text와 Data 세그먼트 사이에 가변 크기인 환경 변수 블록을 삽입한다고 가정해보자. 이때 커널이 거쳐야 하는 과정은 다음과 같다.&lt;/p&gt;
-&lt;ol&gt;
-&lt;li&gt;Text 세그먼트를 메모리에 매핑한다.&lt;/li&gt;
-&lt;li&gt;이번에 실행되는 프로세스의 환경 변수 크기(envp의 총 길이)를 계산한다.&lt;/li&gt;
-&lt;li&gt;계산된 크기만큼의 빈 공간을 확보한다.&lt;/li&gt;
-&lt;li&gt;그 빈 공간 &lt;em&gt;다음에&lt;/em&gt; Data 세그먼트를 매핑한다.&lt;/li&gt;
-&lt;/ol&gt;
-&lt;p&gt;이 과정은 실행 파일의 내용을 한 번에 쭉 매핑하는 것에 비해 훨씬 복잡하고 비효율적이다. 또한, Text와 Data 사이의 거리가 실행 시마다 달라져 디버깅과 프로파일링을 매우 어렵게 만든다.&lt;/p&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;메모리 권한 설정의 복잡성: Text 세그먼트는 보통 읽기/실행(r-x) 권한을, Data와 BSS는 읽기/쓰기(rw-) 권한을 가진다. 세그먼트 사이에 다른 데이터를 끼워 넣는 것은 페이지 단위로 권한을 관리하는 MMU의 설정을 복잡하게 만들고 추가적인 오버헤드를 유발하게 된다.&lt;/p&gt;
-&lt;/li&gt;
-&lt;/ul&gt;
-&lt;blockquote&gt;
-&lt;p&gt;만약, Heap 아래 (즉, BSS와 Heap 사이)에 위치한다면?&lt;/p&gt;
-&lt;/blockquote&gt;
-&lt;h3 id=&quot;기존-동작-원리&quot;&gt;기존 동작 원리&lt;/h3&gt;
-&lt;p&gt;Text, Data, BSS 세그먼트 들은 컴파일 시점에 결정되면 링크 과정을 통해 메모리에 맵핑되며 정적 데이터 영역이 끝나는 지점의 주소를 &lt;code&gt;_end&lt;/code&gt; 또는 &lt;code&gt;__bss_end_&lt;/code&gt; 와 같은 심볼로 파일 안에 기록해둔다.&lt;/p&gt;
-&lt;p&gt;또, 메모리 동적 할당을 담당하는 &lt;code&gt;libc&lt;/code&gt; 의 &lt;code&gt;malloc&lt;/code&gt; 구현을 보면 커널에게 물어볼 필요 없이 실행 파일 안에 기록된 &lt;code&gt;_end&lt;/code&gt; 심볼의 주소를 읽어, 정적 데이터의 끝점을 알게되고 힙의 시작점을 고정할 수 있다.&lt;/p&gt;
-&lt;p&gt;그런데 BSS와 Heap 사이에 ENV (동적인 사이즈)가 배치된다면 libc의 malloc 초기화 과정에 힙의 시작점을 알기 위해 반드시 커널과 소통해야 한다. (libc는 유저 스페이스의 라이브러리이고, ENV 초기화는 execve 라는 커널 영역의 책임이다.)&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;어떻게? 커널이 execve의 결과로 새로운 힙 시작 주소를 프로세스에게 넘겨주거나, libc가 &quot;내 힙은 어디서 시작합니까?&quot;라고 묻는 새로운 시스템 콜을 호출해야 한다.&lt;/li&gt;
-&lt;/ul&gt;
-&lt;p&gt;이 방식은 커널과 libc 사이에 의존성을 만들고 커널은 유저 스페이스 라이브러리인 malloc의 구현 방식을 고려해야 하며, libc는 커널이 제공하는 새로운 인터페이스에 의존해야 한다. 이렇게 되면 전체적인 시스템의 복잡도가 증가하고 유연성이 떨어진다.&lt;/p&gt;
-&lt;h3 id=&quot;왜-스택은-괜찮은가&quot;&gt;왜 스택은 괜찮은가?&lt;/h3&gt;
-&lt;ul&gt;
-&lt;li&gt;스택(Stack):
-&lt;ul&gt;
-&lt;li&gt;관리 주체: CPU(하드웨어) 와 커널&lt;/li&gt;
-&lt;li&gt;관리 방식: ESP/RSP 라는 스택 포인터(Stack Pointer) CPU 레지스터를 통해 관리됩니다.&lt;/li&gt;
-&lt;li&gt;초기화: execve 시점에 커널이 환경 변수, 인자 등을 모두 스택의 최상단에 쌓은 후, 그 최종 주소를 RSP 레지스터에 딱 한번 설정해 줍니다.&lt;/li&gt;
-&lt;li&gt;이후 동작: 그 후부터는 프로그램의 call, ret, push, pop 같은 기계어 명령어에 의해 RSP 레지스터 값이 하드웨어 레벨에서 자동으로 증가하거나 감소합니다. 유저스페이스 라이브러리가 스택의 시작점을 알 필요가 없습니다. CPU가 알아서 다 해줍니다.&lt;/li&gt;
-&lt;/ul&gt;
-&lt;/li&gt;
-&lt;li&gt;힙(Heap):
-&lt;ul&gt;
-&lt;li&gt;관리 주체: libc (소프트웨어)&lt;/li&gt;
-&lt;li&gt;관리 방식: malloc, free 함수 내부의 복잡한 알고리즘(free list, bins 등)을 통해 관리됩니다. 힙에는 CPU 레지스터 같은 하드웨어 지원이 없습니다. 순수 소프트웨어의 영역입니다.&lt;/li&gt;
-&lt;li&gt;초기화: libc는 자신의 소프트웨어 자료구조를 초기화하기 위해 &quot;힙이 어디서부터 시작되는가&quot; 라는 기준점 정보가 반드시 필요합니다. 이 정보를 가장 간단하고 독립적으로 얻는 방법이 바로 컴파일 타임에 약속된 _end 심볼을 사용하는 것입니다.&lt;/li&gt;
-&lt;/ul&gt;
-&lt;/li&gt;
-&lt;/ul&gt;
-&lt;p&gt;요약하자면, 스택은 커널이 하드웨어(CPU 레지스터)에 초기값을 설정해주면 그만이지만, 힙은 소프트웨어(libc)가 자신의 관리 체계를 시작하기 위해 고정된 기준점이 필요하다.&lt;/p&gt;
-&lt;hr&gt;
-&lt;h1 id=&quot;왜-secret은-base64로-인코딩-할까&quot;&gt;왜 Secret은 Base64로 인코딩 할까?&lt;/h1&gt;
-&lt;p&gt;Secret 데이터 base64로 인코딩하는 것은 보안적인 측면에서 불안 요소이다. 그럼 왜 base64로 인코딩 하는 형태로 설계되었을까?&lt;/p&gt;
-&lt;p&gt;&lt;em&gt;이 고민의 핵심 base64로 인코딩 하는 것이 보안과는 관련이 없다는 점을 파악하는 것이다.&lt;/em&gt; 결론은 &lt;em&gt;Secret의 data 필드는 임의의 바이너리 데이터를 담을 수 있게 설계되었기 때문에 base64 기반의 인코딩을 지원한다.&lt;/em&gt;&lt;/p&gt;
-&lt;p&gt;YAML이나 JSON 형식의 매니페스트 파일은 기본적으로 Text 기반인데 줄바꿈이나 &lt;code&gt;null 문자(\0)&lt;/code&gt; 또는 기타 제어 문자가 포함된 바이너리 데이터(예: id_rsa 개인키, .p12 인증서 파일 등)를 그대로 넣으면 파싱 오류가 발생하거나 데이터 변형이 초래될 수 있다.&lt;/p&gt;
-&lt;p&gt;이런 문제를 해결하고자 base64를 활용한다. base64는 모든 바이너리 데이터를 ASCII로 변환하고 이렇게 변환된 문자열은 YAML/JSON 파일에 아무런 문제 없이 포함될 수 있다.&lt;/p&gt;
-&lt;h3 id=&quot;왜-기본적으로-암호화하지-않았을까&quot;&gt;왜 기본적으로 암호화하지 않았을까?&lt;/h3&gt;
-&lt;blockquote&gt;
-&lt;p&gt;유연성과 확장성을 중시하기 때문&lt;/p&gt;
-&lt;/blockquote&gt;
-&lt;p&gt;쿠버네티스는 핵심 설계 원칙 중 하나로 &lt;em&gt;확장 가능성&lt;/em&gt;을 내세우고 있다. 만약, 쿠버네티스가 특정 암호화 방식을 내장하여 강제했다면 사용자들은 환경에 맞는 최적의 KMS(Key Management Solution)를 도입하는데 큰 제약을 겪게될 것이다.&lt;/p&gt;
-&lt;p&gt;대신 쿠버네티스는 Encryption at Rest 라는 플러그형 메커니즘을 제공한다. 사용자는 자신의 환경에 맞는 KMS Provider를 선택하여 API Server와 연동할 수 있고 이를 통해 쿠버네티스는 특정 기술에 종속되지 않으면서도, 강력한 보안을 지원할 수 있다.&lt;/p&gt;
-&lt;hr&gt;
-&lt;h1 id=&quot;결론&quot;&gt;결론&lt;/h1&gt;
-&lt;p&gt;Kubernetes의 ConfigMap과 Secret은 단순히 설정과 민감 정보를 컨테이너에 전달하는 수단을 넘어, 클라우드 네이티브 환경의 핵심 설계 철학을 담고 있는 중요한 API 오브젝트이다. 이 글을 통해 우리는 표면적인 사용법에서 시작하여, &lt;em&gt;두 리소스가 분리된 이유&lt;/em&gt;, &lt;em&gt;두 가지 주입 방식이 제공하는 상반된 가치&lt;/em&gt;, 그리고 이 모든 것이 운영체제의 프로세스 모델과 메모리 구조에 어떻게 뿌리내리고 있는지 깊이 이야기해보았다.&lt;/p&gt;
-&lt;p&gt;이 과정에서 알게된 것들은 다음과 같다.
-ConfigMap과 Secret의 본질&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;ConfigMap과 Secret은 12-Factor App의 설정 외부화 원칙을 구현하는 Kubernetes API 오브젝트이다.&lt;/li&gt;
-&lt;li&gt;두 리소스의 분리는 RBAC을 통한 접근 제어 차별화와 보안 정책의 세분화를 위함이다.&lt;/li&gt;
-&lt;li&gt;Secret의 Base64 인코딩은 암호화가 아닌 바이너리 데이터 호환성을 위한 인코딩 방식이다.&lt;/li&gt;
-&lt;/ul&gt;
-&lt;p&gt;두 가지 주입 방식의 근본적 차이&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;환경 변수 방식: &lt;code&gt;execve()&lt;/code&gt; 시스템 콜에 의해 프로세스 시작 시점에 고정되어 불변성(Immutability)을 보장한다.&lt;/li&gt;
-&lt;li&gt;볼륨 마운트 방식: Kubelet의 symlink 교체를 통해 동적 업데이트(Hot Reload)가 가능하며 유연성을 제공한다.&lt;/li&gt;
-&lt;li&gt;이 두 방식은 &apos;안정성 vs 유연성&apos;이라는 상반된 설계 목표를 모두 지원하기 위한 의도적인 선택이다.&lt;/li&gt;
-&lt;/ul&gt;
-&lt;p&gt;프로세스 메모리와 환경 변수의 관계&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;환경 변수는 프로세스 메모리의 Stack 세그먼트 위 가장 높은 주소 영역에 위치한다.&lt;/li&gt;
-&lt;li&gt;execve() 호출 시 커널이 환경 변수를 메모리에 복사하며, 이후 프로세스 생명주기 동안 변경되지 않는다.&lt;/li&gt;
-&lt;li&gt;Text, Data, BSS 세그먼트는 컴파일/링크 타임에 크기가 결정되므로, 런타임에 결정되는 환경 변수와는 별도 영역에 배치된다.&lt;/li&gt;
-&lt;/ul&gt;
-&lt;p&gt;Kubelet의 동작 메커니즘&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;Kubelet은 API 서버를 지속적으로 Watch하여 ConfigMap/Secret 변경을 감지한다.&lt;/li&gt;
-&lt;li&gt;볼륨 마운트 시 새로운 타임스탬프 디렉터리를 생성하고 symlink를 원자적으로 교체하여 Hot Reload를 구현한다.&lt;/li&gt;
-&lt;li&gt;이 방식은 파일 시스템 수준에서 일관성을 보장하며, 애플리케이션이 부분적으로 업데이트된 설정을 읽는 것을 방지한다.&lt;/li&gt;
-&lt;/ul&gt;
-&lt;p&gt;보안과 확장성 설계&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;Secret은 기본적으로 ETCD에 암호화되지 않고 평문으로 저장되지만, Encryption at Rest를 통해 강화할 수 있고 권장된다.&lt;/li&gt;
-&lt;li&gt;External Secrets Operator와 같은 확장 도구를 통해 HashiCorp Vault, AWS Secrets Manager 등과 통합 가능하다.&lt;/li&gt;
-&lt;li&gt;이는 Kubernetes가 특정 보안 솔루션을 강요하지 않고 확장 가능한 플랫폼을 지향한다는 설계 철학을 보여준다.&lt;/li&gt;
-&lt;/ul&gt;
-&lt;p&gt;운영 환경에서의 고려사항&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;환경 변수는 프로세스 격리를 위해 불변하지만, 이로 인해 동적 설정 변경이 불가능하다.&lt;/li&gt;
-&lt;li&gt;볼륨 마운트는 Hot Reload가 가능하지만, 애플리케이션이 파일 변경을 감지하고 처리하는 로직이 필요하다.&lt;/li&gt;
-&lt;li&gt;두 방식 모두 장단점이 있으므로, 애플리케이션의 특성과 운영 요구사항에 따라 적절한 방식을 선택해야 한다.&lt;/li&gt;
+&lt;li&gt;ConfigMap과 Secret은 Pod 입장에서는 사용법이 비슷해 보이지만, 나뉜 이유는 순전히 RBAC 접근 제어와 외부 시스템 연동을 위한 설계 결정이다.&lt;/li&gt;
+&lt;li&gt;env 방식이 불변인 건 쿠버네티스 정책이 아니라 &lt;code&gt;execve()&lt;/code&gt;가 프로세스를 초기화하는 순간 커널이 스택 위에 값을 딱 한 번 찍어주고 끝나기 때문이다.&lt;/li&gt;
+&lt;li&gt;volumeMount 방식이 Hot Reload되는 비밀은 파일을 직접 덮어쓰는 게 아니라 &lt;code&gt;..data&lt;/code&gt; 심볼릭 링크가 가리키는 대상을 원자적으로 바꿔치기하는 데 있다.&lt;/li&gt;
+&lt;li&gt;Secret이 base64인 건 암호화가 아니라 바이너리 데이터를 YAML·JSON에 안전하게 넣기 위한 인코딩일 뿐이다. 진짜 보안은 Encryption at Rest와 RBAC 조합으로 챙겨야 한다.&lt;/li&gt;
+&lt;li&gt;ConfigMap은 1MiB 제한이 있으니, 그보다 큰 설정은 볼륨 마운트나 별도 DB·파일 서비스를 쓰는 걸 고려하자.&lt;/li&gt;
 &lt;/ul&gt;</content:encoded></item></channel></rss>
