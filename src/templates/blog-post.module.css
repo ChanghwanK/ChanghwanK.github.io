@@ -194,11 +194,15 @@
 .content code {
   background: var(--bg-card);
   color: var(--text-code);
-  border: 1.5px solid var(--border-base);
-  padding: 0.15rem 0.42rem;
+  border: 1.5px solid #000000;
+  padding: 0.15rem 0.28rem;
   border-radius: 5px;
   font-size: 0.85em;
   font-family: var(--font-mono);
+}
+
+[data-theme="dark"] .content code {
+  border-color: var(--border-base);
 }
 
 .content pre {
