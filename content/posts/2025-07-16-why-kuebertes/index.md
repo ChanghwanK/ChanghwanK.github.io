@@ -2,7 +2,7 @@
 title: "Kubernetes ConfigMap, Secret 깊게 이해하기"
 description: "Kubernetes ConfigMap과 Secret의 설계 철학과 내부 동작 원리를 OS 프로세스 모델부터 kubelet 메커니즘까지 깊게 이해한다."
 date: 2025-07-16
-status: deploy
+status: writing
 thumbnail: ./kubernetes.png
 ---
 
