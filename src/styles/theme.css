@@ -1,6 +1,6 @@
 /* ─── Theme variables ────────────────────────────────────────── */
 :root {
-  --font-sans: "Spoqa Han Sans Neo", "Apple SD Gothic Neo", "Nanum Barun Gothic",
+  --font-sans: "Noto Sans KR", "Apple SD Gothic Neo", "Nanum Barun Gothic",
     "Nanum Gothic", Verdana, Arial, "Malgun Gothic", Dotum, sans-serif;
   --font-serif: var(--font-sans);
   --font-mono: SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono",

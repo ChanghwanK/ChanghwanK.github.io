@@ -8,15 +8,20 @@ export const onRenderBody: GatsbySSR["onRenderBody"] = ({
   setHtmlAttributes({ lang: `ko` })
   setHeadComponents([
     React.createElement("link", {
-      key: "preconnect-jsdelivr",
+      key: "preconnect-google-fonts",
       rel: "preconnect",
-      href: "https://cdn.jsdelivr.net",
+      href: "https://fonts.googleapis.com",
+    }),
+    React.createElement("link", {
+      key: "preconnect-google-fonts-static",
+      rel: "preconnect",
+      href: "https://fonts.gstatic.com",
       crossOrigin: "anonymous",
     }),
     React.createElement("link", {
-      key: "spoqa-han-sans-neo",
+      key: "noto-sans-kr",
       rel: "stylesheet",
-      href: "https://cdn.jsdelivr.net/gh/spoqa/spoqa-han-sans@latest/css/SpoqaHanSansNeo.css",
+      href: "https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@100..900&display=swap",
     }),
   ])
 }
