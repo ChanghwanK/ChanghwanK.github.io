@@ -63,7 +63,7 @@ const BlogPostTemplate = ({ data }: PageProps<BlogPostData>) => {
         )}
         <nav className={styles.pageNav} aria-label="브레드크럼">
           <Link to="/" className={styles.navHome}>
-            N@vis
+            Aidan
           </Link>
           <span className={styles.navSep}>/</span>
           <Link to="/blog" className={styles.navHome}>

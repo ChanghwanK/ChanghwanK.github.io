@@ -2,11 +2,11 @@ import type { GatsbyConfig } from "gatsby"
 
 const config: GatsbyConfig = {
   siteMetadata: {
-    title: `N@vis`,
+    title: `Aidan`,
     description: `개인 기술 블로그`,
     author: `@changhwanK`,
     siteUrl: `https://dev.k10n.me`,
-    authorName: `N@vis`,
+    authorName: `Aidan`,
     authorRole: `DevOps Engineer`,
     authorHandle: `@changhwanK`,
     githubUrl: `https://github.com/changhwanK`,
@@ -66,7 +66,7 @@ const config: GatsbyConfig = {
     {
       resolve: `gatsby-plugin-manifest`,
       options: {
-        name: `N@vis`,
+        name: `Aidan`,
         short_name: `Changhwan`,
         start_url: `/`,
         background_color: `#ffffff`,
@@ -121,7 +121,7 @@ const config: GatsbyConfig = {
               }
             }`,
             output: "/rss.xml",
-            title: "N@vis",
+            title: "Aidan",
           },
         ],
       },

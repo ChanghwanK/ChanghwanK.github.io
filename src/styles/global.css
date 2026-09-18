@@ -15,8 +15,8 @@ body {
   background-color: var(--bg-page);
   color: var(--text-body);
   font-family: var(--font-sans);
-  -moz-osx-font-smoothing: grayscale;
-  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: auto;
+  -webkit-font-smoothing: auto;
   transition: background-color 0.2s ease, color 0.2s ease;
 }
 
