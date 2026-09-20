@@ -1,5 +1,8 @@
 /* ─── Page root ─────────────────────────────────────────────── */
 .darkPage {
+  /* 브레드크럼과 본문이 같은 세로선에 맞아야 하므로 폭은 한 곳에서만 정한다. */
+  --post-width: 800px;
+
   min-height: 100vh;
   background: var(--bg-page);
   padding: 3.5rem 1.5rem 8rem;
@@ -7,7 +10,7 @@
 
 /* ─── Page nav ───────────────────────────────────────────────── */
 .pageNav {
-  max-width: 735px;
+  max-width: var(--post-width);
   margin: 0 auto 2.5rem;
   display: flex;
   align-items: center;
@@ -37,7 +40,7 @@
 
 /* ─── Article ────────────────────────────────────────────────── */
 .article {
-  max-width: 735px;
+  max-width: var(--post-width);
   margin: 0 auto;
   color: var(--text-body);
 }
@@ -276,6 +279,8 @@
 .content :global(.shiki-code-block) :global(pre.shiki) {
   margin: 0;
   padding: 0.9em 1.1em;
+  /* code가 white-space: pre라 줄바꿈되지 않는다. 본문보다 긴 줄은 박스 밖으로 넘치지 않고 안에서 스크롤되어야 한다. */
+  overflow-x: auto;
 }
 
 .content :global(.shiki-code-block) :global(pre.shiki code) {
