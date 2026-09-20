@@ -89,8 +89,8 @@
   font-family: var(--font-sans);
   line-height: 1.75;
   font-size: 1rem;
-  /* body 기본(300)은 획이 가늘어 흰 배경에서 가장자리가 날카롭게 읽힌다. 본문은 표준 굵기로 둔다. */
-  font-weight: 400;
+  /* body 기본(300)은 획이 가늘어 가장자리가 날카롭게 읽히고, 400은 페이지 전체가 무거워 보인다. 그 중간값을 쓴다. */
+  font-weight: 350;
   color: var(--text-prose);
   word-break: keep-all;
 }
@@ -156,7 +156,8 @@
 
 .content strong,
 .content b {
-  font-weight: 300;
+  /* 강조는 본문(350)보다 굵어야 한다. 300이면 강조가 본문보다 가늘어지는 역전이 생긴다. */
+  font-weight: 450;
   color: var(--text-strong);
 }
 
@@ -179,9 +180,7 @@
   color: var(--text-prose);
 }
 
-/* 마커는 구조 표시일 뿐 내용이 아니므로 본문보다 한 단계 흐리게 둔다. */
 .content li::marker {
-  color: var(--text-faint);
   font-variant-numeric: tabular-nums;
 }
 
@@ -191,9 +190,22 @@
   margin-bottom: 0;
 }
 
+/* 문단 바로 뒤의 목록은 그 문단의 연장이므로 문단 아래 여백(1.25rem)을 조금 당겨 붙인다(간격 1rem).
+   다만 항목 사이 간격보다는 넓어야 한다. 그보다 좁으면 첫 항목이 도입 문단에 붙어 목록의 시작이 흐려진다. */
 .content p + ul,
 .content p + ol {
-  margin-top: -0.75rem;
+  margin-top: -0.25rem;
+}
+
+/* 목록 위 간격은 앞 요소와 무관하게 1rem으로 맞춘다. 아래 여백이 1.5rem인 블록 뒤에서는 그만큼 더 당긴다.
+   제목 뒤는 제외한다: 제목의 아래 여백은 뒤따르는 내용이 문단이든 목록이든 같아야 한다. */
+.content :global(.shiki-code-block) + ul,
+.content :global(.shiki-code-block) + ol,
+.content blockquote + ul,
+.content blockquote + ol,
+.content table + ul,
+.content table + ol {
+  margin-top: -0.5rem;
 }
 
 .content blockquote {
@@ -277,7 +289,7 @@
 .content th {
   color: var(--text-muted);
   font-size: 0.85em;
-  font-weight: 400;
+  font-weight: 350;
   padding: 0.6rem 0.9rem;
   border-bottom: 1px solid var(--border-strong);
   text-align: left;
