@@ -1,7 +1,7 @@
 /* ─── Page root ─────────────────────────────────────────────── */
 .darkPage {
   /* 브레드크럼과 본문이 같은 세로선에 맞아야 하므로 폭은 한 곳에서만 정한다. */
-  --post-width: 800px;
+  --post-width: 780px;
 
   min-height: 100vh;
   background: var(--bg-page);
@@ -164,15 +164,29 @@
 
 .content ul,
 .content ol {
-  /* 마커는 이 패딩 안에 걸린다. 1.25rem이면 마커가 문단 왼쪽 선에 붙어 목록이 본문과 구분되지 않는다. */
-  padding-left: 2rem;
+  /* 마커는 이 패딩 안에 걸린다. 패딩이 작으면 마커가 문단 왼쪽 선에 붙어 목록이 본문과 구분되지 않는다. */
+  padding-left: 2.5rem;
   margin-bottom: 1.25rem;
 }
 
 .content ul li,
 .content ol li {
-  margin-bottom: 0.35rem;
+  /* 항목 간격이 항목 안 줄 간격보다 확실히 커야 여러 줄짜리 항목의 경계가 읽힌다. */
+  margin-bottom: 0.55rem;
+  padding-left: 0.2rem;
   color: var(--text-prose);
+}
+
+/* 마커는 구조 표시일 뿐 내용이 아니므로 본문보다 한 단계 흐리게 둔다. */
+.content li::marker {
+  color: var(--text-faint);
+  font-variant-numeric: tabular-nums;
+}
+
+.content li > ul,
+.content li > ol {
+  margin-top: 0.55rem;
+  margin-bottom: 0;
 }
 
 .content p + ul,
@@ -204,6 +218,9 @@
   border-radius: 5px;
   font-size: 0.85em;
   font-family: var(--font-mono);
+  /* 긴 경로가 줄바꿈될 때 기본값(slice)은 테두리를 잘라 상자가 열린 채 다음 줄로 넘어간다. */
+  -webkit-box-decoration-break: clone;
+  box-decoration-break: clone;
 }
 
 [data-theme="dark"] .content code {
@@ -387,10 +404,21 @@
   --toc-indent-base: 1.1rem;
   --toc-indent-step: 0.9rem;
 
+  /* 목차는 화면 중앙이 아니라 본문 왼쪽 끝을 기준으로 놓는다.
+     중앙 기준 고정 오프셋이면 본문 폭을 바꾸거나 화면이 좁아질 때 목차가 화면 밖으로 잘린다.
+     폭은 본문 왼쪽에 남는 공간만큼만 쓰고(최대 260px), 하한(200px) 아래로는 아래 미디어쿼리가 숨긴다. */
+  --toc-gap: 88px;
+  --toc-edge-margin: 1rem;
+  --toc-width: clamp(
+    200px,
+    calc(50% - var(--post-width) / 2 - var(--toc-gap) - var(--toc-edge-margin)),
+    260px
+  );
+
   position: fixed;
   top: 140px;
-  left: calc(50% - 375px - 400px);
-  width: 260px;
+  left: calc(50% - var(--post-width) / 2 - var(--toc-gap) - var(--toc-width));
+  width: var(--toc-width);
   opacity: 0;
   visibility: hidden;
   transition: opacity 0.3s ease, transform 0.3s ease, visibility 0.3s;
@@ -477,7 +505,9 @@
   border-left-color: var(--toc-marker-active);
 }
 
-@media (max-width: 1300px) {
+/* 1384px = 2 * (본문 절반 390 + 간격 88 + 목차 하한 200 + 여백 14).
+   이보다 좁으면 목차가 하한 폭으로도 본문 왼쪽에 들어가지 않는다. --post-width나 --toc-gap을 바꾸면 함께 고친다. */
+@media (max-width: 1384px) {
   .toc {
     display: none;
   }
