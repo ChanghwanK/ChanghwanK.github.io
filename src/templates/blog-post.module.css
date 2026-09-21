@@ -412,6 +412,134 @@
   }
 }
 
+/* ─── Timeline (```timeline 블록, plugins/gatsby-remark-timeline이 생성) ─── */
+/* 세로선은 목차처럼 목록 전체에 한 번 그리지 않고 항목마다 그린다.
+   선분이 항목의 상태색을 따라야 연속된 danger 항목이 "장애 구간"으로 이어져 보이기 때문이다.
+   선과 점의 가로 위치는 --timeline-rail-x 하나로 정해서, 모바일에서는 이 값만 바꿔 왼쪽 끝으로 옮긴다. */
+.content :global(.timeline) {
+  --timeline-time-width: 7.5rem;
+  --timeline-column-gap: 2.25rem;
+  --timeline-rail-x: calc(
+    var(--timeline-time-width) + var(--timeline-column-gap) / 2
+  );
+  --timeline-dot-size: 10px;
+  --timeline-rail-color: var(--border-strong);
+  --timeline-dot-color: var(--text-faint);
+
+  list-style: none;
+  padding-left: 0;
+  /* 앞 요소가 무엇이든 같은 간격을 쓴다 (문단 뒤 목록을 당기는 음수 여백 규칙을 덮는다). */
+  margin: 1.5rem 0;
+}
+
+.content :global(.timeline) :global(.timeline-item) {
+  position: relative;
+  display: grid;
+  grid-template-columns: var(--timeline-time-width) 1fr;
+  column-gap: var(--timeline-column-gap);
+  margin: 0;
+  padding: 0 0 1.4rem;
+}
+
+.content :global(.timeline) :global(.timeline-item):last-child {
+  padding-bottom: 0;
+}
+
+.content :global(.timeline) :global(.timeline-item[data-status="danger"]) {
+  --timeline-rail-color: var(--status-danger);
+  --timeline-dot-color: var(--status-danger);
+}
+
+/* 복구는 점만 초록이다. 선까지 초록이면 "복구 구간"이 이어지는 것처럼 읽힌다. */
+.content :global(.timeline) :global(.timeline-item[data-status="ok"]) {
+  --timeline-dot-color: var(--status-ok);
+}
+
+.content :global(.timeline) :global(.timeline-item)::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: calc(var(--timeline-rail-x) - 1px);
+  width: 2px;
+  background: var(--timeline-rail-color);
+}
+
+.content :global(.timeline) :global(.timeline-item)::after {
+  content: "";
+  position: absolute;
+  /* 제목 첫 줄(line-height 1.5rem)의 세로 가운데에 맞춘다. */
+  top: calc((1.5rem - var(--timeline-dot-size)) / 2);
+  left: calc(var(--timeline-rail-x) - var(--timeline-dot-size) / 2);
+  width: var(--timeline-dot-size);
+  height: var(--timeline-dot-size);
+  border-radius: 50%;
+  background: var(--timeline-dot-color);
+  /* 점 둘레의 선을 배경색으로 끊어 점이 선에 묻히지 않게 한다. */
+  box-shadow: 0 0 0 3px var(--bg-page);
+}
+
+.content :global(.timeline) :global(.timeline-time) {
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  line-height: 1.5rem;
+  color: var(--text-muted);
+  text-align: right;
+  white-space: nowrap;
+}
+
+.content :global(.timeline) :global(.timeline-time-line) {
+  display: block;
+}
+
+.content :global(.timeline) p {
+  margin: 0;
+}
+
+.content :global(.timeline) :global(.timeline-title) {
+  line-height: 1.5rem;
+  font-weight: 450;
+  color: var(--text-strong);
+}
+
+.content :global(.timeline) :global(.timeline-desc) {
+  margin-top: 0.2rem;
+  font-size: 0.92em;
+  line-height: 1.6;
+  color: var(--text-muted);
+}
+
+/* 상태 라벨은 스크린 리더와 CSS 없는 RSS 리더를 위한 것이다. display: none은 스크린 리더에서도 사라지므로 clip으로 숨긴다. */
+.content :global(.timeline) :global(.timeline-sr) {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+/* 좁은 화면에서는 시간 열을 둘 폭이 없다. 시간을 제목 위로 올리고 선과 점은 왼쪽 끝으로 옮긴다. */
+@media (max-width: 600px) {
+  .content :global(.timeline) {
+    --timeline-rail-x: 5px;
+  }
+
+  .content :global(.timeline) :global(.timeline-item) {
+    grid-template-columns: 1fr;
+    padding-left: 1.5rem;
+  }
+
+  .content :global(.timeline) :global(.timeline-time) {
+    text-align: left;
+    white-space: normal;
+  }
+
+  .content :global(.timeline) :global(.timeline-time-line) {
+    display: inline;
+  }
+}
+
 /* ─── Footer ─────────────────────────────────────────────────── */
 .footer {
   margin-top: 4rem;

@@ -1,0 +1,8 @@
+{
+  "name": "gatsby-remark-timeline",
+  "version": "1.0.0",
+  "private": true,
+  "description": "```timeline 코드 블록을 빌드타임에 세로 타임라인 HTML로 바꾸는 로컬 gatsby-transformer-remark 플러그인",
+  "main": "index.js",
+  "license": "0BSD"
+}

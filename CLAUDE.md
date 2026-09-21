@@ -17,7 +17,7 @@ npm run format      # Prettier 코드 포맷팅
 npm run deploy      # 빌드 + gh-pages로 deploy 브랜치에 배포
 ```
 
-테스트/린팅 설정 없음. 코드 포맷팅은 Prettier만 사용 (세미콜론 없음, arrow function 괄호 생략).
+테스트/린팅 설정 없음 (예외: 타임라인 플러그인은 `node --test plugins/gatsby-remark-timeline/`). 코드 포맷팅은 Prettier만 사용 (세미콜론 없음, arrow function 괄호 생략).
 
 ## Architecture
 
@@ -59,6 +59,28 @@ tags:
 ```
 
 > `status: writing`으로 설정하면 로컬 개발 서버에서도 보이지 않음 (GraphQL 필터로 제외).
+
+### 타임라인 블록
+
+장애 회고 글의 세로 타임라인은 ` ```timeline ` 코드 블록으로 쓴다. 로컬 플러그인 `plugins/gatsby-remark-timeline`이 빌드 시점에 HTML로 바꾸고, 모양은 `src/templates/blog-post.module.css`의 `.timeline` 규칙이 입힌다.
+
+````markdown
+```timeline
+# 장애 전
+14:20 // 05:20Z | info   | anon 27.8GB(84%), MemAvailable 2.8GB | 헤드룸 없는 상태로 하루 종일 운영 중이었다.
+14:32 // 05:32Z | danger | kubelet 하트비트 중단 | `vmsingle` 9.4GB 시점.
+14:34:44        | danger | 노드 NotReady 판정
+14:45:18        | ok     | 노드 Ready 자연 복귀 | NodeRepair=false라 자동 교체도 없었다.
+```
+````
+
+- 한 줄 = 사건 하나. 필드는 `시간 | 상태 | 제목 | 설명` 순서이고 설명만 생략할 수 있다.
+- 상태는 `info`(회색), `danger`(빨강, 연속되면 세로선이 빨간 구간으로 이어진다), `ok`(초록 점) 셋뿐이다.
+- 시간의 `//`는 줄바꿈이다 (KST와 UTC 병기용). 본문에 `|`가 필요하면 `\|`로 쓴다. 빈 줄과 `#`으로 시작하는 줄은 무시된다.
+- 제목과 설명에서 지원하는 마크다운은 백틱 인라인 코드뿐이다 (링크, 굵게 미지원).
+- 문법 오류(상태값 오타, 필드 개수 등)는 조용히 넘어가지 않고 `index.md:줄번호`가 담긴 오류로 빌드를 실패시킨다. develop에서는 해당 글에만 오류가 뜬다.
+- `gatsby-config.ts`에서 `gatsby-remark-timeline`은 `gatsby-remark-shiki`보다 **앞에** 있어야 한다. shiki가 모든 코드 블록을 가져가므로 순서가 바뀌면 타임라인이 일반 코드 블록으로 렌더링된다.
+- 파서와 렌더러 테스트: `node --test plugins/gatsby-remark-timeline/` (의존성 없는 Node 내장 러너).
 
 ### 주요 컴포넌트
 

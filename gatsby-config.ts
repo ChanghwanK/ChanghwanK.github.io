@@ -43,6 +43,9 @@ const config: GatsbyConfig = {
               showCaptions: true,
             },
           },
+          // shiki보다 앞에 있어야 한다. shiki는 언어를 가리지 않고 모든 코드 블록을 가져가므로
+          // 뒤에 두면 ```timeline 블록이 하이라이팅된 일반 코드 블록으로 렌더링된다.
+          `gatsby-remark-timeline`,
           `gatsby-remark-shiki`,
           {
             resolve: `gatsby-remark-autolink-headers`,

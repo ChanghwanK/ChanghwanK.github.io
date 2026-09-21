@@ -48,6 +48,10 @@
   --text-hover-strong: #000000;
   --text-link: #2563eb;
   --text-link-hover: #1d4ed8;
+
+  /* Status: 색이 곧 내용인 곳(장애 타임라인 등)에만 쓴다. 장식용으로 쓰지 않는다. */
+  --status-danger: #b3261e;
+  --status-ok: #1e7b45;
 }
 
 [data-theme="dark"] {
@@ -91,4 +95,8 @@
   --text-hover-strong: #cac2a2;
   --text-link: #e2896a;
   --text-link-hover: #efa688;
+
+  /* Status: 따뜻한 차콜 배경에서 튀지 않게 채도를 낮추고, 주황 계열인 링크색과 구분되게 붉은 쪽으로 둔다. */
+  --status-danger: #d4574a;
+  --status-ok: #6fa97a;
 }
