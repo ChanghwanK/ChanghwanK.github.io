@@ -2,6 +2,9 @@
 .darkPage {
   /* 브레드크럼과 본문이 같은 세로선에 맞아야 하므로 폭은 한 곳에서만 정한다. */
   --post-width: 780px;
+  /* 그림은 글보다 넓게 들어간다. 글은 읽기 좋은 폭을 지키고, 다이어그램은 글자가 읽힐 만큼 커야 하기 때문이다.
+     gatsby-config.ts의 gatsby-remark-images maxWidth와 같은 값이어야 한다. */
+  --figure-wide-width: 940px;
 
   min-height: 100vh;
   background: var(--bg-page);
@@ -237,6 +240,8 @@
   /* 긴 경로가 줄바꿈될 때 기본값(slice)은 테두리를 잘라 상자가 열린 채 다음 줄로 넘어간다. */
   -webkit-box-decoration-break: clone;
   box-decoration-break: clone;
+  /* 경로처럼 끊을 지점이 없는 긴 문자열은 좁은 화면에서 페이지 전체에 가로 스크롤을 만든다. 넘칠 때만 아무 데서나 끊는다. */
+  overflow-wrap: anywhere;
 }
 
 .content pre {
@@ -253,9 +258,22 @@
   margin: 0;
 }
 
+/* 그림은 본문 열을 가운데 기준으로 양쪽으로 넘어간다.
+   작은 이미지는 흐려지지 않는다: 플러그인이 래퍼에 "원본 폭 이하"의 max-width를 인라인으로 걸어 주므로
+   넓어지는 것은 figure 상자뿐이고 이미지는 그 안에서 원래 크기로 가운데 정렬된다.
+   좁은 화면에서는 100vw 기준으로 줄어 가로 스크롤이 생기지 않고, 본문 폭(100%)보다 좁아지지는 않는다. */
 .content figure {
-  margin: 2rem 0;
+  width: max(100%, min(var(--figure-wide-width), 100vw - 3rem));
+  margin: 2rem 0 2rem 50%;
+  transform: translateX(-50%);
   text-align: center;
+}
+
+/* 캡션이 없는 이미지는 figure 없이 문단 안에 래퍼만 들어온다. 인라인 margin(auto)을 이겨야 해서 !important를 쓴다. */
+.content p > :global(.gatsby-resp-image-wrapper) {
+  width: max(100%, min(var(--figure-wide-width), 100vw - 3rem));
+  margin-left: 50% !important;
+  transform: translateX(-50%);
 }
 
 .content figcaption {
@@ -428,7 +446,7 @@
   /* 목차는 화면 중앙이 아니라 본문 왼쪽 끝을 기준으로 놓는다.
      중앙 기준 고정 오프셋이면 본문 폭을 바꾸거나 화면이 좁아질 때 목차가 화면 밖으로 잘린다.
      폭은 본문 왼쪽에 남는 공간만큼만 쓰고(최대 260px), 하한(200px) 아래로는 아래 미디어쿼리가 숨긴다. */
-  --toc-gap: 88px;
+  --toc-gap: 104px;
   --toc-edge-margin: 1rem;
   --toc-width: clamp(
     200px,
@@ -526,9 +544,10 @@
   border-left-color: var(--toc-marker-active);
 }
 
-/* 1384px = 2 * (본문 절반 390 + 간격 88 + 목차 하한 200 + 여백 14).
+/* 1416px = 2 * (본문 절반 390 + 간격 104 + 목차 하한 200 + 여백 14).
+   간격 104는 넓은 그림(--figure-wide-width)이 본문 왼쪽으로 80px 넘어와도 목차와 24px 떨어지게 하는 값이다.
    이보다 좁으면 목차가 하한 폭으로도 본문 왼쪽에 들어가지 않는다. --post-width나 --toc-gap을 바꾸면 함께 고친다. */
-@media (max-width: 1384px) {
+@media (max-width: 1416px) {
   .toc {
     display: none;
   }

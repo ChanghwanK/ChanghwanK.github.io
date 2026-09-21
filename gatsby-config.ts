@@ -37,7 +37,9 @@ const config: GatsbyConfig = {
           {
             resolve: `gatsby-remark-images`,
             options: {
-              maxWidth: 800,
+              // blog-post.module.css의 --figure-wide-width와 같은 값이어야 한다.
+              // 이 값이 작으면 넓은 그림이 저해상도로 생성되어 확대되어 보인다.
+              maxWidth: 940,
               showCaptions: true,
             },
           },
