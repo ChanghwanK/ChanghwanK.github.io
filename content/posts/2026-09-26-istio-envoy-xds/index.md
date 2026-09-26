@@ -33,9 +33,24 @@ flowchart LR
   ISTIOD -.->|"xDS (gRPC)"| EnvoyA
   ISTIOD -.->|"xDS (gRPC)"| EnvoyB
   EnvoyA ==>|mTLS| EnvoyB
+
+  classDef control fill:#ede9fe,stroke:#7c3aed,color:#3b0764
+  classDef proxy fill:#e0f2fe,stroke:#0284c7,color:#0c4a6e
+  classDef app fill:#ffffff,stroke:#94a3b8,color:#1e293b
+  class K8S,ISTIOD control
+  class EnvoyA,EnvoyB proxy
+  class AppA,AppB app
+  style CP fill:#faf5ff,stroke:#c4b5fd
+  style PodA fill:#f8fafc,stroke:#cbd5e1
+  style PodB fill:#f8fafc,stroke:#cbd5e1
+
+  linkStyle 0 stroke:#7c3aed,stroke-width:1.5px
+  linkStyle 1,2 stroke:#94a3b8,stroke-width:1.5px
+  linkStyle 3,4 stroke:#7c3aed,stroke-width:1.5px,stroke-dasharray:5 4
+  linkStyle 5 stroke:#0284c7,stroke-width:3px
 ```
 
-점선은 설정 경로(Control Plane), 굵은 선은 실제 요청 경로(Data Plane)다. App은 상대 App을 직접 호출한다고 생각하지만, 실제로는 양쪽 Envoy를 한 번씩 거친다.
+보라 점선은 설정 경로(Control Plane), 굵은 파란 선은 실제 요청 경로(Data Plane)다. App은 상대 App을 직접 호출한다고 생각하지만, 실제로는 양쪽 Envoy를 한 번씩 거친다.
 
 ## Envoy에는 어떤 기능들이 있는가?
 
