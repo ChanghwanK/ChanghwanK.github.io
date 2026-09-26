@@ -62,4 +62,9 @@ const DARK_CONFIG = {
   },
 }
 
-module.exports = { LIGHT_CONFIG, DARK_CONFIG }
+// 사이트가 gatsby-ssr.ts에서 불러오는 웹폰트와 같은 URL이다. 렌더링 브라우저에 이 폰트가 없으면
+// 다른 폰트로 박스 크기를 재서, 실제 페이지(Noto Sans KR)에서 라벨 끝이 잘린다 (실측).
+const FONT_CSS_URL =
+  "https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@100..900&display=swap"
+
+module.exports = { LIGHT_CONFIG, DARK_CONFIG, FONT_CSS_URL }

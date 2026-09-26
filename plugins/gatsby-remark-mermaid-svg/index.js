@@ -1,6 +1,6 @@
 const fs = require("fs")
 const visit = require("unist-util-visit")
-const { LIGHT_CONFIG, DARK_CONFIG } = require("./themes")
+const { LIGHT_CONFIG, DARK_CONFIG, FONT_CSS_URL } = require("./themes")
 
 const MERMAID_LANG = "mermaid"
 
@@ -49,8 +49,16 @@ module.exports = async ({ markdownAST, markdownNode }) => {
   const diagrams = targets.map(node => node.value)
   // 한 페이지 안에서 SVG id가 겹치면 스타일(#id 선택자)과 마커가 서로 섞인다. 테마별 prefix로 구분한다.
   const [lightResults, darkResults] = await Promise.all([
-    render(diagrams, { prefix: "mermaid-light", mermaidConfig: LIGHT_CONFIG }),
-    render(diagrams, { prefix: "mermaid-dark", mermaidConfig: DARK_CONFIG }),
+    render(diagrams, {
+      prefix: "mermaid-light",
+      mermaidConfig: LIGHT_CONFIG,
+      css: FONT_CSS_URL,
+    }),
+    render(diagrams, {
+      prefix: "mermaid-dark",
+      mermaidConfig: DARK_CONFIG,
+      css: FONT_CSS_URL,
+    }),
   ])
 
   targets.forEach((node, i) => {

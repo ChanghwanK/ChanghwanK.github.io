@@ -706,6 +706,18 @@
   display: block;
 }
 
+/* 라벨은 SVG 안의 HTML(<p>)이라 본문 규칙(.content, .content p)을 그대로 상속한다.
+   박스 크기는 렌더링 시점의 기본값으로 쟀으므로, 굵기·줄 간격·줄바꿈·문단 여백이 달라지면 글자가 잘린다. 그 값으로 되돌린다. */
+.content :global(.mermaid-diagram) {
+  font-weight: 400;
+  line-height: 1.5;
+  word-break: normal;
+}
+
+.content :global(.mermaid-diagram) p {
+  margin: 0;
+}
+
 /* mermaid는 SVG에 width="100%"와 인라인 max-width(원본 폭)를 준다.
    그래서 넓은 화면에서는 원본 크기로, 좁은 화면에서는 figure 폭에 맞춰 줄어든다. 가운데 정렬만 맞춘다. */
 .content :global(.mermaid-diagram) :global(svg) {
