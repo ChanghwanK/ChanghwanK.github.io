@@ -11,7 +11,7 @@ const config: GatsbyConfig = {
     authorHandle: `@changhwanK`,
     githubUrl: `https://github.com/changhwanK`,
     linkedInUrl: `https://www.linkedin.com/in/changhwan-kim-767139219/`,
-    authorBio: `올해로 5년 차가 된 DevOps 엔지니어 김창환입니다. 백엔드 개발로 시작해 지금은 AWS EKS 기반 Kubernetes 플랫폼을 운영하고 있습니다. 장애나 성능 저하가 생기면 커널과 네트워크 수준의 동작 원리까지 따라가 근본 원인을 찾고, 장애 자동 복구 시스템 설계와 아키텍처 개선, 자동화와 표준화로 같은 문제가 다시 생기지 않도록 재발 방지책을 마련해 왔습니다.`,
+    authorBio: `올해로 5년 차가 된 DevOps 엔지니어 김창환입니다. 현재 Ad Tech 교육 도메인에서 AWS EKS 기반 Kubernetes 플랫폼을 운영하고 있습니다. \n 장애나 성능 저하가 생기면 커널과 네트워크 수준의 동작 원리까지 따라가 근본 원인을 찾고, 장애 자동 복구 시스템 설계와 아키텍처 개선, 자동화와 표준화로 같은 문제가 다시 생기지 않도록 재발 방지책을 마련해 왔습니다.`,
     techStack: [`Kubernetes`, `AWS`, `Terraform`, `Docker`, `Istio`, `ArgoCD`],
   },
   plugins: [
@@ -46,6 +46,8 @@ const config: GatsbyConfig = {
           // shiki보다 앞에 있어야 한다. shiki는 언어를 가리지 않고 모든 코드 블록을 가져가므로
           // 뒤에 두면 ```timeline 블록이 하이라이팅된 일반 코드 블록으로 렌더링된다.
           `gatsby-remark-timeline`,
+          // 같은 이유로 shiki보다 앞에 둔다. ```mermaid 블록을 빌드타임에 SVG로 바꾼다.
+          `gatsby-remark-mermaid-svg`,
           `gatsby-remark-shiki`,
           {
             resolve: `gatsby-remark-autolink-headers`,

@@ -690,3 +690,26 @@
     font-size: 1.5rem;
   }
 }
+
+/* ─── Mermaid (```mermaid 블록, plugins/gatsby-remark-mermaid-svg가 생성) ─── */
+/* 색이 SVG 안에 박혀 있어 테마별 SVG 두 벌 중 하나만 보인다. 기본값은 :root 토큰과 같은 라이트다.
+   넓은 그림 배치는 위의 .content figure 규칙을 그대로 따른다. */
+.content :global(.mermaid-diagram-dark) {
+  display: none;
+}
+
+[data-theme="dark"] .content :global(.mermaid-diagram-light) {
+  display: none;
+}
+
+[data-theme="dark"] .content :global(.mermaid-diagram-dark) {
+  display: block;
+}
+
+/* mermaid는 SVG에 width="100%"와 인라인 max-width(원본 폭)를 준다.
+   그래서 넓은 화면에서는 원본 크기로, 좁은 화면에서는 figure 폭에 맞춰 줄어든다. 가운데 정렬만 맞춘다. */
+.content :global(.mermaid-diagram) :global(svg) {
+  display: block;
+  height: auto;
+  margin: 0 auto;
+}

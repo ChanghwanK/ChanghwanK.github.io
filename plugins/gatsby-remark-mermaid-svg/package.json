@@ -1,0 +1,8 @@
+{
+  "name": "gatsby-remark-mermaid-svg",
+  "version": "1.0.0",
+  "private": true,
+  "description": "```mermaid 코드 블록을 빌드타임에 라이트/다크 SVG로 바꾸는 로컬 gatsby-transformer-remark 플러그인",
+  "main": "index.js",
+  "license": "0BSD"
+}
