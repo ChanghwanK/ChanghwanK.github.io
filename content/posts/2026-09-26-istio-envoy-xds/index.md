@@ -2,7 +2,7 @@
 title: "Istio Envoy와 xDS 전체 훑어보기"
 description: "Envoy의 기본 개념(Listener, Route, Cluster, Endpoint)과 Istio가 xDS로 설정을 전달하는 방식(부트스트랩, ADS, SotW/Delta, ACK/NACK)을 정리한다."
 date: 2026-09-26
-status: writing
+status: deploy
 tags:
   - Istio
   - Envoy
