@@ -34,12 +34,23 @@ flowchart LR
   ISTIOD -.->|"xDS (gRPC)"| EnvoyB
   EnvoyA ==>|mTLS| EnvoyB
 
-  classDef accent fill:#e0f2fe,stroke:#0284c7,color:#0c4a6e
-  class EnvoyA,EnvoyB accent
+  classDef control fill:#ede9fe,stroke:#7c3aed,color:#3b0764
+  classDef proxy fill:#e0f2fe,stroke:#0284c7,color:#0c4a6e
+  classDef app fill:#ffffff,stroke:#94a3b8,color:#1e293b
+  class K8S,ISTIOD control
+  class EnvoyA,EnvoyB proxy
+  class AppA,AppB app
+  style CP fill:#faf5ff,stroke:#c4b5fd
+  style PodA fill:#f8fafc,stroke:#cbd5e1
+  style PodB fill:#f8fafc,stroke:#cbd5e1
+
+  linkStyle 0 stroke:#7c3aed,stroke-width:1.5px
+  linkStyle 1,2 stroke:#94a3b8,stroke-width:1.5px
+  linkStyle 3,4 stroke:#7c3aed,stroke-width:1.5px,stroke-dasharray:5 4
   linkStyle 5 stroke:#0284c7,stroke-width:3px
 ```
 
-점선은 설정 경로(Control Plane), 굵은 파란 선은 실제 요청 경로(Data Plane)다. App은 상대 App을 직접 호출한다고 생각하지만, 실제로는 양쪽 Envoy를 한 번씩 거친다.
+보라 점선은 설정 경로(Control Plane), 굵은 파란 선은 실제 요청 경로(Data Plane)다. App은 상대 App을 직접 호출한다고 생각하지만, 실제로는 양쪽 Envoy를 한 번씩 거친다.
 
 ## Envoy에는 어떤 기능들이 있는가?
 
@@ -77,11 +88,19 @@ flowchart LR
   C1 --> E2["Endpoint<br/>172.17.0.3:9080"]
   C2 -.-> E3["Endpoint<br/>172.17.0.4:9080"]
   L -.->|"일치하는 설정 없음<br/>(ALLOW_ANY)"| P["PassthroughCluster<br/>원래 목적지 IP:Port로 TCP 전달"]
-
-  classDef accent fill:#e0f2fe,stroke:#0284c7,color:#0c4a6e
+  classDef request fill:#f1f5f9,stroke:#64748b,color:#0f172a
+  classDef stable fill:#e0f2fe,stroke:#0284c7,color:#0c4a6e
   classDef canary fill:#ffffff,stroke:#0284c7,stroke-dasharray:5 4,color:#0c4a6e
-  class L,R,C1,E1,E2 accent
+  classDef fallback fill:#f8fafc,stroke:#94a3b8,stroke-dasharray:3 3,color:#475569
+  class REQ request
+  class L,R,C1,E1,E2 stable
   class C2,E3 canary
+  class P fallback
+
+  linkStyle 0,1,4,5 stroke:#0284c7,stroke-width:1.5px
+  linkStyle 2 stroke:#0284c7,stroke-width:3px
+  linkStyle 3,6 stroke:#0284c7,stroke-width:1.5px,stroke-dasharray:5 4
+  linkStyle 7 stroke:#94a3b8,stroke-width:1.5px,stroke-dasharray:3 3
 ```
 
 Istio 환경에서 Cluster 이름은 `방향|포트|subset|호스트` 형식이다. 위 그림의 v1 Cluster는 DestinationRule subset `v1`으로 가는 outbound 묶음이고, Endpoint는 그 아래 실제 Pod IP와 컨테이너 포트다. Envoy가 목적지에 대한 Cluster를 받지 못했다면 `PassthroughCluster`로 빠지며, 이때는 재시도·타임아웃 같은 L7 기능이 적용되지 않는다.
@@ -110,19 +129,27 @@ flowchart LR
     L["Listener<br/>0.0.0.0_9080"] --> R["Route<br/>9080 · reviews:9080"] --> C["Cluster<br/>outbound|9080||reviews"] --> E["Endpoint<br/>10.0.1.12:9080"]
     S["Secret<br/>default · ROOTCA"]
   end
-  I["istiod"] -.->|LDS| L
-  I -.->|RDS| R
-  I -.->|CDS| C
-  I -.->|EDS| E
-  PA["pilot-agent"] -.->|SDS| S
-  PA -.->|"CSR 서명 요청"| I
+  I["istiod"] -->|LDS| L
+  I -->|RDS| R
+  I -->|CDS| C
+  I -->|EDS| E
+  PA["pilot-agent"] -->|SDS| S
+  PA -->|"CSR 서명 요청"| I
 
-  classDef accent fill:#e0f2fe,stroke:#0284c7,color:#0c4a6e
-  class L,R,C,E accent
+  classDef control fill:#ede9fe,stroke:#7c3aed,color:#3b0764
+  classDef cert fill:#fef3c7,stroke:#d97706,color:#78350f
+  classDef resource fill:#e0f2fe,stroke:#0284c7,color:#0c4a6e
+  class I control
+  class PA,S cert
+  class L,R,C,E resource
+  style ENVOY fill:#f0f9ff,stroke:#7dd3fc
+
   linkStyle 0,1,2 stroke:#0284c7,stroke-width:2px
+  linkStyle 3,4,5,6 stroke:#7c3aed,stroke-width:1.5px,stroke-dasharray:5 4
+  linkStyle 7,8 stroke:#d97706,stroke-width:1.5px,stroke-dasharray:5 4
 ```
 
-점선은 설정·인증서가 전달되는 경로, 파란 실선은 요청이 실제로 지나가는 순서다. 노드 아래의 이름은 `reviews` 서비스(9080 포트)를 호출하는 파드에서 `istioctl proxy-config`로 보이는 실제 형태를 예로 든 것이다(Cluster 이름은 원래 `outbound|9080||reviews.default.svc.cluster.local`인데 줄여 적었다). 뒤의 [직접 확인해보기](#직접-확인해보기)에서 같은 이름을 다시 만난다.
+보라 점선은 istiod가 보내는 xDS, 주황 점선은 인증서 경로, 파란 실선은 요청이 실제로 지나가는 순서다. 노드 아래의 이름은 `reviews` 서비스(9080 포트)를 호출하는 파드에서 `istioctl proxy-config`로 보이는 실제 형태를 예로 든 것이다(Cluster 이름은 원래 `outbound|9080||reviews.default.svc.cluster.local`인데 줄여 적었다). 뒤의 [직접 확인해보기](#직접-확인해보기)에서 같은 이름을 다시 만난다.
 
 ### 의존성 정리
 
@@ -223,14 +250,25 @@ NACK 응답의 `version_info`가 여전히 v2라는 점이 핵심이다. istiod�
 
 ```mermaid
 flowchart LR
-  K["Kubernetes API<br/>Service, EndpointSlice<br/>VirtualService, DestinationRule"] -->|watch| D["debounce<br/>변경 묶기"]
-  D --> M["내부 모델 변환<br/>영향받는 프록시 선별"]
-  M --> G["프록시별<br/>Envoy 설정 생성"]
+  K["Kubernetes API<br/>Service, EndpointSlice<br/>VirtualService, DestinationRule"] -->|watch| D
+  subgraph ISTIOD["istiod"]
+    D["debounce<br/>변경 묶기"] --> M["내부 모델 변환<br/>영향받는 프록시 선별"] --> G["프록시별<br/>Envoy 설정 생성"]
+  end
   G -->|"ADS push"| E["Envoy"]
-  E -.->|"ACK / NACK"| G
+  E -->|"ACK / NACK"| G
 
-  classDef accent fill:#e0f2fe,stroke:#0284c7,color:#0c4a6e
-  class E accent
+  classDef source fill:#f1f5f9,stroke:#64748b,color:#0f172a
+  classDef control fill:#ede9fe,stroke:#7c3aed,color:#3b0764
+  classDef proxy fill:#e0f2fe,stroke:#0284c7,color:#0c4a6e
+  class K source
+  class D,M,G control
+  class E proxy
+  style ISTIOD fill:#faf5ff,stroke:#c4b5fd
+
+  linkStyle 0 stroke:#64748b,stroke-width:1.5px
+  linkStyle 1,2 stroke:#7c3aed,stroke-width:1.5px
+  linkStyle 3 stroke:#7c3aed,stroke-width:2px,stroke-dasharray:5 4
+  linkStyle 4 stroke:#d97706,stroke-width:1.5px,stroke-dasharray:5 4
 ```
 
 ### 직접 확인해보기
