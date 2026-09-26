@@ -88,12 +88,19 @@ flowchart LR
   C1 --> E2["Endpoint<br/>172.17.0.3:9080"]
   C2 -.-> E3["Endpoint<br/>172.17.0.4:9080"]
   L -.->|"일치하는 설정 없음<br/>(ALLOW_ANY)"| P["PassthroughCluster<br/>원래 목적지 IP:Port로 TCP 전달"]
-  classDef stable fill:#e8f1fb,stroke:#1f6feb,color:#0b2447
-  classDef canary fill:#ffffff,stroke:#1f6feb,stroke-dasharray:5 4,color:#0b2447
-  classDef fallback fill:#f6f8fa,stroke:#8c959f,stroke-dasharray:3 3,color:#57606a
+  classDef request fill:#f1f5f9,stroke:#64748b,color:#0f172a
+  classDef stable fill:#e0f2fe,stroke:#0284c7,color:#0c4a6e
+  classDef canary fill:#ffffff,stroke:#0284c7,stroke-dasharray:5 4,color:#0c4a6e
+  classDef fallback fill:#f8fafc,stroke:#94a3b8,stroke-dasharray:3 3,color:#475569
+  class REQ request
   class L,R,C1,E1,E2 stable
   class C2,E3 canary
   class P fallback
+
+  linkStyle 0,1,4,5 stroke:#0284c7,stroke-width:1.5px
+  linkStyle 2 stroke:#0284c7,stroke-width:3px
+  linkStyle 3,6 stroke:#0284c7,stroke-width:1.5px,stroke-dasharray:5 4
+  linkStyle 7 stroke:#94a3b8,stroke-width:1.5px,stroke-dasharray:3 3
 ```
 
 Istio 환경에서 Cluster 이름은 `방향|포트|subset|호스트` 형식이다. 위 그림의 v1 Cluster는 DestinationRule subset `v1`으로 가는 outbound 묶음이고, Endpoint는 그 아래 실제 Pod IP와 컨테이너 포트다. Envoy가 목적지에 대한 Cluster를 받지 못했다면 `PassthroughCluster`로 빠지며, 이때는 재시도·타임아웃 같은 L7 기능이 적용되지 않는다.
@@ -176,20 +183,29 @@ xDS의 각 API(LDS, RDS, CDS, EDS, SDS)는 원래 서로 다른 서버, 서로 �
 
 ```mermaid
 sequenceDiagram
-  participant E as Envoy
-  participant A as pilot-agent
-  participant I as istiod
+  box rgb(240, 249, 255) Pod
+    participant E as Envoy
+    participant A as pilot-agent
+  end
+  box rgb(250, 245, 255) Control Plane
+    participant I as istiod
+  end
   E->>A: ADS 스트림 연결 (로컬 소켓)
   A->>I: 15012 포트로 중계 (mTLS gRPC)
-  I-->>E: 1. CDS (Cluster 목록)
-  E->>I: ACK
-  I-->>E: 2. EDS (Endpoint 목록)
-  E->>I: ACK
-  I-->>E: 3. LDS (Listener 목록)
-  E->>I: ACK
-  I-->>E: 4. RDS (Route 목록)
-  E->>I: ACK
-  Note over E: 목적지가 먼저 준비된 뒤 길이 연결된다
+  rect rgb(224, 242, 254)
+    Note over E,I: 목적지 먼저 준비
+    I-->>E: 1. CDS (Cluster 목록)
+    E->>I: ACK
+    I-->>E: 2. EDS (Endpoint 목록)
+    E->>I: ACK
+  end
+  rect rgb(237, 233, 254)
+    Note over E,I: 그 다음 길을 연결
+    I-->>E: 3. LDS (Listener 목록)
+    E->>I: ACK
+    I-->>E: 4. RDS (Route 목록)
+    E->>I: ACK
+  end
 ```
 
 단, ADS가 보장하는 것은 "하나의 Envoy 안에서"의 순서다. 메시 전체의 수백 개 Envoy가 동시에 같은 설정을 받는다는 보장은 없다(Eventual Consistency). 그래서 DestinationRule을 먼저 적용하고, 전파된 것을 확인한 뒤 VirtualService를 적용하는 운영 순서가 여전히 필요하다.
@@ -219,14 +235,22 @@ xDS는 단방향 푸시가 아니라 요청·응답 프로토콜이다. Envoy는
 
 ```mermaid
 sequenceDiagram
-  participant I as istiod
-  participant E as Envoy
-  I-->>E: RDS version=v2, nonce=a
-  E->>I: ACK (version_info=v2, response_nonce=a)
-  Note over E: v2 적용
-  I-->>E: RDS version=v3, nonce=b (잘못된 설정)
-  E->>I: NACK (version_info=v2, response_nonce=b, error_detail)
-  Note over E: v3 거부, v2 계속 사용
+  box rgb(250, 245, 255) Control Plane
+    participant I as istiod
+  end
+  box rgb(240, 249, 255) Pod
+    participant E as Envoy
+  end
+  rect rgb(220, 252, 231)
+    I-->>E: RDS version=v2, nonce=a
+    E->>I: ACK (version_info=v2, response_nonce=a)
+    Note over E: v2 적용
+  end
+  rect rgb(254, 226, 226)
+    I-->>E: RDS version=v3, nonce=b (잘못된 설정)
+    E->>I: NACK (version_info=v2, response_nonce=b, error_detail)
+    Note over E: v3 거부, v2 계속 사용
+  end
 ```
 
 NACK 응답의 `version_info`가 여전히 v2라는 점이 핵심이다. istiod는 "이 Envoy는 아직 v2에 머물러 있다"는 것을 이 값으로 안다.
@@ -243,11 +267,25 @@ NACK 응답의 `version_info`가 여전히 v2라는 점이 핵심이다. istiod�
 
 ```mermaid
 flowchart LR
-  K["Kubernetes API<br/>Service, EndpointSlice<br/>VirtualService, DestinationRule"] -->|watch| D["debounce<br/>변경 묶기"]
-  D --> M["내부 모델 변환<br/>영향받는 프록시 선별"]
-  M --> G["프록시별<br/>Envoy 설정 생성"]
+  K["Kubernetes API<br/>Service, EndpointSlice<br/>VirtualService, DestinationRule"] -->|watch| D
+  subgraph ISTIOD["istiod"]
+    D["debounce<br/>변경 묶기"] --> M["내부 모델 변환<br/>영향받는 프록시 선별"] --> G["프록시별<br/>Envoy 설정 생성"]
+  end
   G -->|"ADS push"| E["Envoy"]
   E -->|"ACK / NACK"| G
+
+  classDef source fill:#f1f5f9,stroke:#64748b,color:#0f172a
+  classDef control fill:#ede9fe,stroke:#7c3aed,color:#3b0764
+  classDef proxy fill:#e0f2fe,stroke:#0284c7,color:#0c4a6e
+  class K source
+  class D,M,G control
+  class E proxy
+  style ISTIOD fill:#faf5ff,stroke:#c4b5fd
+
+  linkStyle 0 stroke:#64748b,stroke-width:1.5px
+  linkStyle 1,2 stroke:#7c3aed,stroke-width:1.5px
+  linkStyle 3 stroke:#7c3aed,stroke-width:2px,stroke-dasharray:5 4
+  linkStyle 4 stroke:#d97706,stroke-width:1.5px,stroke-dasharray:5 4
 ```
 
 ### 직접 확인해보기
