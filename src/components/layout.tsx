@@ -1,5 +1,6 @@
 import * as React from "react"
 import ThemeToggle from "./theme-toggle"
+import { DARK_MODE_ENABLED } from "../utils/theme"
 import * as styles from "./layout.module.css"
 
 interface LayoutProps {
@@ -8,9 +9,11 @@ interface LayoutProps {
 
 const Layout = ({ children }: LayoutProps) => (
   <>
-    <div className={styles.themeToggleBar}>
-      <ThemeToggle />
-    </div>
+    {DARK_MODE_ENABLED && (
+      <div className={styles.themeToggleBar}>
+        <ThemeToggle />
+      </div>
+    )}
     <main>{children}</main>
   </>
 )
