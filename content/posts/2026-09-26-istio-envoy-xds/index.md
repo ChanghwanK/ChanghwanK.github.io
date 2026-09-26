@@ -95,8 +95,8 @@ Istio 환경의 Envoy는 설정 파일을 다시 읽지 않고, 대신 Runtime�
 ```mermaid
 flowchart LR
   subgraph ENVOY["Envoy"]
-    L["Listener"] --> R["Route"] --> C["Cluster"] --> E["Endpoint"]
-    S["Secret"]
+    L["Listener<br/>0.0.0.0_9080"] --> R["Route<br/>9080 · reviews:9080"] --> C["Cluster<br/>outbound|9080||reviews"] --> E["Endpoint<br/>10.0.1.12:9080"]
+    S["Secret<br/>default · ROOTCA"]
   end
   I["istiod"] -->|LDS| L
   I -->|RDS| R
@@ -104,7 +104,21 @@ flowchart LR
   I -->|EDS| E
   PA["pilot-agent"] -->|SDS| S
   PA -->|"CSR 서명 요청"| I
+
+  classDef control fill:#ede9fe,stroke:#7c3aed,color:#3b0764
+  classDef cert fill:#fef3c7,stroke:#d97706,color:#78350f
+  classDef resource fill:#e0f2fe,stroke:#0284c7,color:#0c4a6e
+  class I control
+  class PA,S cert
+  class L,R,C,E resource
+  style ENVOY fill:#f0f9ff,stroke:#7dd3fc
+
+  linkStyle 0,1,2 stroke:#0284c7,stroke-width:2px
+  linkStyle 3,4,5,6 stroke:#7c3aed,stroke-width:1.5px,stroke-dasharray:5 4
+  linkStyle 7,8 stroke:#d97706,stroke-width:1.5px,stroke-dasharray:5 4
 ```
+
+보라 점선은 istiod가 보내는 xDS, 주황 점선은 인증서 경로, 파란 실선은 요청이 실제로 지나가는 순서다. 노드 아래의 이름은 `reviews` 서비스(9080 포트)를 호출하는 파드에서 `istioctl proxy-config`로 보이는 실제 형태를 예로 든 것이다(Cluster 이름은 원래 `outbound|9080||reviews.default.svc.cluster.local`인데 줄여 적었다). 뒤의 [직접 확인해보기](#직접-확인해보기)에서 같은 이름을 다시 만난다.
 
 ### 의존성 정리
 
