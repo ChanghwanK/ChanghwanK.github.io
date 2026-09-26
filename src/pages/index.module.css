@@ -15,11 +15,14 @@
   margin-top: 1.75rem;
 }
 
+/* 글 본문(blog-post.module.css의 .content)과 같은 글자 규칙을 쓴다. 굵기를 빼면 body 기본값 300을 물려받아 본문보다 가늘게 보인다. */
 .text {
-  font-family: var(--font-serif);
+  font-family: var(--font-sans);
   font-size: 1rem;
   line-height: 1.75;
+  font-weight: 350;
   color: var(--text-prose);
+  word-break: keep-all;
   margin-bottom: 1rem;
 }
 
