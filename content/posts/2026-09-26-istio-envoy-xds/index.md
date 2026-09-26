@@ -65,14 +65,23 @@ Envoy를 Proxy로 사용할 때 4가지 개념을 기본적으로 알고 있어�
 
 ```mermaid
 flowchart LR
-  REQ["요청"] --> L["Listener<br/>IP:Port + 필터 체인"]
+  REQ(["요청<br/>reviews:9080"]) --> L["Listener<br/>0.0.0.0:9080<br/>+ 필터 체인"]
   L --> R["Route<br/>host / path 매칭"]
-  R -->|"weight 90"| C1["Cluster<br/>reviews v1"]
-  R -->|"weight 10"| C2["Cluster<br/>reviews v2"]
-  C1 --> E1["Endpoint<br/>172.17.0.2"]
-  C1 --> E2["Endpoint<br/>172.17.0.3"]
-  C2 --> E3["Endpoint<br/>172.17.0.4"]
+  R -->|"weight 90"| C1["Cluster<br/>outbound#124;9080#124;v1#124;reviews.default.svc.cluster.local"]
+  R -.->|"weight 10"| C2["Cluster<br/>outbound#124;9080#124;v2#124;reviews.default.svc.cluster.local"]
+  C1 --> E1["Endpoint<br/>172.17.0.2:9080"]
+  C1 --> E2["Endpoint<br/>172.17.0.3:9080"]
+  C2 -.-> E3["Endpoint<br/>172.17.0.4:9080"]
+  L -.->|"일치하는 설정 없음<br/>(ALLOW_ANY)"| P["PassthroughCluster<br/>원래 목적지 IP:Port로 TCP 전달"]
+  classDef stable fill:#e8f1fb,stroke:#1f6feb,color:#0b2447
+  classDef canary fill:#ffffff,stroke:#1f6feb,stroke-dasharray:5 4,color:#0b2447
+  classDef fallback fill:#f6f8fa,stroke:#8c959f,stroke-dasharray:3 3,color:#57606a
+  class L,R,C1,E1,E2 stable
+  class C2,E3 canary
+  class P fallback
 ```
+
+Istio 환경에서 Cluster 이름은 `방향|포트|subset|호스트` 형식이다. 위 그림의 v1 Cluster는 DestinationRule subset `v1`으로 가는 outbound 묶음이고, Endpoint는 그 아래 실제 Pod IP와 컨테이너 포트다. Envoy가 목적지에 대한 Cluster를 받지 못했다면 `PassthroughCluster`로 빠지며, 이때는 재시도·타임아웃 같은 L7 기능이 적용되지 않는다.
 
 ## xDS를 이용한 API Driven Configuration
 
