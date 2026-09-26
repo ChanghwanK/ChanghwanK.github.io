@@ -3,6 +3,7 @@ title: "Istio Envoy와 xDS 전체 훑어보기"
 description: "Envoy의 기본 개념(Listener, Route, Cluster, Endpoint)과 Istio가 xDS로 설정을 전달하는 방식(부트스트랩, ADS, SotW/Delta, ACK/NACK)을 정리한다."
 date: 2026-09-26
 status: deploy
+thumbnail: ./istio.png
 tags:
   - Istio
   - Envoy
@@ -129,7 +130,7 @@ Envoy가 모든 설정을 API로 받는다고 해도, "어디서 받을지"는 �
 
 xDS의 각 API(LDS, RDS, CDS, EDS, SDS)는 원래 서로 다른 서버, 서로 다른 스트림으로 받을 수 있다. 그런데 스트림이 나뉘어 있으면 앞의 의존성 정리에서 본 CDS → EDS → LDS → RDS 순서를 보장할 수 없다. RDS가 CDS보다 먼저 도착하면 존재하지 않는 클러스터를 가리키게 되고 트래픽이 DROP된다.
 
-이 문제를 풀기 위해 Envoy는 **ADS(Aggregated Discovery Service)**를 제공한다. 모든 리소스 타입을 하나의 gRPC 스트림으로 주고받기 때문에, Control Plane이 보내는 순서를 직접 제어할 수 있다.
+이 문제를 풀기 위해 Envoy는 <strong>ADS(Aggregated Discovery Service)</strong>를 제공한다. 모든 리소스 타입을 하나의 gRPC 스트림으로 주고받기 때문에, Control Plane이 보내는 순서를 직접 제어할 수 있다.
 
 - Istio는 ADS를 사용한다.
 - 연결 경로는 Envoy → `pilot-agent`(로컬 xDS 프록시) → istiod `15012` 포트(mTLS gRPC)이다.
