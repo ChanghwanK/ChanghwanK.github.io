@@ -91,8 +91,9 @@ const PostListItem = ({ post }: { post: PostNode }) => {
   return (
     <article className={styles.postItem}>
       <Link to={slug} className={styles.postLink}>
-        {thumbnailImage && (
-          <div className={styles.thumbnailWrapper}>
+        {/* 썸네일이 없어도 자리는 남겨, 모든 글의 제목·요약 폭이 같은 오른쪽 선에서 끝나게 한다. */}
+        <div className={styles.thumbnailWrapper} aria-hidden={!thumbnailImage}>
+          {thumbnailImage && (
             <GatsbyImage
               image={thumbnailImage}
               alt={title}
@@ -103,8 +104,8 @@ const PostListItem = ({ post }: { post: PostNode }) => {
                 objectPosition: "center",
               }}
             />
-          </div>
-        )}
+          )}
+        </div>
         <div className={styles.postContent}>
           <h2 className={styles.postTitle}>{title}</h2>
           <p className={styles.postExcerpt}>{description || post.excerpt}</p>
