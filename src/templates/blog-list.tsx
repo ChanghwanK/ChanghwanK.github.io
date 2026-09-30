@@ -121,8 +121,8 @@ const PostListItem = ({ post }: { post: PostNode }) => {
                 {status}
               </span>
             )}
+            <PostTags tags={tags} className={styles.tags} />
           </div>
-          <PostTags tags={tags} className={styles.tags} />
         </div>
       </Link>
     </article>

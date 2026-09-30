@@ -154,8 +154,8 @@ const BlogPostTemplate = ({ data }: PageProps<BlogPostData>) => {
               </time>
               <span aria-hidden="true">·</span>
               <span>{readingMinutes}분</span>
+              <PostTags tags={tags} className={styles.tags} />
             </div>
-            <PostTags tags={tags} className={styles.tags} />
           </header>
 
           <div

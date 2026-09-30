@@ -116,9 +116,9 @@
   font-variant-numeric: tabular-nums;
 }
 
-/* 날짜·읽기 시간 줄과 한 덩어리로 읽히도록 간격을 좁게 둔다. */
+/* 태그는 날짜·읽기 시간 줄의 오른쪽에 붙이되, 메타 항목 사이 간격(0.5rem)보다 넓게 띄워 별도 묶음으로 읽히게 한다. */
 .tags {
-  margin-top: 0.15rem;
+  margin-left: 0.75rem;
 }
 
 /* ─── Status Badge ──────────────────────────────────────────── */
@@ -140,6 +140,11 @@
 @media (max-width: 600px) {
   .darkPage {
     padding: 3.5rem 1.25rem 4.5rem;
+  }
+
+  /* 좁은 화면에서는 태그가 다음 줄로 내려가므로, 왼쪽 여백을 없애 날짜와 같은 선에서 시작하게 한다. */
+  .tags {
+    margin-left: 0;
   }
 
   .thumbnailWrapper {
