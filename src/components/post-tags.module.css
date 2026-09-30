@@ -1,7 +1,7 @@
 .tagList {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.35rem;
+  gap: 0.3rem;
   margin: 0;
   padding: 0;
   list-style: none;
@@ -10,11 +10,11 @@
 /* 누를 수 없는 표시라서 hover 효과 없이 옅은 테두리만 둔다. */
 .tag {
   margin: 0;
-  padding: 0.1rem 0.5rem;
+  padding: 0.05rem 0.45rem;
   border: 1px solid var(--border-base);
   border-radius: 100px;
   color: var(--text-dim);
-  font-size: 0.75rem;
+  font-size: 0.7rem;
   line-height: 1.5;
   white-space: nowrap;
 }
