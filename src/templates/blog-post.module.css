@@ -91,7 +91,7 @@
 .content {
   font-family: var(--font-sans);
   line-height: 1.75;
-  font-size: 1rem;
+  font-size: 0.9375rem;
   /* body 기본(300)은 획이 가늘어 가장자리가 날카롭게 읽히고, 400은 페이지 전체가 무거워 보인다. 그 중간값을 쓴다. */
   font-weight: 350;
   color: var(--text-prose);
