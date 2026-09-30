@@ -58,7 +58,7 @@
 }
 
 .title {
-  font-size: 2.1rem;
+  font-size: 1.75rem;
   font-weight: 450;
   color: var(--text-display);
   margin-bottom: 0;
@@ -67,7 +67,7 @@
 }
 
 .subtitle {
-  font-size: 1rem;
+  font-size: 0.875rem;
   color: var(--text-secondary);
   font-weight: 400;
   margin-top: 0.6rem;
@@ -102,7 +102,7 @@
 
 .content p {
   max-width: 100%;
-  margin-bottom: 1.25rem;
+  margin-bottom: 0.8rem;
 }
 
 .content h1 {
