@@ -9,7 +9,11 @@ interface ProfileTabsProps {
   linkedInUrl: string
 }
 
-const ProfileTabs = ({ activeTab, githubUrl, linkedInUrl }: ProfileTabsProps) => (
+const ProfileTabs = ({
+  activeTab,
+  githubUrl,
+  linkedInUrl,
+}: ProfileTabsProps) => (
   <div className={styles.tabBar}>
     <div className={styles.tabs}>
       <Link
@@ -18,7 +22,7 @@ const ProfileTabs = ({ activeTab, githubUrl, linkedInUrl }: ProfileTabsProps) =>
           activeTab === "about" ? styles.tabActive : ""
         }`}
       >
-        About
+        Home
       </Link>
       <Link
         to="/blog"

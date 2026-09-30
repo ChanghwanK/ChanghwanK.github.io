@@ -9,10 +9,10 @@
   --size-content: 760px;
 
   /* Backgrounds: 종이처럼 아주 옅은 회색 바탕 위에 요소의 깊이만 한 단계씩 더한다. */
-  --bg-page: #f7f7f6;
-  --bg-elevated: #f2f2f1;
-  --bg-card: #ededec;
-  --bg-code: #f0f0ef;
+  --bg-page: #fcfcfb;
+  --bg-elevated: #f7f7f6;
+  --bg-card: #f2f2f1;
+  --bg-code: #f5f5f4;
 
   /* Borders */
   --border-subtle: #ececec;

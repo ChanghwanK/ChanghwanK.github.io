@@ -35,7 +35,7 @@
   flex-direction: row-reverse;
   align-items: flex-start;
   gap: 1.75rem;
-  padding: 1.35rem 0;
+  padding: 1rem 0;
 }
 
 .postLink:hover {
@@ -76,7 +76,7 @@
 }
 
 .postTitle {
-  font-size: 1.45rem;
+  font-size: 1.125rem;
   font-weight: 450;
   letter-spacing: -0.015em;
   color: var(--text-code);

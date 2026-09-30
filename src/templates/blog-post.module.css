@@ -14,7 +14,7 @@
 /* ─── Page nav ───────────────────────────────────────────────── */
 .pageNav {
   max-width: var(--post-width);
-  margin: 0 auto 2.5rem;
+  margin: 0 auto 1.5rem;
   display: flex;
   align-items: center;
   gap: 0.6rem;
@@ -51,7 +51,9 @@
 /* ─── Header ─────────────────────────────────────────────────── */
 .header {
   margin-bottom: 2rem;
+  border-top: 1px solid var(--border-subtle);
   border-bottom: 1px solid var(--border-subtle);
+  padding-top: 2rem;
   padding-bottom: 1.25rem;
 }
 
