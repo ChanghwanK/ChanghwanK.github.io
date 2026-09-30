@@ -2,28 +2,28 @@
 .darkPage {
   min-height: 100vh;
   background: var(--bg-page);
-  padding: 3.5rem 1.5rem 6rem;
+  padding: 3rem 1.5rem 5rem;
 }
 
 .container {
-  max-width: 720px;
+  max-width: 780px;
   margin: 0 auto;
 }
 
 /* ─── Content ────────────────────────────────────────────────── */
 .content {
-  margin-top: 1.75rem;
+  margin-top: 1.5rem;
 }
 
 /* 글 본문(blog-post.module.css의 .content)과 같은 글자 규칙을 쓴다. 굵기를 빼면 body 기본값 300을 물려받아 본문보다 가늘게 보인다. */
 .text {
   font-family: var(--font-sans);
-  font-size: 1rem;
-  line-height: 1.75;
+  font-size: 0.9rem;
+  line-height: 1.7;
   font-weight: 350;
   color: var(--text-prose);
   word-break: keep-all;
-  margin-bottom: 1rem;
+  margin-bottom: 0.85rem;
 }
 
 .text:last-child {
@@ -45,6 +45,6 @@
 /* ─── Responsive ─────────────────────────────────────────────── */
 @media (max-width: 600px) {
   .darkPage {
-    padding: 2.5rem 1.25rem 5rem;
+    padding: 2.25rem 1.25rem 4.5rem;
   }
 }
