@@ -2,7 +2,7 @@
 .darkPage {
   min-height: 100vh;
   background: var(--bg-page);
-  padding: 3rem 1.5rem 5rem;
+  padding: 5rem 1.5rem 5rem;
 }
 
 .container {
@@ -11,10 +11,11 @@
 }
 
 /* ─── Post List ─────────────────────────────────────────────── */
+/* 헤더 구분선 아래 여백. 글 칸 자체의 위쪽 padding(1rem)이 더해져 선에서 첫 제목까지 약 24px이 된다. */
 .postList {
   display: flex;
   flex-direction: column;
-  margin-top: 1rem;
+  margin-top: 0.5rem;
 }
 
 .emptyState {
@@ -24,8 +25,9 @@
   text-align: center;
 }
 
+/* 헤더 구분선(1px, --border-base)보다 약해야 "페이지 구획 > 글 사이" 순서가 선 굵기에서도 읽힌다. */
 .postItem:not(:last-child) {
-  border-bottom: 2px solid var(--border-subtle);
+  border-bottom: 1px solid var(--border-subtle);
 }
 
 .postLink {
@@ -127,58 +129,10 @@
   background-color: #1c0a00;
 }
 
-/* ─── Pagination ────────────────────────────────────────────── */
-.pagination {
-  display: flex;
-  justify-content: center;
-  list-style: none;
-  padding: 0;
-  margin-top: 3rem;
-  gap: 0.4rem;
-}
-
-.paginationLink {
-  text-decoration: none;
-  color: var(--text-ghost);
-  width: 34px;
-  height: 34px;
-  border-radius: 6px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border: 1px solid var(--border-base);
-  font-size: 0.825rem;
-  transition: all 0.15s ease;
-  background: transparent;
-}
-
-.paginationLink:first-child,
-.paginationLink:last-child {
-  width: auto;
-  padding: 0 0.875rem;
-}
-
-.paginationLink:hover {
-  color: var(--text-primary);
-  border-color: var(--border-accent);
-  text-decoration: none;
-}
-
-.activeLink {
-  color: var(--text-primary);
-  border-color: var(--border-accent);
-  background: var(--bg-card);
-  font-weight: 600;
-}
-
-.activeLink:hover {
-  color: var(--text-primary);
-}
-
 /* ─── Responsive ─────────────────────────────────────────────── */
 @media (max-width: 600px) {
   .darkPage {
-    padding: 2.25rem 1.25rem 4.5rem;
+    padding: 3.5rem 1.25rem 4.5rem;
   }
 
   .thumbnailWrapper {

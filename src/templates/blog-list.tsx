@@ -1,11 +1,10 @@
 import * as React from "react"
 import { Link, graphql } from "gatsby"
-import type { PageProps, HeadProps } from "gatsby"
+import type { PageProps } from "gatsby"
 import { GatsbyImage, getImage } from "gatsby-plugin-image"
 import type { IGatsbyImageData } from "gatsby-plugin-image"
 import Layout from "../components/layout"
 import ProfileHeader from "../components/home/profile-header"
-import ProfileTabs from "../components/home/profile-tabs"
 import Seo from "../components/seo"
 import * as styles from "./blog-list.module.css"
 
@@ -30,7 +29,7 @@ interface BlogListData {
   site: {
     siteMetadata: {
       authorName: string
-      authorRole: string
+      authorBio: string
       authorHandle: string
       githubUrl: string
       linkedInUrl: string
@@ -42,23 +41,94 @@ interface BlogListData {
 }
 
 interface BlogListPageContext {
-  currentPage: number
-  numPages: number
   validStatuses: string[]
 }
 
-const BlogList = ({
-  data,
-  pageContext,
-}: PageProps<BlogListData, BlogListPageContext>) => {
+// 한 번에 그리는 글 수. 첫 묶음만 정적 HTML에 들어가고, 나머지는 스크롤이 목록 끝에 닿을 때마다 붙인다.
+// 검색엔진은 gatsby-plugin-sitemap으로 나머지 글을 찾으므로 첫 묶음 밖의 글도 색인된다.
+const POSTS_PER_BATCH = 6
+
+// 화면 아래 끝보다 이만큼 먼저 다음 묶음을 붙여, 스크롤이 목록 끝에서 멈칫하지 않게 한다.
+const PRELOAD_MARGIN = "400px"
+
+/**
+ * 목록 끝의 감시 요소가 화면 근처에 오면 보여줄 글 수를 한 묶음씩 늘린다.
+ * 반환하는 ref를 목록 바로 아래 요소에 붙인다. 전부 보여주면 감시를 멈춘다.
+ */
+const useInfiniteReveal = (total: number) => {
+  const [visibleCount, setVisibleCount] = React.useState(POSTS_PER_BATCH)
+  const sentinelRef = React.useRef<HTMLDivElement>(null)
+  const hasMore = visibleCount < total
+
+  React.useEffect(() => {
+    const sentinel = sentinelRef.current
+    if (!hasMore || !sentinel) return
+
+    const observer = new IntersectionObserver(
+      entries => {
+        if (entries.some(entry => entry.isIntersecting)) {
+          setVisibleCount(count => Math.min(count + POSTS_PER_BATCH, total))
+        }
+      },
+      { rootMargin: `0px 0px ${PRELOAD_MARGIN} 0px` }
+    )
+    observer.observe(sentinel)
+    return () => observer.disconnect()
+    // 묶음이 붙을 때마다 다시 연결해야, 붙은 뒤에도 감시 요소가 여전히 화면 안이면 다음 묶음을 이어서 붙인다.
+  }, [hasMore, total, visibleCount])
+
+  return { visibleCount, hasMore, sentinelRef }
+}
+
+const PostListItem = ({ post }: { post: PostNode }) => {
+  const { title, date, rawDate, description, status, thumbnail } =
+    post.frontmatter
+  const { slug } = post.fields
+  const thumbnailImage = getImage(thumbnail)
+
+  return (
+    <article className={styles.postItem}>
+      <Link to={slug} className={styles.postLink}>
+        {thumbnailImage && (
+          <div className={styles.thumbnailWrapper}>
+            <GatsbyImage
+              image={thumbnailImage}
+              alt={title}
+              className={styles.thumbnail}
+              style={{ width: "100%", height: "100%" }}
+              imgStyle={{
+                objectFit: "contain",
+                objectPosition: "center",
+              }}
+            />
+          </div>
+        )}
+        <div className={styles.postContent}>
+          <h2 className={styles.postTitle}>{title}</h2>
+          <p className={styles.postExcerpt}>{description || post.excerpt}</p>
+          <div className={styles.metaContainer}>
+            <time className={styles.date} dateTime={rawDate}>
+              {date}
+            </time>
+            {status === "writing" && (
+              <span className={`${styles.statusBadge} ${styles.statusWriting}`}>
+                {status}
+              </span>
+            )}
+          </div>
+        </div>
+      </Link>
+    </article>
+  )
+}
+
+const BlogList = ({ data }: PageProps<BlogListData, BlogListPageContext>) => {
   const posts = data.allMarkdownRemark.nodes
-  const { authorName, authorRole, authorHandle, githubUrl, linkedInUrl } =
+  const { authorName, authorBio, authorHandle, githubUrl, linkedInUrl } =
     data.site.siteMetadata
-  const { currentPage, numPages } = pageContext
-  const isFirst = currentPage === 1
-  const isLast = currentPage === numPages
-  const prevPage = currentPage - 1 === 1 ? "/blog" : `/blog/${currentPage - 1}`
-  const nextPage = `/blog/${currentPage + 1}`
+  const { visibleCount, hasMore, sentinelRef } = useInfiniteReveal(
+    posts.length
+  )
 
   return (
     <Layout>
@@ -66,11 +136,8 @@ const BlogList = ({
         <div className={styles.container}>
           <ProfileHeader
             name={authorName}
-            role={authorRole}
+            bio={authorBio}
             handle={authorHandle}
-          />
-          <ProfileTabs
-            activeTab="post"
             githubUrl={githubUrl}
             linkedInUrl={linkedInUrl}
           />
@@ -80,105 +147,27 @@ const BlogList = ({
                 아직 공개된 포스트가 없습니다.
               </p>
             ) : (
-              posts.map(post => {
-                const { title, date, rawDate, description, status, thumbnail } =
-                  post.frontmatter
-                const { slug } = post.fields
-                const thumbnailImage = getImage(thumbnail)
-
-                return (
-                  <article key={slug} className={styles.postItem}>
-                    <Link to={slug} className={styles.postLink}>
-                      {thumbnailImage && (
-                        <div className={styles.thumbnailWrapper}>
-                          <GatsbyImage
-                            image={thumbnailImage}
-                            alt={title}
-                            className={styles.thumbnail}
-                            style={{ width: "100%", height: "100%" }}
-                            imgStyle={{
-                              objectFit: "contain",
-                              objectPosition: "center",
-                            }}
-                          />
-                        </div>
-                      )}
-                      <div className={styles.postContent}>
-                        <h2 className={styles.postTitle}>{title}</h2>
-                        <p className={styles.postExcerpt}>
-                          {description || post.excerpt}
-                        </p>
-                        <div className={styles.metaContainer}>
-                          <time className={styles.date} dateTime={rawDate}>
-                            {date}
-                          </time>
-                          {status === "writing" && (
-                            <span
-                              className={`${styles.statusBadge} ${styles.statusWriting}`}
-                            >
-                              {status}
-                            </span>
-                          )}
-                        </div>
-                      </div>
-                    </Link>
-                  </article>
-                )
-              })
+              posts
+                .slice(0, visibleCount)
+                .map(post => <PostListItem key={post.fields.slug} post={post} />)
             )}
           </div>
-
-          {/* Pagination */}
-          {numPages > 1 && (
-            <nav className={styles.pagination} aria-label="페이지 내비게이션">
-              {!isFirst && (
-                <Link to={prevPage} className={styles.paginationLink}>
-                  ← Prev
-                </Link>
-              )}
-
-              {Array.from({ length: numPages }, (_, i) => (
-                <Link
-                  key={`pagination-number${i + 1}`}
-                  to={i === 0 ? "/blog" : `/blog/${i + 1}`}
-                  className={`${styles.paginationLink} ${
-                    i + 1 === currentPage ? styles.activeLink : ""
-                  }`}
-                  {...(i + 1 === currentPage
-                    ? { "aria-current": "page" as const }
-                    : {})}
-                >
-                  {i + 1}
-                </Link>
-              ))}
-
-              {!isLast && (
-                <Link to={nextPage} className={styles.paginationLink}>
-                  Next →
-                </Link>
-              )}
-            </nav>
-          )}
+          {hasMore && <div ref={sentinelRef} aria-hidden="true" />}
         </div>
       </div>
     </Layout>
   )
 }
 
-export const Head = ({
-  pageContext,
-}: HeadProps<BlogListData, BlogListPageContext>) => {
-  const isFirst = pageContext.currentPage === 1
-  const pathname = isFirst ? "/blog" : `/blog/${pageContext.currentPage}`
-  return <Seo title="Blog" pathname={pathname} />
-}
+// /blog 별칭도 canonical은 /로 둬서 검색엔진이 홈 하나로 인식하게 한다.
+export const Head = () => <Seo title="Blog" pathname="/" />
 
 export const query = graphql`
-  query blogListQuery($skip: Int!, $limit: Int!, $validStatuses: [String]!) {
+  query blogListQuery($validStatuses: [String]!) {
     site {
       siteMetadata {
         authorName
-        authorRole
+        authorBio
         authorHandle
         githubUrl
         linkedInUrl
@@ -189,8 +178,6 @@ export const query = graphql`
       filter: {
         frontmatter: { date: { ne: null }, status: { in: $validStatuses } }
       }
-      limit: $limit
-      skip: $skip
     ) {
       nodes {
         fields {

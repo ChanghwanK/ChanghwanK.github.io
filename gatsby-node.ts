@@ -136,23 +136,20 @@ export const createPages: GatsbyNode["createPages"] = async ({
     })
   })
 
-  // 2. 블로그 리스트 페이지 생성 (페이지네이션)
-  const postsPerPage = 6
-  // 배포 가능한 포스트가 없어도 /blog 리스트 페이지는 유지한다.
-  const numPages = Math.max(1, Math.ceil(posts.length / postsPerPage))
+  // 2. 포스트 목록 페이지 생성. 페이지를 나누지 않고 전체 글을 한 페이지에 싣는다 (무한 스크롤은 템플릿이 처리).
+  const listPageContext = {
+    // 페이지 쿼리 필터로 전달 (개발: 전체, 프로덕션: deploy만)
+    validStatuses: isDev ? ["deploy", "writing"] : ["deploy"],
+  }
 
-  Array.from({ length: numPages }).forEach((_, i) => {
+  // 홈(/)이 곧 포스트 목록이다.
+  // 예전 목록 주소(/blog)로 들어오는 외부 링크를 깨뜨리지 않도록 같은 목록을 한 번 더 만든다.
+  // GitHub Pages는 서버 리다이렉트가 없어서다. canonical은 템플릿에서 /로 둔다.
+  for (const listPath of [`/`, `/blog`]) {
     createPage({
-      path: i === 0 ? `/blog` : `/blog/${i + 1}`,
+      path: listPath,
       component: path.resolve("./src/templates/blog-list.tsx"),
-      context: {
-        limit: postsPerPage,
-        skip: i * postsPerPage,
-        numPages,
-        currentPage: i + 1,
-        // 페이지 쿼리 필터로 전달 (개발: 전체, 프로덕션: deploy만)
-        validStatuses: isDev ? ["deploy", "writing"] : ["deploy"],
-      },
+      context: listPageContext,
     })
-  })
+  }
 }
