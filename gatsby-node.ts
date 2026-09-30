@@ -2,6 +2,21 @@ import fs from "fs"
 import path from "path"
 import { createFilePath } from "gatsby-source-filesystem"
 import type { GatsbyNode } from "gatsby"
+import { estimateReadingMinutes } from "./src/utils/reading-time"
+
+// 태그가 있는 글이 하나도 배포되지 않아도(= 추론할 값이 없어도) tags·readingMinutes 쿼리가 깨지지 않게
+// 두 필드의 타입만 명시하고 나머지는 계속 추론에 맡긴다.
+export const createSchemaCustomization: GatsbyNode["createSchemaCustomization"] =
+  ({ actions }) => {
+    actions.createTypes(`
+      type MarkdownRemarkFrontmatter @infer {
+        tags: [String!]
+      }
+      type MarkdownRemarkFields @infer {
+        readingMinutes: Int!
+      }
+    `)
+  }
 
 export const onCreateNode: GatsbyNode["onCreateNode"] = ({
   node,
@@ -14,6 +29,7 @@ export const onCreateNode: GatsbyNode["onCreateNode"] = ({
     const markdownNode = node as typeof node & {
       frontmatter: PostFrontmatter
       parent: string
+      rawMarkdownBody: string
     }
     const fileNode = getNode(markdownNode.parent) as
       | { absolutePath?: string }
@@ -31,6 +47,12 @@ export const onCreateNode: GatsbyNode["onCreateNode"] = ({
       node,
       name: `slug`,
       value: slug,
+    })
+
+    createNodeField({
+      node,
+      name: `readingMinutes`,
+      value: estimateReadingMinutes(markdownNode.rawMarkdownBody),
     })
   }
 }
@@ -51,6 +73,7 @@ interface PostFrontmatter {
   date?: unknown
   status?: unknown
   thumbnail?: unknown
+  tags?: unknown
 }
 
 const isPostStatus = (status: unknown): status is PostStatus =>
@@ -85,6 +108,17 @@ const validatePostFrontmatter = (
     )
   ) {
     errors.push(`thumbnail 파일을 찾을 수 없습니다: ${frontmatter.thumbnail}`)
+  }
+
+  // tags는 선택 항목이다. 적었다면 빈 문자열이 섞이지 않은 목록이어야 화면에 빈 알약이 생기지 않는다.
+  if (
+    frontmatter.tags !== undefined &&
+    (!Array.isArray(frontmatter.tags) ||
+      !frontmatter.tags.every(
+        tag => typeof tag === "string" && tag.trim() !== ""
+      ))
+  ) {
+    errors.push("tags는 비어 있지 않은 문자열 목록이어야 합니다")
   }
 
   if (errors.length > 0) {

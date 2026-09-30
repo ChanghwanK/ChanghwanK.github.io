@@ -5,17 +5,19 @@ import { GatsbyImage, getImage } from "gatsby-plugin-image"
 import type { IGatsbyImageData } from "gatsby-plugin-image"
 import Layout from "../components/layout"
 import ProfileHeader from "../components/home/profile-header"
+import PostTags from "../components/post-tags"
 import Seo from "../components/seo"
 import * as styles from "./blog-list.module.css"
 
 interface PostNode {
-  fields: { slug: string }
+  fields: { slug: string; readingMinutes: number }
   frontmatter: {
     title: string
     date: string
     rawDate: string
     description: string | null
     status: string | null
+    tags: string[] | null
     thumbnail: {
       childImageSharp: {
         gatsbyImageData: IGatsbyImageData
@@ -81,9 +83,9 @@ const useInfiniteReveal = (total: number) => {
 }
 
 const PostListItem = ({ post }: { post: PostNode }) => {
-  const { title, date, rawDate, description, status, thumbnail } =
+  const { title, date, rawDate, description, status, tags, thumbnail } =
     post.frontmatter
-  const { slug } = post.fields
+  const { slug, readingMinutes } = post.fields
   const thumbnailImage = getImage(thumbnail)
 
   return (
@@ -110,12 +112,17 @@ const PostListItem = ({ post }: { post: PostNode }) => {
             <time className={styles.date} dateTime={rawDate}>
               {date}
             </time>
+            <span className={styles.metaSeparator} aria-hidden="true">
+              ·
+            </span>
+            <span className={styles.readingTime}>{readingMinutes}분</span>
             {status === "writing" && (
               <span className={`${styles.statusBadge} ${styles.statusWriting}`}>
                 {status}
               </span>
             )}
           </div>
+          <PostTags tags={tags} className={styles.tags} />
         </div>
       </Link>
     </article>
@@ -182,6 +189,7 @@ export const query = graphql`
       nodes {
         fields {
           slug
+          readingMinutes
         }
         frontmatter {
           title
@@ -189,6 +197,7 @@ export const query = graphql`
           rawDate: date
           description
           status
+          tags
           thumbnail {
             childImageSharp {
               gatsbyImageData(

@@ -4,17 +4,19 @@ import { Link, graphql } from "gatsby"
 import type { PageProps, HeadProps } from "gatsby"
 import Layout from "../components/layout"
 import Seo from "../components/seo"
+import PostTags from "../components/post-tags"
 import * as styles from "./blog-post.module.css"
 
 interface BlogPostData {
   markdownRemark: {
     html: string
-    fields: { slug: string }
+    fields: { slug: string; readingMinutes: number }
     frontmatter: {
       title: string
       date: string
       rawDate: string
       description: string | null
+      tags: string[] | null
       thumbnail: { publicURL: string } | null
     }
     excerpt: string
@@ -87,7 +89,8 @@ const markActiveSection = (sections: TocSection[]) => {
 
 const BlogPostTemplate = ({ data }: PageProps<BlogPostData>) => {
   const post = data.markdownRemark
-  const { title, description, date, rawDate } = post.frontmatter
+  const { title, description, date, rawDate, tags } = post.frontmatter
+  const { readingMinutes } = post.fields
   const [tocVisible, setTocVisible] = useState(false)
   const tocListRef = useRef<HTMLElement>(null)
 
@@ -149,7 +152,10 @@ const BlogPostTemplate = ({ data }: PageProps<BlogPostData>) => {
               <time className={styles.date} dateTime={rawDate}>
                 {date}
               </time>
+              <span aria-hidden="true">·</span>
+              <span>{readingMinutes}분</span>
             </div>
+            <PostTags tags={tags} className={styles.tags} />
           </header>
 
           <div
@@ -188,12 +194,14 @@ export const query = graphql`
       html
       fields {
         slug
+        readingMinutes
       }
       frontmatter {
         title
         date(formatString: "YYYY년 MM월 DD일")
         rawDate: date
         description
+        tags
         thumbnail {
           publicURL
         }

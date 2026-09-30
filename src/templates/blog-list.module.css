@@ -108,10 +108,17 @@
   margin-top: 0.1rem;
 }
 
-.date {
+.date,
+.metaSeparator,
+.readingTime {
   font-size: 0.775rem;
   color: var(--text-whisper);
   font-variant-numeric: tabular-nums;
+}
+
+/* 날짜·읽기 시간 줄과 한 덩어리로 읽히도록 간격을 좁게 둔다. */
+.tags {
+  margin-top: 0.15rem;
 }
 
 /* ─── Status Badge ──────────────────────────────────────────── */
