@@ -139,10 +139,6 @@ const BlogPostTemplate = ({ data }: PageProps<BlogPostData>) => {
           <Link to="/" className={styles.navHome}>
             Aiden_
           </Link>
-          <span className={styles.navSep}>/</span>
-          <Link to="/blog" className={styles.navHome}>
-            Post
-          </Link>
         </nav>
         <article className={styles.article}>
           <header className={styles.header}>
@@ -162,7 +158,7 @@ const BlogPostTemplate = ({ data }: PageProps<BlogPostData>) => {
           />
 
           <footer className={styles.footer}>
-            <Link to="/blog">← posts</Link>
+            <Link to="/">← posts</Link>
           </footer>
         </article>
       </div>

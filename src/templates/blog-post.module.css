@@ -12,13 +12,16 @@
 }
 
 /* ─── Page nav ───────────────────────────────────────────────── */
+/* 구분선 위(브레드크럼 → 선)와 아래(선 → 제목)의 간격을 같은 1.25rem으로 맞춘다.
+   line-height를 좁혀 글자 위아래 여백이 간격에 섞이지 않게 한다 (제목도 1.25라 반행간 차이는 1px 안쪽). */
 .pageNav {
   max-width: var(--post-width);
-  margin: 0 auto 1.5rem;
+  margin: 0 auto 1.25rem;
   display: flex;
   align-items: center;
   gap: 0.6rem;
   font-size: 1.5rem;
+  line-height: 1.2;
 }
 
 .navHome {
@@ -31,10 +34,6 @@
 .navHome:hover {
   color: var(--text-hover);
   text-decoration: none;
-}
-
-.navSep {
-  color: var(--text-whisper);
 }
 
 .navCurrent {
@@ -53,7 +52,7 @@
   margin-bottom: 2rem;
   border-top: 1px solid var(--border-subtle);
   border-bottom: 1px solid var(--border-subtle);
-  padding-top: 2rem;
+  padding-top: 1.25rem;
   padding-bottom: 1.25rem;
 }
 
