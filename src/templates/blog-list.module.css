@@ -6,12 +6,22 @@
 }
 
 .container {
-  max-width: 780px;
+  max-width: 680px;
   margin: 0 auto;
 }
 
 /* ─── Post List ─────────────────────────────────────────────── */
-/* 헤더 구분선 아래 여백. 글 칸 자체의 위쪽 padding(1rem)이 더해져 선에서 첫 제목까지 약 24px이 된다. */
+/* 헤더와 목록 사이의 작은 구획 표시. 글 제목보다 눈에 덜 띄어야 해서 작고 흐린 글자로 둔다. */
+.sectionLabel {
+  margin: 0;
+  color: var(--text-faint);
+  font-size: 0.75rem;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+/* 라벨 아래 여백. 글 칸 자체의 위쪽 padding(1rem)이 더해져 라벨에서 첫 제목까지 약 24px이 된다. */
 .postList {
   display: flex;
   flex-direction: column;

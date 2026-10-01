@@ -1,10 +1,9 @@
-/* 헤더와 포스트 목록을 가르는 구분선은 헤더가 긋는다. 선 아래 여백은 blog-list의 .postList가 맡는다. */
+/* 헤더 아래 여백. 그 아래 blog-list의 "Posts" 라벨이 목록의 시작을 알린다. */
 .avatarRow {
   display: flex;
   align-items: center;
   gap: 1.25rem;
-  padding-bottom: 2.5rem;
-  border-bottom: 1px solid var(--border-base);
+  padding-bottom: 3rem;
 }
 
 /* 텍스트 묶음(이름 줄 + 소개글 두 줄) 높이와 같게 맞춰, 아바타 위아래 끝이 이름 윗선·소개글 아랫선과 나란히 서게 한다. */

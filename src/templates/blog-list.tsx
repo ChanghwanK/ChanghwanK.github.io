@@ -149,6 +149,7 @@ const BlogList = ({ data }: PageProps<BlogListData, BlogListPageContext>) => {
             githubUrl={githubUrl}
             linkedInUrl={linkedInUrl}
           />
+          <h2 className={styles.sectionLabel}>Posts</h2>
           <div className={styles.postList}>
             {posts.length === 0 ? (
               <p className={styles.emptyState}>
