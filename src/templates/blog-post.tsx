@@ -5,6 +5,7 @@ import type { PageProps, HeadProps } from "gatsby"
 import Layout from "../components/layout"
 import Seo from "../components/seo"
 import PostTags from "../components/post-tags"
+import Comments from "../components/comments"
 import * as styles from "./blog-post.module.css"
 
 interface BlogPostData {
@@ -162,6 +163,8 @@ const BlogPostTemplate = ({ data }: PageProps<BlogPostData>) => {
             className={styles.content}
             dangerouslySetInnerHTML={{ __html: post.html }}
           />
+
+          <Comments key={post.fields.slug} term={post.fields.slug} />
 
           <footer className={styles.footer}>
             <Link to="/">← posts</Link>
