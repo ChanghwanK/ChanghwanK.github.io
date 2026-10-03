@@ -182,7 +182,7 @@ export const Head = ({ data }: HeadProps<BlogPostData>) => {
         description={post.frontmatter.description || post.excerpt}
         image={image}
         pathname={post.fields.slug}
-        ogType="article"
+        article={{ publishedTime: post.frontmatter.rawDate }}
       />
     </>
   )

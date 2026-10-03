@@ -1,5 +1,20 @@
 import type { GatsbyConfig } from "gatsby"
 
+interface SitemapQueryData {
+  allSitePage: { nodes: Array<{ path: string }> }
+  allMarkdownRemark: {
+    nodes: Array<{
+      fields: { slug: string }
+      frontmatter: { date: string | null }
+    }>
+  }
+}
+
+interface SitemapPage {
+  path: string
+  lastmod?: string
+}
+
 const config: GatsbyConfig = {
   siteMetadata: {
     title: `Aiden_`,
@@ -70,7 +85,58 @@ const config: GatsbyConfig = {
     },
     `gatsby-transformer-sharp`,
     `gatsby-plugin-sharp`,
-    `gatsby-plugin-sitemap`,
+    {
+      resolve: `gatsby-plugin-sitemap`,
+      options: {
+        // /blog는 예전 주소를 살리려고 홈 목록을 한 번 더 만든 별칭이라(gatsby-node.ts) canonical인 /만 남긴다.
+        // 404 페이지는 플러그인 기본 제외 목록에 이미 들어 있다.
+        excludes: [`/blog`],
+        query: `
+          {
+            site {
+              siteMetadata {
+                siteUrl
+              }
+            }
+            allSitePage {
+              nodes {
+                path
+              }
+            }
+            allMarkdownRemark {
+              nodes {
+                fields {
+                  slug
+                }
+                frontmatter {
+                  date
+                }
+              }
+            }
+          }
+        `,
+        // 글 페이지에만 게시일을 lastmod로 붙인다. 실제로 생성된 페이지(allSitePage)를 기준으로 합치므로
+        // 프로덕션에서 빠지는 writing 글은 frontmatter가 있어도 사이트맵에 나오지 않는다.
+        resolvePages: ({
+          allSitePage,
+          allMarkdownRemark,
+        }: SitemapQueryData): SitemapPage[] => {
+          const publishedDateBySlug = new Map(
+            allMarkdownRemark.nodes.map(node => [
+              node.fields.slug,
+              node.frontmatter.date,
+            ])
+          )
+          return allSitePage.nodes.map(({ path }) => ({
+            path,
+            lastmod: publishedDateBySlug.get(path) ?? undefined,
+          }))
+        },
+        // changefreq·priority는 Google이 읽지 않아 넣지 않는다 (플러그인 기본값은 daily·0.7).
+        serialize: ({ path, lastmod }: SitemapPage) =>
+          lastmod ? { url: path, lastmod } : { url: path },
+      },
+    },
     {
       resolve: `gatsby-plugin-manifest`,
       options: {
