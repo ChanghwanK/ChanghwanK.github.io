@@ -3,7 +3,7 @@
 
 // 측정과 표시 폰트가 다르면 노드 박스보다 글자가 넓어져 잘린다. 사이트 본문과 같은 폰트 목록을 쓴다.
 const FONT_FAMILY =
-  '"Noto Sans KR", "Apple SD Gothic Neo", "Nanum Barun Gothic", "Nanum Gothic", Verdana, Arial, "Malgun Gothic", Dotum, sans-serif'
+  '"Pretendard Variable", Pretendard, -apple-system, BlinkMacSystemFont, system-ui, "Apple SD Gothic Neo", "Malgun Gothic", sans-serif'
 
 const LIGHT_CONFIG = {
   theme: "base",
@@ -62,9 +62,10 @@ const DARK_CONFIG = {
   },
 }
 
-// 사이트가 gatsby-ssr.ts에서 불러오는 웹폰트와 같은 URL이다. 렌더링 브라우저에 이 폰트가 없으면
-// 다른 폰트로 박스 크기를 재서, 실제 페이지(Noto Sans KR)에서 라벨 끝이 잘린다 (실측).
+// 사이트 본문과 같은 폰트(Pretendard)를 렌더링 브라우저에 넣는다. 이 폰트가 없으면
+// 다른 폰트로 박스 크기를 재서, 실제 페이지에서 라벨 끝이 잘린다 (실측).
+// 측정용이라 빌드 중에만 내려받는다(방문자는 npm 패키지 사본을 받는다). package.json의 pretendard 버전과 맞춘다.
 const FONT_CSS_URL =
-  "https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@100..900&display=swap"
+  "https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css"
 
 module.exports = { LIGHT_CONFIG, DARK_CONFIG, FONT_CSS_URL }

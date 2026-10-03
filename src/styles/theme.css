@@ -1,7 +1,9 @@
 /* ─── Theme variables ────────────────────────────────────────── */
 :root {
-  --font-sans: "Noto Sans KR", "Apple SD Gothic Neo", "Nanum Barun Gothic",
-    "Nanum Gothic", Verdana, Arial, "Malgun Gothic", Dotum, sans-serif;
+  /* Pretendard는 npm 패키지에서 직접 서빙한다(gatsby-browser.ts). 웹폰트가 늦게 오면 OS 기본 한글 폰트로 먼저 그린다. */
+  --font-sans: "Pretendard Variable", Pretendard, -apple-system,
+    BlinkMacSystemFont, system-ui, "Apple SD Gothic Neo", "Malgun Gothic",
+    sans-serif;
   --font-serif: var(--font-sans);
   --font-mono: SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono",
     "Courier New", monospace;
