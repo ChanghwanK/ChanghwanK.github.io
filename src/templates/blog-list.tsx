@@ -1,6 +1,6 @@
 import * as React from "react"
 import { Link, graphql } from "gatsby"
-import type { PageProps } from "gatsby"
+import type { HeadProps, PageProps } from "gatsby"
 import { GatsbyImage, getImage } from "gatsby-plugin-image"
 import type { IGatsbyImageData } from "gatsby-plugin-image"
 import Layout from "../components/layout"
@@ -169,17 +169,20 @@ const BlogList = ({ data }: PageProps<BlogListData, BlogListPageContext>) => {
 }
 
 // 검색 결과에서 홈이 어떤 글을 모아 둔 곳인지 보이도록 실제 다루는 주제를 적는다.
-// siteMetadata.description을 바꾸지 않는 이유: RSS 채널 설명과 404 등 설명 없는 페이지의 기본값으로도 쓰여
-// 홈 문구를 다듬을 때마다 그쪽까지 함께 바뀌기 때문이다.
 const HOME_TITLE = "Kubernetes·Istio·AWS 플랫폼 엔지니어링 기록"
-const HOME_DESCRIPTION =
-  "Kubernetes, Istio·Envoy, AWS EKS 네트워킹을 중심으로 플랫폼 엔지니어링의 동작 원리와 문제 해결 과정을 기록하는 기술 블로그"
+
+// 홈 설명은 화면 상단 소개글(authorBio)을 그대로 쓴다. 본문에 보이는 문장과 같아야 소개글을 고칠 때
+// 함께 바뀌고, Google이 meta description 대신 본문 문장으로 바꿔 쓸 이유도 줄어든다.
+// siteMetadata.description을 쓰지 않는 이유: RSS 채널 설명과 404 등 설명 없는 페이지의 기본값으로도 쓰여
+// 홈 문구를 다듬을 때마다 그쪽까지 함께 바뀌기 때문이다.
+// 소개글의 \n은 화면 줄바꿈용이라 meta 태그에서는 공백 하나로 합친다.
+const toSingleLine = (text: string) => text.replace(/\s*\n\s*/g, " ").trim()
 
 // /blog 별칭도 canonical과 구조화 데이터(WebSite)는 /로 둬서 검색엔진이 홈 하나로 인식하게 한다.
-export const Head = () => (
+export const Head = ({ data }: HeadProps<BlogListData>) => (
   <Seo
     title={HOME_TITLE}
-    description={HOME_DESCRIPTION}
+    description={toSingleLine(data.site.siteMetadata.authorBio)}
     pathname="/"
     isSiteHome
   />
