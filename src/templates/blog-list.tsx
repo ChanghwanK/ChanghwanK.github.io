@@ -1,11 +1,8 @@
 import * as React from "react"
 import { Link, graphql } from "gatsby"
 import type { HeadProps, PageProps } from "gatsby"
-import { GatsbyImage, getImage } from "gatsby-plugin-image"
-import type { IGatsbyImageData } from "gatsby-plugin-image"
 import Layout from "../components/layout"
 import ProfileHeader from "../components/home/profile-header"
-import PostTags from "../components/post-tags"
 import Seo from "../components/seo"
 import * as styles from "./blog-list.module.css"
 
@@ -15,16 +12,8 @@ interface PostNode {
     title: string
     date: string
     rawDate: string
-    description: string | null
     status: string | null
-    tags: string[] | null
-    thumbnail: {
-      childImageSharp: {
-        gatsbyImageData: IGatsbyImageData
-      }
-    } | null
   }
-  excerpt: string
 }
 
 interface BlogListData {
@@ -48,7 +37,8 @@ interface BlogListPageContext {
 
 // 한 번에 그리는 글 수. 첫 묶음만 정적 HTML에 들어가고, 나머지는 스크롤이 목록 끝에 닿을 때마다 붙인다.
 // 검색엔진은 gatsby-plugin-sitemap으로 나머지 글을 찾으므로 첫 묶음 밖의 글도 색인된다.
-const POSTS_PER_BATCH = 6
+// 한 줄짜리 목록이라 한 화면에 20개 안팎이 들어간다.
+const POSTS_PER_BATCH = 20
 
 // 화면 아래 끝보다 이만큼 먼저 다음 묶음을 붙여, 스크롤이 목록 끝에서 멈칫하지 않게 한다.
 const PRELOAD_MARGIN = "400px"
@@ -82,51 +72,26 @@ const useInfiniteReveal = (total: number) => {
   return { visibleCount, hasMore, sentinelRef }
 }
 
+// 목록은 제목·읽는 시간과 날짜만 한 줄로 보여준다. 요약·썸네일·태그를 빼서 글 수가 늘어도 한눈에 훑을 수 있게 한다.
 const PostListItem = ({ post }: { post: PostNode }) => {
-  const { title, date, rawDate, description, status, tags, thumbnail } =
-    post.frontmatter
+  const { title, date, rawDate, status } = post.frontmatter
   const { slug, readingMinutes } = post.fields
-  const thumbnailImage = getImage(thumbnail)
 
   return (
-    <article className={styles.postItem}>
+    <li>
       <Link to={slug} className={styles.postLink}>
-        {/* 썸네일이 없어도 자리는 남겨, 모든 글의 제목·요약 폭이 같은 오른쪽 선에서 끝나게 한다. */}
-        <div className={styles.thumbnailWrapper} aria-hidden={!thumbnailImage}>
-          {thumbnailImage && (
-            <GatsbyImage
-              image={thumbnailImage}
-              alt={title}
-              className={styles.thumbnail}
-              style={{ width: "100%", height: "100%" }}
-              imgStyle={{
-                objectFit: "contain",
-                objectPosition: "center",
-              }}
-            />
+        <span className={styles.postTitle}>
+          {title}
+          <span className={styles.readingTime}>{readingMinutes}분</span>
+          {status === "writing" && (
+            <span className={styles.statusBadge}>{status}</span>
           )}
-        </div>
-        <div className={styles.postContent}>
-          <h2 className={styles.postTitle}>{title}</h2>
-          <p className={styles.postExcerpt}>{description || post.excerpt}</p>
-          <div className={styles.metaContainer}>
-            <time className={styles.date} dateTime={rawDate}>
-              {date}
-            </time>
-            <span className={styles.metaSeparator} aria-hidden="true">
-              ·
-            </span>
-            <span className={styles.readingTime}>{readingMinutes}분</span>
-            {status === "writing" && (
-              <span className={`${styles.statusBadge} ${styles.statusWriting}`}>
-                {status}
-              </span>
-            )}
-            <PostTags tags={tags} className={styles.tags} />
-          </div>
-        </div>
+        </span>
+        <time className={styles.date} dateTime={rawDate}>
+          {date}
+        </time>
       </Link>
-    </article>
+    </li>
   )
 }
 
@@ -134,9 +99,7 @@ const BlogList = ({ data }: PageProps<BlogListData, BlogListPageContext>) => {
   const posts = data.allMarkdownRemark.nodes
   const { authorName, authorTagline, authorBio, githubUrl, linkedInUrl } =
     data.site.siteMetadata
-  const { visibleCount, hasMore, sentinelRef } = useInfiniteReveal(
-    posts.length
-  )
+  const { visibleCount, hasMore, sentinelRef } = useInfiniteReveal(posts.length)
 
   return (
     <Layout>
@@ -150,17 +113,19 @@ const BlogList = ({ data }: PageProps<BlogListData, BlogListPageContext>) => {
             linkedInUrl={linkedInUrl}
           />
           <h2 className={styles.sectionLabel}>Posts</h2>
-          <div className={styles.postList}>
+          <ul className={styles.postList}>
             {posts.length === 0 ? (
-              <p className={styles.emptyState}>
+              <li className={styles.emptyState}>
                 아직 공개된 포스트가 없습니다.
-              </p>
+              </li>
             ) : (
               posts
                 .slice(0, visibleCount)
-                .map(post => <PostListItem key={post.fields.slug} post={post} />)
+                .map(post => (
+                  <PostListItem key={post.fields.slug} post={post} />
+                ))
             )}
-          </div>
+          </ul>
           {hasMore && <div ref={sentinelRef} aria-hidden="true" />}
         </div>
       </div>
@@ -212,23 +177,10 @@ export const query = graphql`
         }
         frontmatter {
           title
-          date(formatString: "YYYY년 MM월 DD일")
+          date(formatString: "YY. M. D.")
           rawDate: date
-          description
           status
-          tags
-          thumbnail {
-            childImageSharp {
-              gatsbyImageData(
-                width: 200
-                height: 200
-                placeholder: BLURRED
-                formats: [AUTO, WEBP]
-              )
-            }
-          }
         }
-        excerpt(pruneLength: 200)
       }
     }
   }
