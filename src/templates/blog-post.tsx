@@ -139,11 +139,24 @@ const BlogPostTemplate = ({ data }: PageProps<BlogPostData>) => {
             />
           </aside>
         )}
-        <nav className={styles.pageNav} aria-label="브레드크럼">
-          <Link to="/" className={styles.navHome}>
-            Aiden_
-          </Link>
-        </nav>
+        {/* 글 제목이 페이지 맨 위에 오도록 홈 링크는 본문 흐름 밖, 페이지 왼쪽 위 구석에 둔다. */}
+        <Link to="/" className={styles.homeLink} aria-label="홈">
+          <svg
+            width="24"
+            height="24"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="1.6"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            aria-hidden="true"
+          >
+            <path d="M3 10.5 12 3l9 7.5" />
+            <path d="M5 9v11h14V9" />
+            <path d="M10 20v-6h4v6" />
+          </svg>
+        </Link>
         <article className={styles.article}>
           <header className={styles.header}>
             <h1 className={styles.title}>{title}</h1>

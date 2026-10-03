@@ -1,43 +1,34 @@
 /* ─── Page root ─────────────────────────────────────────────── */
 .darkPage {
   /* 브레드크럼과 본문이 같은 세로선에 맞아야 하므로 폭은 한 곳에서만 정한다. */
-  --post-width: 680px;
+  /* 홈 목록(blog-list .container)과 같은 폭이라 홈에서 글로 넘어가도 왼쪽 시작선이 그대로다. */
+  --post-width: 608px;
   /* 그림은 글보다 넓게 들어간다. 글은 읽기 좋은 폭을 지키고, 다이어그램은 글자가 읽힐 만큼 커야 하기 때문이다.
      gatsby-config.ts의 gatsby-remark-images maxWidth와 같은 값이어야 한다. */
   --figure-wide-width: 820px;
 
+  position: relative;
   min-height: 100vh;
   background: var(--bg-page);
-  padding: 3.5rem 1.5rem 8rem;
+  /* 제목이 첫 화면 위쪽에 오도록 홈 아이콘(왼쪽 위 구석) 바로 아래 높이에서 시작한다. */
+  padding: 4rem 1.5rem 8rem;
 }
 
-/* ─── Page nav ───────────────────────────────────────────────── */
-/* 구분선 위(브레드크럼 → 선)와 아래(선 → 제목)의 간격을 같은 1.25rem으로 맞춘다.
-   line-height를 좁혀 글자 위아래 여백이 간격에 섞이지 않게 한다 (제목도 1.25라 반행간 차이는 1px 안쪽). */
-.pageNav {
-  max-width: var(--post-width);
-  margin: 0 auto 1.25rem;
+/* ─── Home link ─────────────────────────────────────────────── */
+/* 왼쪽 위 구석에 둔다. 창 모서리에 붙어 보이지 않게 위쪽보다 왼쪽 여백을 넓게 둔다.
+   fixed가 아니라 absolute라 스크롤하면 함께 올라가 본문을 가리지 않는다. */
+.homeLink {
+  position: absolute;
+  top: 1.25rem;
+  left: 2.5rem;
   display: flex;
-  align-items: center;
-  gap: 0.6rem;
-  font-size: 1.5rem;
-  line-height: 1.2;
-}
-
-.navHome {
-  color: var(--text-hover-strong);
-  text-decoration: none;
+  padding: 0.25rem;
+  color: var(--text-faint);
   transition: color 0.15s ease;
-  font-weight: 400;
 }
 
-.navHome:hover {
-  color: var(--text-hover);
-  text-decoration: none;
-}
-
-.navCurrent {
-  color: var(--text-secondary);
+.homeLink:hover {
+  color: var(--text-hover-strong);
 }
 
 /* ─── Article ────────────────────────────────────────────────── */
@@ -48,11 +39,10 @@
 }
 
 /* ─── Header ─────────────────────────────────────────────────── */
+/* 위에 브레드크럼이 없어 제목이 페이지 첫 줄이다. 아래 구분선만 남겨 머리말과 본문을 나눈다. */
 .header {
   margin-bottom: 2rem;
-  border-top: 1px solid var(--border-subtle);
   border-bottom: 1px solid var(--border-subtle);
-  padding-top: 1.25rem;
   padding-bottom: 1.25rem;
 }
 
@@ -682,10 +672,10 @@
   border-left-color: var(--toc-marker-active);
 }
 
-/* 1496px = 2 * (본문 절반 340 + 간격 194 + 목차 하한 200 + 여백 14).
-   간격 194는 넓은 그림이 940px이던 때(본문 왼쪽으로 130px 넘어옴) 목차와 64px 떨어지게 잡은 값이다. 지금(820px, 70px 넘어옴)은 124px 떨어진다.
+/* 1424px = 2 * (본문 절반 304 + 간격 194 + 목차 하한 200 + 여백 14).
+   간격 194는 넓은 그림이 940px이던 때(본문 왼쪽으로 130px 넘어옴) 목차와 64px 떨어지게 잡은 값이다. 지금(820px, 106px 넘어옴)은 88px 떨어진다.
    이보다 좁으면 목차가 하한 폭으로도 본문 왼쪽에 들어가지 않는다. --post-width나 --toc-gap을 바꾸면 함께 고친다. */
-@media (max-width: 1496px) {
+@media (max-width: 1424px) {
   .toc {
     display: none;
   }
@@ -693,7 +683,12 @@
 
 @media (max-width: 600px) {
   .darkPage {
-    padding: 2.5rem 1.25rem 6rem;
+    padding: 3.5rem 1.25rem 6rem;
+  }
+
+  .homeLink {
+    top: 1rem;
+    left: 1.25rem;
   }
 
   .title {
