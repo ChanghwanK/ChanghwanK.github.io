@@ -67,3 +67,7 @@ yarn-error.log
 .pnp.js
 # Yarn Integrity file
 .yarn-integrity
+
+# 로컬 다이어그램 작업물 (diagram-design 스킬 설정, 초안 html/png)
+.diagram-design
+diagrams/
