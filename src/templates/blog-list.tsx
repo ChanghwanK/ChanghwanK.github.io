@@ -31,8 +31,8 @@ interface BlogListData {
   site: {
     siteMetadata: {
       authorName: string
+      authorTagline: string
       authorBio: string
-      authorHandle: string
       githubUrl: string
       linkedInUrl: string
     }
@@ -132,7 +132,7 @@ const PostListItem = ({ post }: { post: PostNode }) => {
 
 const BlogList = ({ data }: PageProps<BlogListData, BlogListPageContext>) => {
   const posts = data.allMarkdownRemark.nodes
-  const { authorName, authorBio, authorHandle, githubUrl, linkedInUrl } =
+  const { authorName, authorTagline, authorBio, githubUrl, linkedInUrl } =
     data.site.siteMetadata
   const { visibleCount, hasMore, sentinelRef } = useInfiniteReveal(
     posts.length
@@ -144,8 +144,8 @@ const BlogList = ({ data }: PageProps<BlogListData, BlogListPageContext>) => {
         <div className={styles.container}>
           <ProfileHeader
             name={authorName}
+            tagline={authorTagline}
             bio={authorBio}
-            handle={authorHandle}
             githubUrl={githubUrl}
             linkedInUrl={linkedInUrl}
           />
@@ -193,8 +193,8 @@ export const query = graphql`
     site {
       siteMetadata {
         authorName
+        authorTagline
         authorBio
-        authorHandle
         githubUrl
         linkedInUrl
       }

@@ -17,17 +17,19 @@ interface SitemapPage {
 
 const config: GatsbyConfig = {
   siteMetadata: {
-    title: `Aiden_`,
+    title: `Aiden's 기술 블로그`,
     description: `개인 기술 블로그`,
     author: `@changhwanK`,
     siteUrl: `https://dev.k10n.me`,
     authorName: `Aiden_`,
+    // 홈 상단 한 줄 소개. authorName은 구조화 데이터(BlogPosting author.name)에도 쓰이므로 문구를 따로 둔다.
+    authorTagline: `정답을 쫓기보다, 정답을 만들어 갑니다.`,
     authorRole: `DevOps Engineer`,
     authorHandle: `@changhwanK`,
     githubUrl: `https://github.com/changhwanK`,
     linkedInUrl: `https://www.linkedin.com/in/changhwan-kim-767139219/`,
     // authorBio: `올해로 5년 차가 된 DevOps 엔지니어 김창환입니다. 현재 Ad Tech 교육 도메인에서 AWS EKS 기반 Kubernetes 플랫폼을 운영하고 있습니다. \n 장애나 성능 저하가 생기면 커널과 네트워크 수준의 동작 원리까지 따라가 근본 원인을 찾고, 장애 자동 복구 시스템 설계와 아키텍처 개선, 자동화와 표준화로 같은 문제가 다시 생기지 않도록 재발 방지책을 마련해 왔습니다.`,
-    authorBio: `현재 Platform Engineer로 일하고 있으며 쿠버네티스와 성능 문제에 관심이 많습니다. \n 이 블로그에서는 주로 공부하며 알게 된 것들과 문제 해결 과정 및 고민들을 기록합니다.`,
+    authorBio: `안녕하세요 현재 Platform Engineer로 일하고 있는 Aiden(김창환)입니다. 저는 쿠버네티스와 성능 문제에 관심이 많으며 이 블로그는 고민들을 머릿속의 물음표가 느낌표가 되는 과정을 기록합니다.`,
     techStack: [`Kubernetes`, `AWS`, `Terraform`, `Docker`, `Istio`, `ArgoCD`],
   },
   plugins: [

@@ -1,12 +1,12 @@
 /* 헤더 아래 여백. 그 아래 blog-list의 "Posts" 라벨이 목록의 시작을 알린다. */
 .avatarRow {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   gap: 1.25rem;
   padding-bottom: 3rem;
 }
 
-/* 텍스트 묶음(이름 줄 + 소개글 두 줄) 높이와 같게 맞춰, 아바타 위아래 끝이 이름 윗선·소개글 아랫선과 나란히 서게 한다. */
+/* 위쪽 정렬로 아바타 윗선을 한 줄 소개 윗선에 맞춘다. 소개글 줄 수가 바뀌어도 아바타 위치가 흔들리지 않는다. */
 .avatar {
   display: block;
   width: 72px;
@@ -25,29 +25,27 @@
   min-width: 0;
   display: flex;
   flex-direction: column;
-  gap: 0.35rem;
-}
-
-.nameRow {
-  display: flex;
-  align-items: baseline;
   gap: 0.5rem;
-  line-height: 1;
 }
 
-/* 글 상세 페이지 브레드크럼의 "Aiden_"(blog-post.module.css .navHome)과 굵기·색·자간을 같게 해서
-   두 화면의 이름이 같은 글자로 보이게 한다. 크기만 헤더 안 균형을 위해 브레드크럼(1.5rem)보다 작게 둔다. */
-.name {
+.taglineRow {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+/* 홈의 페이지 제목(h1)이다. 최근 글 제목 굵기를 400으로 낮춘 흐름에 맞춰 크기로만 위계를 만들고,
+   한글 문장이 넓어 보이지 않도록 자간을 조금 좁힌다. */
+.tagline {
   margin: 0;
   color: var(--text-hover-strong);
-  font-size: 1.4rem;
+  font-size: 1.375rem;
   font-weight: 400;
-}
-
-/* 소개글과 같은 크기를 쓴다. 0.9rem/0.875rem처럼 거의 같은 두 크기는 의도가 아니라 실수로 읽힌다. */
-.handle {
-  color: var(--text-faint);
-  font-size: 0.875rem;
+  line-height: 1.35;
+  letter-spacing: -0.01em;
+  word-break: keep-all;
+  /* 좁은 화면에서 줄이 꺾일 때 마지막 어절만 홀로 남지 않게 줄 길이를 고르게 나눈다. */
+  text-wrap: balance;
 }
 
 .bio {
@@ -65,11 +63,9 @@
   word-break: keep-all;
 }
 
-/* 이름 줄은 글자 기준선 정렬이라 아이콘만 세로 가운데로 뺀다.
-   아이콘 칸(28px)은 클릭 영역이라 유지하되, 글리프(16px) 둘레 여백 6px을 음수 마진으로 상쇄해
-   이름 줄 높이를 늘리지 않고, 글리프 오른쪽 끝을 본문 오른쪽 끝(썸네일)에 맞춘다. */
+/* 아이콘 칸(28px)은 클릭 영역이라 유지하되, 글리프(16px) 둘레 여백 6px을 음수 마진으로 상쇄해
+   한 줄 소개 줄 높이를 늘리지 않고, 글리프 오른쪽 끝을 본문 오른쪽 끝(썸네일)에 맞춘다. */
 .socialLinks {
-  align-self: center;
   flex-shrink: 0;
   margin: -6px -6px -6px auto;
 }
@@ -77,5 +73,9 @@
 @media (max-width: 600px) {
   .avatarRow {
     padding-bottom: 1.75rem;
+  }
+
+  .tagline {
+    font-size: 1.2rem;
   }
 }

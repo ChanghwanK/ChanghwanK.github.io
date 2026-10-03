@@ -5,16 +5,16 @@ import * as styles from "./profile-header.module.css"
 
 interface ProfileHeaderProps {
   name: string
+  tagline: string
   bio: string
-  handle: string
   githubUrl: string
   linkedInUrl: string
 }
 
 const ProfileHeader = ({
   name,
+  tagline,
   bio,
-  handle,
   githubUrl,
   linkedInUrl,
 }: ProfileHeaderProps) => {
@@ -32,10 +32,9 @@ const ProfileHeader = ({
         className={styles.avatar}
       />
       <div className={styles.profileInfo}>
-        <div className={styles.nameRow}>
-          <span className={styles.name}>{name}</span>
-          <span className={styles.handle}>{handle}</span>
-          {/* 이름 줄 안에 두어 아이콘의 세로 중심을 이름에 맞추고, 소개글이 아이콘 아래까지 펼쳐지게 한다. */}
+        <div className={styles.taglineRow}>
+          <h1 className={styles.tagline}>{tagline}</h1>
+          {/* 한 줄 소개 줄 안에 두어 아이콘의 세로 중심을 그 줄에 맞추고, 소개글이 아이콘 아래까지 펼쳐지게 한다. */}
           <div className={styles.socialLinks}>
             <SocialLinks githubUrl={githubUrl} linkedInUrl={linkedInUrl} />
           </div>
