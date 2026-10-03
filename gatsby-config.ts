@@ -29,7 +29,7 @@ const config: GatsbyConfig = {
     githubUrl: `https://github.com/changhwanK`,
     linkedInUrl: `https://www.linkedin.com/in/changhwan-kim-767139219/`,
     // authorBio: `올해로 5년 차가 된 DevOps 엔지니어 김창환입니다. 현재 Ad Tech 교육 도메인에서 AWS EKS 기반 Kubernetes 플랫폼을 운영하고 있습니다. \n 장애나 성능 저하가 생기면 커널과 네트워크 수준의 동작 원리까지 따라가 근본 원인을 찾고, 장애 자동 복구 시스템 설계와 아키텍처 개선, 자동화와 표준화로 같은 문제가 다시 생기지 않도록 재발 방지책을 마련해 왔습니다.`,
-    authorBio: `안녕하세요, Platform Engineer Aiden(김창환)입니다. 쿠버네티스와 성능 문제에 관심이 많고, 이 블로그에는 머릿속의 물음표가 느낌표가 되는 과정을 기록합니다.`,
+    authorBio: `안녕하세요, Platform Engineer Aiden(김창환)입니다. 쿠버네티스 생태계에 관심이 많으며, 물음표가 느낌표가 되는 과정을 기록합니다.`,
     techStack: [`Kubernetes`, `AWS`, `Terraform`, `Docker`, `Istio`, `ArgoCD`],
   },
   plugins: [
