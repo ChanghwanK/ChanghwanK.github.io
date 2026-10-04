@@ -156,6 +156,10 @@
   margin-bottom: 0.5rem;
 }
 
+.content h4 {
+  font-weight: 600;
+}
+
 .content a {
   color: var(--text-link);
   text-decoration: underline;
