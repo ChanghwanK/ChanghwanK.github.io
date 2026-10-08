@@ -1,0 +1,31 @@
+.nav {
+  display: flex;
+  gap: 1.25rem;
+  margin-bottom: 3.5rem;
+}
+
+.link {
+  color: var(--text-faint);
+  font-size: 0.95rem;
+  font-weight: 400;
+  text-decoration: none;
+  transition: color 0.15s ease;
+}
+
+.link:hover {
+  color: var(--text-hover-strong);
+  text-decoration: none;
+}
+
+/* 현재 페이지는 색을 진하게 하고 밑줄을 글자 아래로 내려 한글 받침과 겹치지 않게 한다. */
+.active {
+  color: var(--text-code);
+  text-decoration: underline;
+  text-underline-position: under;
+}
+
+@media (max-width: 600px) {
+  .nav {
+    margin-bottom: 2.5rem;
+  }
+}

@@ -1,0 +1,111 @@
+/* ─── Post List ─────────────────────────────────────────────── */
+.postList {
+  list-style: none;
+  margin: 1rem 0 0;
+  padding: 0;
+}
+
+.emptyState {
+  color: var(--text-ghost);
+  padding: 2rem 0;
+  text-align: center;
+}
+
+/* 구분선 없이 줄 간격만으로 글을 나눈다. 제목 한 줄이라 선이 있으면 목록보다 선이 먼저 읽힌다. */
+.postLink {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1.5rem;
+  padding: 0.7rem 0;
+  color: inherit;
+  text-decoration: none;
+}
+
+.postLink:hover {
+  text-decoration: none;
+}
+
+.postTitle {
+  min-width: 0;
+  color: var(--text-code);
+  font-size: 1.125rem;
+  font-weight: 300;
+  letter-spacing: -0.01em;
+  line-height: 1.5;
+  /* 좁은 화면에서 한글 제목이 단어 중간에서 끊기지 않게 어절 단위로 줄을 바꾼다. */
+  word-break: keep-all;
+}
+
+/* 색은 그대로 두고 밑줄만 긋는다. 한 줄 목록에서 색까지 바뀌면 hover한 줄만 튀어 보인다.
+   밑줄을 글자 아래(under)로 내려 한글 받침과 겹치지 않게 한다. */
+.postLink:hover .postTitle {
+  text-decoration: underline from-font var(--text-dim);
+  text-underline-position: under;
+}
+
+/* 날짜는 오른쪽 끝에 붙이고 자릿수를 고정폭으로 맞춰, 위아래 날짜의 끝선이 가지런하게 한다. */
+.date {
+  flex-shrink: 0;
+  color: var(--text-faint);
+  font-size: 0.9rem;
+  font-weight: 400;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+/* 읽는 시간은 제목에 딸린 보조 정보라 날짜보다 작고 흐리게 둔다. 제목 hover 밑줄이 여기까지 이어지지 않게 끊는다. */
+.readingTime {
+  display: inline-block;
+  margin-left: 0.5rem;
+  color: var(--text-ghost);
+  font-size: 0.75rem;
+  font-variant-numeric: tabular-nums;
+}
+
+/* ─── Status Badge ──────────────────────────────────────────── */
+/* writing 글은 로컬 develop에서만 보인다. 목록의 단색 톤을 깨지 않게 배경 없는 작은 글자로만 표시한다. */
+.statusBadge {
+  display: inline-block;
+  margin-left: 0.5rem;
+  color: var(--text-ghost);
+  font-size: 0.7rem;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+/* ─── Compact ────────────────────────────────────────────────── */
+.compact .postLink {
+  padding: 0.45rem 0;
+}
+
+.compact .postTitle {
+  font-size: 0.95rem;
+}
+
+.compact .date {
+  font-size: 0.8rem;
+}
+
+/* ─── Responsive ─────────────────────────────────────────────── */
+@media (max-width: 600px) {
+  .postLink {
+    gap: 1rem;
+  }
+
+  .postTitle {
+    font-size: 1rem;
+  }
+
+  .date {
+    font-size: 0.8rem;
+  }
+
+  .compact .postTitle {
+    font-size: 0.9rem;
+  }
+
+  .compact .date {
+    font-size: 0.75rem;
+  }
+}

@@ -1,4 +1,4 @@
-/* 헤더 아래 여백. 그 아래 blog-list의 "Posts" 라벨이 목록의 시작을 알린다. */
+/* 헤더 아래 여백. 그 아래 홈의 "Recent Posts" 제목이 최근 글 목록의 시작을 알린다. */
 .avatarRow {
   display: flex;
   align-items: flex-start;

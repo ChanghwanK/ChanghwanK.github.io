@@ -176,14 +176,10 @@ export const createPages: GatsbyNode["createPages"] = async ({
     validStatuses: isDev ? ["deploy", "writing"] : ["deploy"],
   }
 
-  // 홈(/)이 곧 포스트 목록이다.
-  // 예전 목록 주소(/blog)로 들어오는 외부 링크를 깨뜨리지 않도록 같은 목록을 한 번 더 만든다.
-  // GitHub Pages는 서버 리다이렉트가 없어서다. canonical은 템플릿에서 /로 둔다.
-  for (const listPath of [`/`, `/blog`]) {
-    createPage({
-      path: listPath,
-      component: path.resolve("./src/templates/blog-list.tsx"),
-      context: listPageContext,
-    })
-  }
+  // 홈(/)은 프로필과 최근 글만 싣는 src/pages/index.tsx이고, 전체 글 목록은 /blog 한 곳에만 만든다.
+  createPage({
+    path: `/blog`,
+    component: path.resolve("./src/templates/blog-list.tsx"),
+    context: listPageContext,
+  })
 }

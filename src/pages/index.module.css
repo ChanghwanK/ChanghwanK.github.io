@@ -1,23 +1,38 @@
 /* ─── Page root ─────────────────────────────────────────────── */
-/* 홈(src/pages/index.module.css)과 같은 여백·폭이라 상단 메뉴로 오가도 메뉴와 목록의 위치가 그대로다. */
+/* 글 목록(blog-list)과 같은 여백·폭이라 상단 메뉴로 오가도 메뉴와 목록의 위치가 그대로다. */
 .darkPage {
   min-height: 100vh;
   background: var(--bg-page);
   padding: 3rem 1.5rem 5rem;
 }
 
-/* 제목과 날짜가 한 줄에 놓이는 목록이라 폭이 넓으면 둘 사이가 벌어져 한 줄로 읽히지 않는다. */
 .container {
   max-width: 608px;
   margin: 0 auto;
 }
 
-/* 홈의 "Recent Posts"와 같은 모양이라, 홈에서 넘어와도 같은 목록이 이어지는 것으로 읽힌다. */
+/* 프로필 아래 곁들이는 구획이라 /blog의 "Posts" 제목보다 한 단계 작게 둔다. */
 .sectionLabel {
   margin: 0;
   color: var(--text-code);
-  font-size: 1.05rem;
+  font-size: 0.9rem;
   font-weight: 500;
+}
+
+/* 최근 글 목록 끝에서 전체 목록으로 넘어가는 링크. 목록 날짜와 같은 오른쪽 끝선에 맞춘다. */
+.moreLink {
+  display: block;
+  margin-top: 0.75rem;
+  color: var(--text-faint);
+  font-size: 0.8rem;
+  text-align: right;
+  text-decoration: none;
+  transition: color 0.15s ease;
+}
+
+.moreLink:hover {
+  color: var(--text-hover-strong);
+  text-decoration: none;
 }
 
 /* ─── Responsive ─────────────────────────────────────────────── */

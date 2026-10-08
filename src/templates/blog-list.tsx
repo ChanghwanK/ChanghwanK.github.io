@@ -1,33 +1,16 @@
 import * as React from "react"
-import { Link, graphql } from "gatsby"
-import type { HeadProps, PageProps } from "gatsby"
+import { graphql } from "gatsby"
+import type { PageProps } from "gatsby"
 import Layout from "../components/layout"
-import ProfileHeader from "../components/home/profile-header"
+import PostList from "../components/post-list"
+import type { PostListNode } from "../components/post-list"
+import SiteNav from "../components/site-nav"
 import Seo from "../components/seo"
 import * as styles from "./blog-list.module.css"
 
-interface PostNode {
-  fields: { slug: string; readingMinutes: number }
-  frontmatter: {
-    title: string
-    date: string
-    rawDate: string
-    status: string | null
-  }
-}
-
 interface BlogListData {
-  site: {
-    siteMetadata: {
-      authorName: string
-      authorTagline: string
-      authorBio: string
-      githubUrl: string
-      linkedInUrl: string
-    }
-  }
   allMarkdownRemark: {
-    nodes: PostNode[]
+    nodes: PostListNode[]
   }
 }
 
@@ -72,60 +55,17 @@ const useInfiniteReveal = (total: number) => {
   return { visibleCount, hasMore, sentinelRef }
 }
 
-// 목록은 제목·읽는 시간과 날짜만 한 줄로 보여준다. 요약·썸네일·태그를 빼서 글 수가 늘어도 한눈에 훑을 수 있게 한다.
-const PostListItem = ({ post }: { post: PostNode }) => {
-  const { title, date, rawDate, status } = post.frontmatter
-  const { slug, readingMinutes } = post.fields
-
-  return (
-    <li>
-      <Link to={slug} className={styles.postLink}>
-        <span className={styles.postTitle}>
-          {title}
-          <span className={styles.readingTime}>{readingMinutes}분</span>
-          {status === "writing" && (
-            <span className={styles.statusBadge}>{status}</span>
-          )}
-        </span>
-        <time className={styles.date} dateTime={rawDate}>
-          {date}
-        </time>
-      </Link>
-    </li>
-  )
-}
-
 const BlogList = ({ data }: PageProps<BlogListData, BlogListPageContext>) => {
   const posts = data.allMarkdownRemark.nodes
-  const { authorName, authorTagline, authorBio, githubUrl, linkedInUrl } =
-    data.site.siteMetadata
   const { visibleCount, hasMore, sentinelRef } = useInfiniteReveal(posts.length)
 
   return (
     <Layout>
       <div className={styles.darkPage}>
         <div className={styles.container}>
-          <ProfileHeader
-            name={authorName}
-            tagline={authorTagline}
-            bio={authorBio}
-            githubUrl={githubUrl}
-            linkedInUrl={linkedInUrl}
-          />
-          <h2 className={styles.sectionLabel}>Posts</h2>
-          <ul className={styles.postList}>
-            {posts.length === 0 ? (
-              <li className={styles.emptyState}>
-                아직 공개된 포스트가 없습니다.
-              </li>
-            ) : (
-              posts
-                .slice(0, visibleCount)
-                .map(post => (
-                  <PostListItem key={post.fields.slug} post={post} />
-                ))
-            )}
-          </ul>
+          <SiteNav />
+          <h1 className={styles.sectionLabel}>Posts</h1>
+          <PostList posts={posts.slice(0, visibleCount)} />
           {hasMore && <div ref={sentinelRef} aria-hidden="true" />}
         </div>
       </div>
@@ -133,37 +73,17 @@ const BlogList = ({ data }: PageProps<BlogListData, BlogListPageContext>) => {
   )
 }
 
-// 검색 결과에서 홈이 어떤 글을 모아 둔 곳인지 보이도록 실제 다루는 주제를 적는다.
-const HOME_TITLE = "Kubernetes·Istio·AWS 플랫폼 엔지니어링 기록"
-
-// 홈 설명은 화면 상단 소개글(authorBio)을 그대로 쓴다. 본문에 보이는 문장과 같아야 소개글을 고칠 때
-// 함께 바뀌고, Google이 meta description 대신 본문 문장으로 바꿔 쓸 이유도 줄어든다.
-// siteMetadata.description을 쓰지 않는 이유: RSS 채널 설명과 404 등 설명 없는 페이지의 기본값으로도 쓰여
-// 홈 문구를 다듬을 때마다 그쪽까지 함께 바뀌기 때문이다.
-// 소개글의 \n은 화면 줄바꿈용이라 meta 태그에서는 공백 하나로 합친다.
-const toSingleLine = (text: string) => text.replace(/\s*\n\s*/g, " ").trim()
-
-// /blog 별칭도 canonical과 구조화 데이터(WebSite)는 /로 둬서 검색엔진이 홈 하나로 인식하게 한다.
-export const Head = ({ data }: HeadProps<BlogListData>) => (
+// 프로필은 홈(/)에 있고 이 페이지는 글 목록만 싣는다. 검색 결과에서 무엇을 모아 둔 목록인지 보이도록 주제를 적는다.
+export const Head = () => (
   <Seo
-    title={HOME_TITLE}
-    description={toSingleLine(data.site.siteMetadata.authorBio)}
-    pathname="/"
-    isSiteHome
+    title="Posts"
+    description="Kubernetes·Istio·AWS 플랫폼 엔지니어링을 다룬 글 전체 목록."
+    pathname="/blog"
   />
 )
 
 export const query = graphql`
   query blogListQuery($validStatuses: [String]!) {
-    site {
-      siteMetadata {
-        authorName
-        authorTagline
-        authorBio
-        githubUrl
-        linkedInUrl
-      }
-    }
     allMarkdownRemark(
       sort: { frontmatter: { date: DESC } }
       filter: {

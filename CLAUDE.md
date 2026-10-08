@@ -36,8 +36,8 @@ content/posts/**/*.md → gatsby-source-filesystem → GraphQL → React 컴포�
 
 ### 라우팅
 
-- `/` — 프로필 홈 (bio, career, social links). `src/pages/index.js`의 `CAREER` 상수와 `gatsby-config.js`의 `siteMetadata`로 구성.
-- `/blog` — 포스트 목록 (6개/페이지 페이지네이션)
+- `/` — 홈: 상단 메뉴(Home · Posts) + 프로필 + Recent Posts 5개 (`src/pages/index.tsx`, 프로필은 `gatsby-config.ts`의 `siteMetadata`). 최근 글은 개발 환경에서도 `deploy` 글만 보인다.
+- `/blog` — 전체 포스트 목록 (`src/templates/blog-list.tsx`, 무한 스크롤). 목록 한 줄 모양은 `src/components/post-list.tsx`를 홈과 공유한다.
 - `/about` — About 페이지 (`src/pages/about.js`)
 
 ### 블로그 포스트 구조

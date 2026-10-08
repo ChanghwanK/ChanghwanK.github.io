@@ -90,9 +90,7 @@ const config: GatsbyConfig = {
     {
       resolve: `gatsby-plugin-sitemap`,
       options: {
-        // /blog는 예전 주소를 살리려고 홈 목록을 한 번 더 만든 별칭이라(gatsby-node.ts) canonical인 /만 남긴다.
         // 404 페이지는 플러그인 기본 제외 목록에 이미 들어 있다.
-        excludes: [`/blog`],
         query: `
           {
             site {

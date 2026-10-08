@@ -180,7 +180,7 @@ const BlogPostTemplate = ({ data }: PageProps<BlogPostData>) => {
           <Comments key={post.fields.slug} term={post.fields.slug} />
 
           <footer className={styles.footer}>
-            <Link to="/">← posts</Link>
+            <Link to="/blog">← posts</Link>
           </footer>
         </article>
       </div>
