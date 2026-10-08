@@ -10,8 +10,8 @@
   --line-height-normal: 1.5;
   --size-content: 760px;
 
-  /* Backgrounds: 종이처럼 아주 옅은 회색 바탕 위에 요소의 깊이만 한 단계씩 더한다. */
-  --bg-page: #fcfcfb;
+  /* Backgrounds: 흰 바탕 위에 요소의 깊이만 아주 옅은 회색으로 한 단계씩 더한다. */
+  --bg-page: #ffffff;
   --bg-elevated: #f7f7f6;
   --bg-card: #f2f2f1;
   --bg-code: #f5f5f4;
@@ -26,19 +26,19 @@
   --border-blockquote: #d4d4d4;
 
   /* Text: display and headings */
-  --text-display: #1a1a1a;
-  --text-primary: #222222;
-  --text-h1: #1a1a1a;
-  --text-h2: #232323;
-  --text-h3: #2b2b2b;
-  --text-h4: #333333;
-  --text-strong: #1a1a1a;
-  --text-code: #333333;
+  --text-display: #000000;
+  --text-primary: #000000;
+  --text-h1: #000000;
+  --text-h2: #000000;
+  --text-h3: #000000;
+  --text-h4: #000000;
+  --text-strong: #000000;
+  --text-code: #000000;
 
   /* Text: body and muted */
-  --text-body: #222222;
-  --text-prose: #333333;
-  --text-emphasis: #1a1a1a;
+  --text-body: #000000;
+  --text-prose: #000000;
+  --text-emphasis: #000000;
   --text-secondary: #555555;
   --text-dim: #666666;
   --text-muted: #767676;

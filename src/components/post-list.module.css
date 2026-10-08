@@ -30,7 +30,7 @@
   min-width: 0;
   color: var(--text-code);
   font-size: 1.125rem;
-  font-weight: 300;
+  font-weight: 400;
   letter-spacing: -0.01em;
   line-height: 1.5;
   /* 좁은 화면에서 한글 제목이 단어 중간에서 끊기지 않게 어절 단위로 줄을 바꾼다. */
