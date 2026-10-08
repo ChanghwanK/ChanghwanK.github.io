@@ -15,6 +15,7 @@ interface HomeData {
       authorName: string
       authorTagline: string
       authorBio: string
+      authorIntro: string[]
       githubUrl: string
       linkedInUrl: string
     }
@@ -27,7 +28,7 @@ interface HomeData {
 // 홈은 프로필과 최근 글 몇 개만 싣고, 전체 글은 /blog에 둔다.
 // 개수는 쿼리의 limit과 같다. 페이지 쿼리는 변수를 받지 않아 상수를 쿼리 안에 넣을 수 없다.
 const Home = ({ data }: PageProps<HomeData>) => {
-  const { authorName, authorTagline, authorBio, githubUrl, linkedInUrl } =
+  const { authorName, authorTagline, authorIntro, githubUrl, linkedInUrl } =
     data.site.siteMetadata
 
   return (
@@ -38,7 +39,7 @@ const Home = ({ data }: PageProps<HomeData>) => {
           <ProfileHeader
             name={authorName}
             tagline={authorTagline}
-            bio={authorBio}
+            intro={authorIntro}
             githubUrl={githubUrl}
             linkedInUrl={linkedInUrl}
           />
@@ -56,8 +57,8 @@ const Home = ({ data }: PageProps<HomeData>) => {
 // 검색 결과에서 홈이 어떤 글을 모아 둔 곳인지 보이도록 실제 다루는 주제를 적는다.
 const HOME_TITLE = "Kubernetes·Istio·AWS 플랫폼 엔지니어링 기록"
 
-// 홈 설명은 화면 상단 소개글(authorBio)을 그대로 쓴다. 본문에 보이는 문장과 같아야 소개글을 고칠 때
-// 함께 바뀌고, Google이 meta description 대신 본문 문장으로 바꿔 쓸 이유도 줄어든다.
+// 홈 설명은 짧은 소개(authorBio)를 쓴다. 화면의 자기소개(authorIntro)는 세 문단이라
+// 검색 결과 설명 길이(약 160자)를 크게 넘겨 잘린다.
 // siteMetadata.description을 쓰지 않는 이유: RSS 채널 설명과 404 등 설명 없는 페이지의 기본값으로도 쓰여
 // 홈 문구를 다듬을 때마다 그쪽까지 함께 바뀌기 때문이다.
 // 소개글의 \n은 화면 줄바꿈용이라 meta 태그에서는 공백 하나로 합친다.
@@ -82,6 +83,7 @@ export const query = graphql`
         authorName
         authorTagline
         authorBio
+        authorIntro
         githubUrl
         linkedInUrl
       }

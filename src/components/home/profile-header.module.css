@@ -1,81 +1,82 @@
-/* 헤더 아래 여백. 그 아래 홈의 "Recent Posts" 제목이 최근 글 목록의 시작을 알린다. */
-.avatarRow {
-  display: flex;
-  align-items: flex-start;
-  gap: 1.25rem;
-  padding-bottom: 3.75rem;
+/* 소개 아래 여백. 그 아래 홈의 "Recent Posts" 제목이 최근 글 목록의 시작을 알린다. */
+.profile {
+  padding-bottom: 4.5rem;
 }
 
-/* 위쪽 정렬로 아바타 윗선을 한 줄 소개 윗선에 맞춘다. 소개글 줄 수가 바뀌어도 아바타 위치가 흔들리지 않는다. */
+/* 아바타 옆에 한 줄 소개를 붙이고, 소셜 아이콘은 오른쪽 끝(소개 문단의 오른쪽 끝선)에 둔다. */
+.topRow {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1.75rem;
+}
+
+/* 소개 문단이 주인공이라 아바타는 작은 표식 크기로 둔다. */
 .avatar {
   display: block;
-  width: 72px;
-  height: 72px;
   flex-shrink: 0;
+  width: 48px;
+  height: 48px;
   margin: 0;
-  border: 2px solid var(--border-avatar);
+  border: 1.5px solid var(--border-avatar);
   border-radius: 50%;
   object-fit: cover;
   background-color: #ffffff;
 }
 
-/* 소개글이 소셜 아이콘 바로 앞까지 남은 폭을 모두 차지한다. */
-.profileInfo {
-  flex: 1;
-  min-width: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-}
-
-.taglineRow {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-}
-
-/* 홈의 페이지 제목(h1)이다. 최근 글 제목 굵기를 400으로 낮춘 흐름에 맞춰 크기로만 위계를 만들고,
-   한글 문장이 넓어 보이지 않도록 자간을 조금 좁힌다. */
-.tagline {
-  margin: 0;
-  color: var(--text-hover-strong);
-  font-size: 1.375rem;
-  font-weight: 400;
-  line-height: 1.35;
-  letter-spacing: -0.01em;
-  word-break: keep-all;
-  /* 좁은 화면에서 줄이 꺾일 때 마지막 어절만 홀로 남지 않게 줄 길이를 고르게 나눈다. */
-  text-wrap: balance;
-}
-
-.bio {
-  display: flex;
-  flex-direction: column;
-  gap: 0.1rem;
-}
-
-/* 페이지 주인을 소개하는 문장이라 글 요약(--text-secondary)보다 옅으면 안 된다. 배경 대비 약 5.6:1로 AA(4.5:1)를 넘긴다. */
-.bioText {
-  margin: 0;
-  color: var(--text-dim);
-  font-size: 0.875rem;
-  line-height: 1.55;
-  word-break: keep-all;
-}
-
 /* 아이콘 칸(28px)은 클릭 영역이라 유지하되, 글리프(16px) 둘레 여백 6px을 음수 마진으로 상쇄해
-   한 줄 소개 줄 높이를 늘리지 않고, 글리프 오른쪽 끝을 본문 오른쪽 끝(썸네일)에 맞춘다. */
+   글리프 오른쪽 끝을 소개 문단의 오른쪽 끝선에 맞춘다. */
 .socialLinks {
   flex-shrink: 0;
-  margin: -6px -6px -6px auto;
+  margin-left: auto;
+  margin-right: -6px;
+}
+
+/* 홈의 페이지 제목(h1)이다. 아래 소개 문단보다 한 단계만 크게 둬서 문단과 한 덩어리로 읽히게 한다.
+   좁은 화면에서 두 줄로 꺾여도 마지막 어절만 홀로 남지 않게 줄 길이를 고르게 나눈다. */
+.tagline {
+  min-width: 0;
+  margin: 0;
+  text-wrap: balance;
+  color: var(--text-hover-strong);
+  font-size: 1.2rem;
+  font-weight: 500;
+  line-height: 1.5;
+  letter-spacing: -0.01em;
+  word-break: keep-all;
+}
+
+.intro {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+/* 긴 소개를 읽히게 하는 게 목적이라 글 본문과 같은 색에 줄 간격을 넉넉히 둔다. */
+.introText {
+  margin: 0;
+  color: var(--text-body);
+  font-size: 1rem;
+  font-weight: 400;
+  line-height: 1.7;
+  word-break: keep-all;
 }
 
 @media (max-width: 600px) {
-  .avatarRow {
-    padding-bottom: 2.125rem;
+  .profile {
+    padding-bottom: 3.25rem;
+  }
+
+  .topRow {
+    margin-bottom: 1.25rem;
   }
 
   .tagline {
-    font-size: 1.2rem;
+    font-size: 1.1rem;
+  }
+
+  .introText {
+    font-size: 0.95rem;
+    line-height: 1.65;
   }
 }
