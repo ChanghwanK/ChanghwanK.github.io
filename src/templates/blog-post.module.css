@@ -158,8 +158,8 @@
 
 .content strong,
 .content b {
-  /* 강조는 본문(350)보다 굵어야 한다. 300이면 강조가 본문보다 가늘어지는 역전이 생긴다. */
-  font-weight: 450;
+  /* 강조는 본문(400)보다 확실히 굵어야 한다. antialiased에서는 450 정도의 차이는 본문과 거의 구분되지 않는다. */
+  font-weight: 550;
   color: var(--text-strong);
 }
 
@@ -219,7 +219,7 @@
   border-left: 2px solid var(--border-strong);
   color: var(--text-emphasis);
   font-weight: 400;
-  line-height: 1.8;
+  line-height: 1.7;
 }
 
 .content blockquote p {
