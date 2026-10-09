@@ -16,8 +16,10 @@ body {
   color: var(--text-body);
   font-family: var(--font-sans);
   font-weight: 300;
-  -moz-osx-font-smoothing: auto;
-  -webkit-font-smoothing: auto;
+  /* macOS 기본(auto)은 획을 두껍게 그려 #343a40 글자가 한 단계 굵어 보인다.
+     회색조 안티앨리어싱으로 얇게 그린다. Windows·Linux에는 적용되지 않는다. */
+  -moz-osx-font-smoothing: grayscale;
+  -webkit-font-smoothing: antialiased;
   transition: background-color 0.2s ease, color 0.2s ease;
 }
 
