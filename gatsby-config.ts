@@ -22,7 +22,7 @@ const config: GatsbyConfig = {
     author: `@changhwanK`,
     siteUrl: `https://dev.k10n.me`,
     authorName: `0xA1D3N`,
-    // 홈 상단 한 줄 소개. authorName은 구조화 데이터(BlogPosting author.name)에도 쓰이므로 문구를 따로 둔다.
+    // 홈 자기소개 문단 위의 제목. 아바타 옆에는 authorName이 블로그 이름으로 보인다.
     authorTagline: `머릿속의 물음표가 느낌표가 될 때까지`,
     authorRole: `DevOps Engineer`,
     authorHandle: `@changhwanK`,

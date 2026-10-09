@@ -3,7 +3,7 @@
   padding-bottom: 4.5rem;
 }
 
-/* 아바타 옆에 한 줄 소개를 붙이고, 소셜 아이콘은 오른쪽 끝(소개 문단의 오른쪽 끝선)에 둔다. */
+/* 아바타 옆에 블로그 이름을 붙이고, 소셜 아이콘은 오른쪽 끝(소개 문단의 오른쪽 끝선)에 둔다. */
 .topRow {
   display: flex;
   align-items: center;
@@ -32,18 +32,28 @@
   margin-right: -6px;
 }
 
-/* 홈의 페이지 제목(h1)이다. 아래 소개 문단보다 한 단계만 크게 둬서 문단과 한 덩어리로 읽히게 한다.
-   좁은 화면에서 두 줄로 꺾여도 마지막 어절만 홀로 남지 않게 줄 길이를 고르게 나눈다. */
-.tagline {
+/* 홈의 페이지 제목(h1)인 블로그 이름이다. 아바타와 함께 사이트의 표식 역할을 한다. */
+.siteTitle {
   min-width: 0;
   margin: 0;
-  text-wrap: balance;
   color: var(--text-h1);
   font-size: 1.2rem;
-  font-weight: 500;
+  font-weight: 600;
+  line-height: 1.5;
+  letter-spacing: -0.01em;
+}
+
+/* 소개 문단의 제목이다. 본문(16px)과 크기 차이는 작게 두고 굵기로 위계를 만든다.
+   좁은 화면에서 두 줄로 꺾여도 마지막 어절만 홀로 남지 않게 줄 길이를 고르게 나눈다. */
+.introHeading {
+  margin: 0 0 0.75rem;
+  color: var(--text-h2);
+  font-size: 1.15rem;
+  font-weight: 600;
   line-height: 1.5;
   letter-spacing: -0.01em;
   word-break: keep-all;
+  text-wrap: balance;
 }
 
 .intro {
@@ -71,7 +81,11 @@
     margin-bottom: 1.25rem;
   }
 
-  .tagline {
+  .siteTitle {
     font-size: 1.1rem;
+  }
+
+  .introHeading {
+    font-size: 1.05rem;
   }
 }
