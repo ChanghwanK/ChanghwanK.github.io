@@ -69,10 +69,11 @@
 /* ─── Content (prose) ────────────────────────────────────────── */
 .content {
   font-family: var(--font-sans);
-  line-height: 1.75;
-  font-size: 0.9375rem;
-  /* body 기본(300)은 획이 가늘어 가장자리가 날카롭게 읽히고, 400은 페이지 전체가 무거워 보인다. 그 중간값을 쓴다. */
-  font-weight: 350;
+  /* 크기·굵기·줄 높이는 홈 자기소개(profile-header.module.css .introText)와 같은 값이다. 한쪽을 바꾸면 함께 바꾼다.
+     글자 색을 순수 검정보다 옅은 #343a40으로 두므로 굵기는 400이어야 획이 흐려 보이지 않는다. */
+  line-height: 1.7;
+  font-size: 1rem;
+  font-weight: 400;
   color: var(--text-prose);
   word-break: keep-all;
 }

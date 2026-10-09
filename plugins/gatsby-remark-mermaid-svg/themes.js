@@ -11,20 +11,21 @@ const LIGHT_CONFIG = {
   themeVariables: {
     fontFamily: FONT_FAMILY,
     fontSize: "15px",
-    background: "#ffffff", // --bg-page
-    primaryColor: "#f7f7f7", // --bg-elevated
+    background: "#f8f9fa", // --bg-page
+    // 노드는 회색 바탕 위에서 구분되도록 흰색으로 띄운다.
+    primaryColor: "#ffffff",
     primaryBorderColor: "#b0b0b0", // --border-accent
-    primaryTextColor: "#222222", // --text-primary
-    secondaryColor: "#f2f2f2", // --bg-card
-    tertiaryColor: "#ffffff",
+    primaryTextColor: "#343a40", // --text-primary
+    secondaryColor: "#e9ecef", // --bg-card
+    tertiaryColor: "#f8f9fa",
     lineColor: "#767676", // --text-muted
-    textColor: "#333333", // --text-prose
-    clusterBkg: "#fbfbfb",
+    textColor: "#343a40", // --text-prose
+    clusterBkg: "#f1f3f5", // --bg-elevated
     clusterBorder: "#d4d4d4", // --border-strong
-    edgeLabelBackground: "#ffffff",
-    noteBkgColor: "#f2f2f2",
+    edgeLabelBackground: "#f8f9fa", // --bg-page
+    noteBkgColor: "#e9ecef",
     noteBorderColor: "#d4d4d4",
-    noteTextColor: "#333333",
+    noteTextColor: "#343a40",
   },
 }
 

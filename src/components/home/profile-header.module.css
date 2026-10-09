@@ -52,7 +52,7 @@
   gap: 1rem;
 }
 
-/* 긴 소개를 읽히게 하는 게 목적이라 글 본문과 같은 색에 줄 간격을 넉넉히 둔다. */
+/* 글 본문(blog-post.module.css .content)과 같은 크기·굵기로 맞춰, 홈과 글에서 같은 글자로 읽히게 한다. */
 .introText {
   margin: 0;
   color: var(--text-body);
@@ -73,10 +73,5 @@
 
   .tagline {
     font-size: 1.1rem;
-  }
-
-  .introText {
-    font-size: 0.95rem;
-    line-height: 1.65;
   }
 }
