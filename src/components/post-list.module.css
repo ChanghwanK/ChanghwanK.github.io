@@ -30,8 +30,8 @@
   min-width: 0;
   color: var(--text-code);
   font-size: 1rem;
-  /* Pretendard Variable이라 중간 굵기를 쓸 수 있다. 300은 검정 글자가 흐려 보이고 400은 목록이 무거워 보인다. */
-  font-weight: 350;
+  /* 글 본문(blog-post.module.css .content)과 같은 굵기다. #343a40 글자에서 350 이하는 획이 흐려 보인다. */
+  font-weight: 400;
   letter-spacing: -0.01em;
   line-height: 1.5;
   /* 좁은 화면에서 한글 제목이 단어 중간에서 끊기지 않게 어절 단위로 줄을 바꾼다. */
