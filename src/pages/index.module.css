@@ -11,7 +11,7 @@
   margin: 0 auto;
 }
 
-/* 프로필 아래 곁들이는 구획이라 /blog의 "Posts" 제목보다 한 단계 작게 둔다. */
+/* 프로필 아래 곁들이는 구획이라 작고 흐린 라벨로 둔다. */
 .sectionLabel {
   margin: 0;
   color: var(--text-code);

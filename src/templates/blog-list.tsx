@@ -64,7 +64,9 @@ const BlogList = ({ data }: PageProps<BlogListData, BlogListPageContext>) => {
       <div className={styles.darkPage}>
         <div className={styles.container}>
           <SiteNav />
-          <h1 className={styles.sectionLabel}>Posts</h1>
+          {/* 상단 메뉴의 "Posts" 밑줄이 이미 현재 페이지를 알려 주므로 화면에서는 감추고,
+              화면 낭독기와 검색엔진이 읽을 페이지 제목(h1)으로만 남긴다. */}
+          <h1 className={styles.visuallyHidden}>Posts</h1>
           <PostList posts={posts.slice(0, visibleCount)} />
           {hasMore && <div ref={sentinelRef} aria-hidden="true" />}
         </div>
