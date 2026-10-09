@@ -10,25 +10,8 @@
   position: relative;
   min-height: 100vh;
   background: var(--bg-page);
-  /* 제목이 첫 화면 위쪽에 오도록 홈 아이콘(왼쪽 위 구석) 바로 아래 높이에서 시작한다. */
-  padding: 4rem 1.5rem 8rem;
-}
-
-/* ─── Home link ─────────────────────────────────────────────── */
-/* 왼쪽 위 구석에 둔다. 창 모서리에 붙어 보이지 않게 위쪽보다 왼쪽 여백을 넓게 둔다.
-   fixed가 아니라 absolute라 스크롤하면 함께 올라가 본문을 가리지 않는다. */
-.homeLink {
-  position: absolute;
-  top: 1.25rem;
-  left: 3.75rem;
-  display: flex;
-  padding: 0.25rem;
-  color: var(--text-faint);
-  transition: color 0.15s ease;
-}
-
-.homeLink:hover {
-  color: var(--text-hover-strong);
+  /* 위쪽 여백은 홈·/blog(src/pages/index.module.css, blog-list.module.css)와 같아야 상단 메뉴 높이가 맞는다. */
+  padding: 3rem 1.5rem 8rem;
 }
 
 /* ─── Article ────────────────────────────────────────────────── */
@@ -703,13 +686,9 @@
 
 @media (max-width: 600px) {
   .darkPage {
-    padding: 3.5rem 1.25rem 6rem;
+    padding: 2rem 1.25rem 6rem;
   }
 
-  .homeLink {
-    top: 1rem;
-    left: 1.25rem;
-  }
 
   .title {
     font-size: 1.5rem;

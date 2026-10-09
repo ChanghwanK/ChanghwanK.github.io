@@ -6,6 +6,7 @@ import Layout from "../components/layout"
 import Seo from "../components/seo"
 import PostTags from "../components/post-tags"
 import Comments from "../components/comments"
+import SiteNav from "../components/site-nav"
 import * as styles from "./blog-post.module.css"
 
 interface BlogPostData {
@@ -139,25 +140,9 @@ const BlogPostTemplate = ({ data }: PageProps<BlogPostData>) => {
             />
           </aside>
         )}
-        {/* 글 제목이 페이지 맨 위에 오도록 홈 링크는 본문 흐름 밖, 페이지 왼쪽 위 구석에 둔다. */}
-        <Link to="/" className={styles.homeLink} aria-label="홈">
-          <svg
-            width="24"
-            height="24"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="1.6"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            aria-hidden="true"
-          >
-            <path d="M3 10.5 12 3l9 7.5" />
-            <path d="M5 9v11h14V9" />
-            <path d="M10 20v-6h4v6" />
-          </svg>
-        </Link>
         <article className={styles.article}>
+          {/* 홈·/blog와 같은 상단 메뉴를 같은 자리에 둬서, 세 페이지를 오가도 메뉴가 움직이지 않는다. */}
+          <SiteNav />
           <header className={styles.header}>
             <h1 className={styles.title}>{title}</h1>
             {description && <h2 className={styles.subtitle}>{description}</h2>}
