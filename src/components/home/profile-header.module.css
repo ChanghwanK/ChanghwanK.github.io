@@ -37,7 +37,7 @@
   min-width: 0;
   margin: 0;
   color: var(--text-h1);
-  font-size: 1.2rem;
+  font-size: 1.625rem;
   font-weight: 600;
   line-height: 1.5;
   letter-spacing: -0.01em;
@@ -82,7 +82,7 @@
   }
 
   .siteTitle {
-    font-size: 1.1rem;
+    font-size: 1.4rem;
   }
 
   .introHeading {

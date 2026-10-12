@@ -21,7 +21,7 @@ const config: GatsbyConfig = {
     description: `개인 기술 블로그`,
     author: `@changhwanK`,
     siteUrl: `https://dev.k10n.me`,
-    authorName: `0xA1D3N`,
+    authorName: `Gon' Figure It Out`,
     // 홈 자기소개 문단 위의 제목. 아바타 옆에는 authorName이 블로그 이름으로 보인다.
     authorTagline: `머릿속의 물음표가 느낌표가 될 때까지`,
     authorRole: `DevOps Engineer`,
