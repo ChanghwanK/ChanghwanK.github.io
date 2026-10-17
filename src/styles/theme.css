@@ -10,8 +10,8 @@
   --line-height-normal: 1.5;
   --size-content: 760px;
 
-  /* Backgrounds: 아주 옅은 회색 바탕 위에 요소의 깊이만 같은 계열 회색으로 한 단계씩 더한다. */
-  --bg-page: #f8f9fa;
+  /* 옅은 웜 화이트 바탕 위에 회색 요소로 깊이를 구분한다. */
+  --bg-page: #fcfcfb;
   --bg-elevated: #f1f3f5;
   --bg-card: #e9ecef;
   --bg-code: #f1f3f5;
