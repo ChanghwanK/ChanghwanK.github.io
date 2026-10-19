@@ -1,5 +1,5 @@
 import * as React from "react"
-import navisLogo from "../../images/navis-7e.png"
+import profileAvatar from "../../images/profile-avatar.png"
 import SocialLinks from "./social-links"
 import * as styles from "./profile-header.module.css"
 
@@ -24,7 +24,7 @@ const ProfileHeader = ({
   <header className={styles.profile}>
     <div className={styles.topRow}>
       {/* 바로 옆에 이름이 글자로 있으므로 아바타는 장식으로 두고 대체 텍스트를 비운다. */}
-      <img src={navisLogo} alt="" className={styles.avatar} />
+      <img src={profileAvatar} alt="" className={styles.avatar} />
       <h1 className={styles.siteTitle}>{name}</h1>
       <div className={styles.socialLinks}>
         <SocialLinks githubUrl={githubUrl} linkedInUrl={linkedInUrl} />
