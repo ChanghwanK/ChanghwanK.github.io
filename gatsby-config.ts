@@ -15,13 +15,15 @@ interface SitemapPage {
   lastmod?: string
 }
 
+const SITE_TITLE = `Gon' Figure It Out`
+
 const config: GatsbyConfig = {
   siteMetadata: {
-    title: `0xA1D3N's 기술 블로그`,
+    title: SITE_TITLE,
     description: `개인 기술 블로그`,
     author: `@changhwanK`,
     siteUrl: `https://dev.k10n.me`,
-    authorName: `Gon' Figure It Out`,
+    authorName: SITE_TITLE,
     // 홈 자기소개 문단 위의 제목. 아바타 옆에는 authorName이 블로그 이름으로 보인다.
     authorTagline: `머릿속의 물음표가 느낌표가 될 때까지`,
     authorRole: `DevOps Engineer`,
@@ -147,13 +149,13 @@ const config: GatsbyConfig = {
     {
       resolve: `gatsby-plugin-manifest`,
       options: {
-        name: `0xA1D3N`,
-        short_name: `Changhwan`,
+        name: SITE_TITLE,
+        short_name: `Gon'`,
         start_url: `/`,
         background_color: `#ffffff`,
         theme_color: `#7026b9`,
         display: `minimal-ui`,
-        icon: `src/images/navis-7e.png`,
+        icon: `src/images/profile-avatar.png`,
       },
     },
     {

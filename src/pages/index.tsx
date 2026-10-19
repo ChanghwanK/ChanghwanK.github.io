@@ -54,9 +54,6 @@ const Home = ({ data }: PageProps<HomeData>) => {
   )
 }
 
-// 검색 결과에서 홈이 어떤 글을 모아 둔 곳인지 보이도록 실제 다루는 주제를 적는다.
-const HOME_TITLE = "Kubernetes·Istio·AWS 플랫폼 엔지니어링 기록"
-
 // 홈 설명은 짧은 소개(authorBio)를 쓴다. 화면의 자기소개(authorIntro)는 세 문단이라
 // 검색 결과 설명 길이(약 160자)를 크게 넘겨 잘린다.
 // siteMetadata.description을 쓰지 않는 이유: RSS 채널 설명과 404 등 설명 없는 페이지의 기본값으로도 쓰여
@@ -66,7 +63,7 @@ const toSingleLine = (text: string) => text.replace(/\s*\n\s*/g, " ").trim()
 
 export const Head = ({ data }: HeadProps<HomeData>) => (
   <Seo
-    title={HOME_TITLE}
+    title={data.site.siteMetadata.authorName}
     description={toSingleLine(data.site.siteMetadata.authorBio)}
     pathname="/"
     isSiteHome

@@ -70,6 +70,8 @@ function Seo({
 
   const metaDescription = description || site.siteMetadata.description
   const defaultTitle = site.siteMetadata?.title
+  const pageTitle =
+    isSiteHome || !defaultTitle ? title : `${title} | ${defaultTitle}`
   const siteUrl = site.siteMetadata?.siteUrl
   const url = pathname ? `${siteUrl}${pathname}` : siteUrl
   const ogImage = image ? `${siteUrl}${image}` : undefined
@@ -95,7 +97,7 @@ function Seo({
 
   return (
     <>
-      <title>{defaultTitle ? `${title} | ${defaultTitle}` : title}</title>
+      <title>{pageTitle}</title>
       <link rel="canonical" href={url} />
       <meta name="description" content={metaDescription} />
       <meta property="og:site_name" content={defaultTitle} />
